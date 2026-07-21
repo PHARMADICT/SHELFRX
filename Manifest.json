@@ -1,0 +1,21 @@
+{
+  "name": "ShelfRx Pro & MY Tracker",
+  "short_name": "ShelfRx",
+  "description": "Pharmacy Daily Tracker with GS1 scanner and RTA shift database",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#020B1F",
+  "theme_color": "#00205B",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='120' fill='%2300205B'/><circle cx='256' cy='256' r='180' fill='%23005EB8'/><text x='256' y='320' font-size='200' text-anchor='middle' fill='white'>💊</text></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["medical", "utilities", "productivity"],
+  "lang": "en-GB"
+}
+
