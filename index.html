@@ -1,1931 +1,836 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<title>ShelfRx Pro & MY Tracker</title>
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="ShelfRx">
-<meta name="theme-color" content="#00205B">
-<link rel="manifest" href="manifest.json">
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=DM+Mono:wght@400;500&display=swap');
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#0f172a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>PharmaTrack - Planner</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* New Dark Cyan & Blue Colour Scheme */
+      --gradient-start: #0f172a;
+      --gradient-mid:   #1e293b;
+      --gradient-end:   #020617;
+      --purple-light:   #22d3ee; 
+      --purple-primary: #06b6d4;
+      --purple-dark:    #0891b2;
+      --purple-glow:    rgba(6, 182, 212, 0.40);
+      --accent:       #38bdf8;
+      --accent-light: #bae6fd;
+      --green: #10b981;
+      --green-bg: rgba(16, 185, 129, 0.15);
+      --orange: #f59e0b;
+      --orange-bg: rgba(245, 158, 11, 0.15);
+      --red: #ef4444;
+      --red-bg: rgba(239, 68, 68, 0.15);
+      --white: #ffffff;
+      --gray-100: #f8fafc;
+      --gray-200: #e2e8f0;
+      --gray-300: #cbd5e1;
+      --gray-400: #94a3b8;
+      --gray-500: #64748b;
+      --gray-600: #475569;
+      --gray-700: #334155;
+      --gray-800: #1e293b;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 20px);
+      --nav-height: 70px;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body { height: 100%; overflow: hidden; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(180deg, var(--gradient-start) 0%, var(--gradient-mid) 50%, var(--gradient-end) 100%);
+      color: var(--white);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+    @keyframes fadeInScale { from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: scale(1); } }
+    @keyframes slideUpFade { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes pulse-scan { 0% { box-shadow: 0 0 0 0 var(--purple-glow); } 70% { box-shadow: 0 0 0 20px rgba(6, 182, 212, 0); } 100% { box-shadow: 0 0 0 0 rgba(6, 182, 212, 0); } }
+    @keyframes scanMove { 0%, 100% { top: 10%; } 50% { top: 90%; } }
+    @keyframes popIn { 0% { transform: scale(0.9); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+    @keyframes shake { 10%, 90% { transform: translate3d(-2px, 0, 0); } 20%, 80% { transform: translate3d(4px, 0, 0); } 30%, 50%, 70% { transform: translate3d(-6px, 0, 0); } 40%, 60% { transform: translate3d(6px, 0, 0); } }
+    @keyframes toastIn { from { opacity: 0; transform: translateY(-20px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
 
-:root {
-  --my-navy: #00205B;
-  --my-blue: #005EB8;
-  --aura-pink: #D81B60;
-  --aura-purple: #8E24AA;
-  --bg: #020B1F;
-  --bg2: #0A1633;
-  --bg3: #112247;
-  --card: #0D1E40;
-  --card2: #162A52;
-  --accent: #4BA3E3;
-  --green: #22C55E;
-  --red: #EF4444;
-  --orange: #F59E0B;
-  --purple: #A855F7;
-  --text: #F1F5F9;
-  --text2: #94A3B8;
-  --text3: #64748B;
-  --border: #1E3A8A;
-  --wood: #C8933A;
-  --wood-dark: #8B5E1A;
-  --wood-light: #E8C07A;
-  --shelf-bg: #F9F4EB;
-  --safe-top: env(safe-area-inset-top, 20px);
-  --safe-bottom: env(safe-area-inset-bottom, 18px);
-}
+    .app {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      padding-top: var(--safe-top);
+      position: relative;
+      overflow: hidden;
+    }
+    .header {
+      height: 60px;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      flex-shrink: 0;
+      z-index: 100;
+    }
+    .logo { display: flex; align-items: center; gap: 12px; }
+    .logo-icon {
+      width: 38px; height: 38px;
+      background: linear-gradient(135deg, var(--purple-light) 0%, var(--purple-dark) 100%);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 15px var(--purple-glow);
+      transition: transform 0.3s ease;
+    }
+    .logo-icon:hover { transform: rotate(5deg) scale(1.05); }
+    .logo-icon svg { width: 22px; height: 22px; color: var(--white); }
+    .logo-text {
+      font-size: 19px; font-weight: 700; letter-spacing: -0.5px;
+      background: linear-gradient(135deg, var(--accent-light) 0%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .menu-btn {
+      width: 44px; height: 44px; border-radius: 12px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: all 0.3s ease;
+    }
+    .menu-btn:hover, .menu-btn:active { background: rgba(255,255,255,0.12); transform: scale(0.92); }
+    .menu-btn svg { width: 22px; height: 22px; }
+    .main { flex: 1; overflow: hidden; position: relative; }
+    .page {
+      position: absolute; inset: 0;
+      display: none; flex-direction: column; overflow: hidden;
+    }
+    .page.active { display: flex; animation: fadeInScale 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .nav {
+      height: var(--nav-height);
+      background: rgba(2, 6, 23, 0.8);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-top: 1px solid rgba(255,255,255,0.08);
+      display: flex; align-items: center; justify-content: space-around;
+      padding: 0 20px; padding-bottom: var(--safe-bottom);
+      flex-shrink: 0; position: relative;
+    }
+    .nav-item {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 6px;
+      padding: 8px 4px; border: none; background: none;
+      color: var(--gray-500); cursor: pointer;
+      transition: all 0.3s ease; border-radius: 12px; position: relative;
+    }
+    .nav-item.active { color: var(--accent); }
+    .nav-item.active::before {
+      content: ''; position: absolute; top: -1px; left: 50%;
+      transform: translateX(-50%); width: 24px; height: 3px;
+      background: var(--accent); border-radius: 0 0 4px 4px;
+      box-shadow: 0 2px 8px var(--purple-glow);
+    }
+    .nav-item svg { width: 24px; height: 24px; transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+    .nav-item:active svg { transform: scale(0.85); }
+    .nav-item span { font-size: 11px; font-weight: 600; }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  -webkit-tap-highlight-color: transparent;
-}
+    /* PLANNER PAGE */
+    .planner-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 12px 14px;
+      overflow: hidden;
+    }
+    .planner-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      flex-shrink: 0;
+    }
+    .planner-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .planner-stats {
+      display: flex;
+      gap: 12px;
+      font-size: 11px;
+      color: var(--gray-400);
+    }
+    .planner-stats span { background: rgba(255,255,255,0.06); padding: 4px 10px; border-radius: 12px; }
+    .planner-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      flex: 1;
+      overflow-y: auto;
+      padding-bottom: 80px;
+      align-content: start;
+    }
+    .planner-card {
+      background: rgba(255,255,255,0.05);
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.08);
+      padding: 10px;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      cursor: pointer;
+      min-height: 140px;
+      display: flex;
+      flex-direction: column;
+      animation: slideUpFade 0.4s ease-out forwards;
+    }
+    .planner-card:active { transform: scale(0.97); }
+    .planner-card:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15); }
+    .planner-card.expiry-normal { border-color: rgba(255,255,255,0.08); }
+    .planner-card.expiry-soon { 
+      border-color: var(--orange); 
+      background: rgba(245, 158, 11, 0.15);
+      box-shadow: 0 0 20px rgba(245, 158, 11, 0.15);
+    }
+    .planner-card.expiry-soon .card-expiry-badge { background: var(--orange); color: #000; }
+    .planner-card.expiry-critical { 
+      border-color: var(--red); 
+      background: rgba(239, 68, 68, 0.18);
+      box-shadow: 0 0 25px rgba(239, 68, 68, 0.20);
+    }
+    .planner-card.expiry-critical .card-expiry-badge { background: var(--red); color: #fff; }
+    .planner-card .card-img {
+      width: 100%;
+      height: 70px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.06);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      margin-bottom: 6px;
+      position: relative;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .planner-card .card-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    .planner-card .card-img .placeholder {
+      font-size: 28px;
+      opacity: 0.5;
+    }
+    .planner-card .card-img .camera-overlay {
+      position: absolute;
+      bottom: 4px;
+      right: 4px;
+      background: rgba(0,0,0,0.7);
+      border-radius: 50%;
+      width: 26px;
+      height: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      cursor: pointer;
+      border: 1px solid rgba(255,255,255,0.15);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .planner-card:hover .card-img .camera-overlay,
+    .planner-card:active .card-img .camera-overlay { opacity: 1; }
+    .planner-card .card-name {
+      font-size: 11px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .planner-card .card-details {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px 8px;
+      font-size: 9px;
+      color: var(--gray-400);
+      margin-bottom: 4px;
+    }
+    .planner-card .card-details span { background: rgba(255,255,255,0.05); padding: 1px 6px; border-radius: 6px; }
+    .planner-card .card-expiry-badge {
+      font-size: 8px;
+      font-weight: 700;
+      padding: 1px 8px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.1);
+    }
+    .planner-card .card-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: auto;
+    }
+    .battery-indicator {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 9px;
+      font-weight: 600;
+    }
+    .battery-bar {
+      width: 36px;
+      height: 8px;
+      border-radius: 4px;
+      background: rgba(255,255,255,0.1);
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.1);
+      position: relative;
+    }
+    .battery-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.3s ease;
+    }
+    .battery-fill.critical { background: var(--red); }
+    .battery-fill.low { background: var(--orange); }
+    .battery-fill.medium { background: #eab308; }
+    .battery-fill.high { background: var(--green); }
+    .battery-fill.full { background: var(--accent); }
 
-body {
-  font-family: 'Inter', sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-  overflow-x: hidden;
-  padding-bottom: calc(88px + var(--safe-bottom));
-}
+    /* POPUP MODAL */
+    .popup-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(10px);
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      z-index: 300;
+      padding: 16px;
+      animation: popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .popup-overlay.active { display: flex; }
+    .popup-card {
+      background: linear-gradient(180deg, var(--gradient-mid) 0%, var(--gradient-start) 100%);
+      border-radius: 24px;
+      padding: 24px;
+      width: 100%;
+      max-width: 420px;
+      max-height: 90vh;
+      overflow-y: auto;
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+    }
+    .popup-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .popup-title { font-size: 18px; font-weight: 700; color: var(--accent); }
+    .popup-close {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: rgba(255,255,255,0.08); border: none;
+      color: var(--gray-400); font-size: 20px;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: all 0.3s ease;
+    }
+    .popup-close:hover { background: rgba(255,255,255,0.15); transform: scale(0.92); }
+    .popup-field { margin-bottom: 12px; }
+    .popup-field label {
+      display: block; font-size: 11px; font-weight: 600;
+      color: var(--gray-400); text-transform: uppercase;
+      letter-spacing: 0.5px; margin-bottom: 4px;
+    }
+    .popup-input {
+      width: 100%; height: 44px; padding: 0 14px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px; color: var(--white);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px; outline: none;
+      transition: all 0.3s ease;
+    }
+    .popup-input:focus { border-color: var(--accent); background: rgba(255,255,255,0.08); box-shadow: 0 0 0 3px var(--purple-glow); }
+    .popup-input::placeholder { color: var(--gray-600); }
+    .popup-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+    }
+    .popup-grid .popup-field { margin-bottom: 0; }
+    .popup-footer {
+      display: flex; gap: 10px; margin-top: 16px;
+      padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .popup-btn {
+      flex: 1; height: 48px; border-radius: 14px; border: none;
+      font-size: 14px; font-weight: 600; cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .popup-btn:active { transform: scale(0.95); }
+    .popup-btn.primary {
+      background: linear-gradient(135deg, var(--purple-primary) 0%, var(--purple-dark) 100%);
+      color: #fff;
+      box-shadow: 0 4px 15px var(--purple-glow);
+    }
+    .popup-btn.secondary { background: rgba(255,255,255,0.08); color: var(--gray-300); border: 1px solid rgba(255,255,255,0.08); }
+    .popup-btn.danger { background: var(--red-bg); color: var(--red); border: 1px solid rgba(239,68,68,0.2); }
 
-button, input, select, textarea {
-  font-family: inherit;
-}
+    .toast-container {
+      position: fixed; top: calc(var(--safe-top) + 80px); left: 50%;
+      transform: translateX(-50%); z-index: 400;
+      display: flex; flex-direction: column; gap: 10px; pointer-events: none;
+      width: 90%; max-width: 400px;
+    }
+    .toast {
+      background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.1); padding: 14px 20px; border-radius: 14px;
+      display: flex; align-items: center; gap: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
+      animation: toastIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: auto;
+    }
+    .toast.success { border-color: rgba(16, 185, 129, 0.5); }
+    .toast.error { border-color: rgba(239, 68, 68, 0.5); }
+    .toast.warning { border-color: rgba(245, 158, 11, 0.5); }
+    .toast-icon { width: 22px; height: 22px; flex-shrink: 0; }
+    .toast.success .toast-icon { color: var(--green); }
+    .toast.error .toast-icon { color: var(--red); }
+    .toast.warning .toast-icon { color: var(--orange); }
+    .toast-text { font-size: 14px; font-weight: 500; color: var(--white); }
 
-/* CINEMATIC SPLASH LOADER */
-#splashScreen {
-  position: fixed;
-  inset: 0;
-  background: #010614;
-  z-index: 1000;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  transition: opacity 0.5s ease, transform 0.5s ease;
-}
-#splashScreen.hide {
-  opacity: 0;
-  pointer-events: none;
-  transform: scale(1.05);
-}
-.orbit-container {
-  position: relative;
-  width: 140px;
-  height: 140px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.orbit-ring {
-  position: absolute;
-  border: 2px dashed rgba(75, 163, 227, 0.3);
-  border-radius: 50%;
-  animation: rotateClockwise 8s linear infinite;
-}
-.ring-1 { width: 120px; height: 120px; }
-.ring-2 { width: 80px; height: 80px; border-color: rgba(216, 27, 150, 0.4); animation-direction: reverse; }
-.splash-pill {
-  font-size: 38px;
-  animation: pulseLogo 1.6s infinite ease-in-out;
-  z-index: 10;
-}
-.splash-title {
-  margin-top: 24px;
-  font-size: 15px;
-  font-weight: 900;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: #fff;
-  text-shadow: 0 0 10px rgba(0, 94, 184, 0.8);
-}
-.splash-author {
-  font-size: 10px;
-  color: var(--text2);
-  margin-top: 4px;
-  font-family: 'DM Mono', monospace;
-  letter-spacing: 3px;
-}
-.splash-console {
-  margin-top: 30px;
-  width: 80%;
-  max-width: 320px;
-  height: 60px;
-  background: rgba(0,0,0,0.4);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 8px 12px;
-  font-family: 'DM Mono', monospace;
-  font-size: 9px;
-  color: var(--accent);
-  overflow-y: hidden;
-  text-align: left;
-}
+    .hidden-input { display: none; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 6px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
 
-@keyframes rotateClockwise {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-@keyframes pulseLogo {
-  0%, 100% { transform: scale(1); opacity: 0.9; }
-  50% { transform: scale(1.12); opacity: 1; }
-}
-
-/* TOP BAR */
-.topbar {
-  position: sticky;
-  top: 0;
-  z-index: 200;
-  padding: calc(var(--safe-top) + 12px) 18px 12px;
-  background: rgba(2, 11, 31, 0.94);
-  backdrop-filter: blur(18px);
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.logo {
-  font-size: 20px;
-  font-weight: 900;
-  letter-spacing: -0.3px;
-}
-.logo span {
-  font-size: 11px;
-  color: var(--accent);
-  font-weight: 700;
-}
-.date {
-  font-size: 11px;
-  color: var(--text2);
-  font-family: 'DM Mono', monospace;
-  margin-top: 2px;
-}
-.topbar-right {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.badge-total-sku {
-  background: linear-gradient(135deg, var(--my-blue), var(--accent));
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 999px;
-  padding: 6px 12px;
-  font-size: 11px;
-  font-weight: 900;
-  color: #fff;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-/* SCREENS */
-.screen {
-  display: none;
-  animation: fadeSlide 0.22s ease-out;
-}
-.screen.active {
-  display: block;
-}
-@keyframes fadeSlide {
-  from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* CORE WIDGETS & GRIDS */
-.hero {
-  background: linear-gradient(155deg, var(--my-navy), #00153B 58%, var(--bg));
-  padding: 20px 18px;
-  position: relative;
-  overflow: hidden;
-}
-.hero-title {
-  font-size: 32px;
-  font-weight: 950;
-  line-height: 1.05;
-  letter-spacing: 0.5px;
-  margin-top: 10px;
-}
-.hero-sub {
-  font-size: 10px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.55);
-  margin-top: 6px;
-}
-
-/* HOURLY AGENDA ROW GRID */
-.agenda-section-title {
-  padding: 16px 18px 6px;
-  font-size: 11px;
-  font-weight: 950;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  color: var(--text2);
-}
-.agenda-container {
-  padding: 0 18px;
-  margin-bottom: 16px;
-}
-.agenda-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
-}
-.agenda-hour-btn {
-  background: var(--card);
-  border: 1.5px solid var(--border);
-  border-radius: 12px;
-  padding: 8px 4px;
-  color: var(--text);
-  font-size: 9px;
-  font-weight: 800;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-.agenda-hour-btn.logged {
-  background: linear-gradient(135deg, rgba(75, 163, 227, 0.2), rgba(0, 94, 184, 0.4));
-  border-color: var(--accent);
-}
-.agenda-hour-btn span {
-  display: block;
-  font-size: 11px;
-  font-weight: 900;
-  font-family: 'DM Mono', monospace;
-  margin-bottom: 2px;
-}
-
-/* KPI CARD GRID */
-.grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 11px;
-  padding: 0 18px 16px;
-}
-.entry-card {
-  background: var(--card);
-  border: 1.5px solid var(--border);
-  border-radius: 16px;
-  padding: 12px;
-  position: relative;
-}
-.entry-card label {
-  font-size: 9px;
-  font-weight: 950;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  color: #fff;
-  display: block;
-  margin-bottom: 6px;
-}
-.entry-card input {
-  width: 100%;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255,255,255,0.12);
-  border-radius: 10px;
-  color: #fff;
-  font-size: 18px;
-  font-weight: 900;
-  font-family: 'DM Mono', monospace;
-  padding: 6px 8px;
-  outline: none;
-}
-.calc-row2 {
-  margin-top: 6px;
-  display: flex;
-  gap: 6px;
-}
-.eq-btn {
-  border: none;
-  background: rgba(255, 255, 255, 0.12);
-  color: #fff;
-  border-radius: 8px;
-  font-size: 10px;
-  font-weight: 950;
-  padding: 5px 8px;
-  cursor: pointer;
-}
-.calc-field {
-  font-size: 10px;
-  color: var(--accent);
-  margin-top: 6px;
-  font-family: 'DM Mono', monospace;
-  font-weight: 700;
-}
-.calc-history-list {
-  font-size: 8px;
-  color: var(--text2);
-  margin-top: 4px;
-}
-
-/* PLANNER (PLANNERRRR) STYLES */
-.rack-tab-bar {
-  background: var(--bg2);
-  padding: 10px 18px;
-  display: flex;
-  gap: 6px;
-  overflow-x: auto;
-  border-bottom: 1px solid var(--border);
-}
-.rack-tab-bar::-webkit-scrollbar { display: none; }
-.rtab {
-  flex-shrink: 0;
-  padding: 6px 14px;
-  border-radius: 20px;
-  border: 1.5px solid var(--border);
-  background: var(--card);
-  font-size: 10px;
-  font-weight: 800;
-  color: var(--text2);
-  cursor: pointer;
-}
-.rtab.active {
-  background: var(--my-blue);
-  color: #fff;
-  border-color: var(--accent);
-}
-.rtab.exp {
-  border-color: var(--red);
-  color: var(--red);
-}
-
-.rack-wrapper {
-  padding: 14px 18px 40px;
-}
-.rack-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 12px;
-}
-.rack-chip {
-  font-size: 9px;
-  padding: 3px 8px;
-  border-radius: 20px;
-  font-weight: 800;
-  background: var(--bg3);
-  color: var(--accent);
-}
-
-.shelf-unit {
-  background: var(--shelf-bg);
-  border-radius: 8px;
-  overflow: hidden;
-  border: 2px solid #D4B896;
-  margin-bottom: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-}
-.shelf-unit.ne { border-color: var(--red); }
-.shelf-unit.s-low { border-color: var(--orange); }
-.shelf-unit.s-out { border-color: var(--red); }
-
-.wood-top {
-  height: 8px;
-  background: linear-gradient(180deg, #E8C47A 0%, #C8933A 50%, #A0700A 100%);
-  border-bottom: 1px solid #7A5000;
-}
-
-.shelf-face {
-  display: flex;
-  align-items: flex-end;
-  min-height: 84px;
-  padding: 6px;
-  gap: 4px;
-  background: linear-gradient(180deg, #FFF8EE 0%, #F5ECD6 70%, #E8DCC8 100%);
-  overflow-x: auto;
-}
-.shelf-face::-webkit-scrollbar { height: 4px; }
-.shelf-face::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 2px; }
-
-.prod-bottle {
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  position: relative;
-  width: 44px;
-}
-.prod-bottle-img {
-  width: 40px;
-  height: 56px;
-  border-radius: 4px;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid rgba(0,0,0,0.12);
-  box-shadow: 1px 1px 4px rgba(0,0,0,0.25);
-  position: relative;
-  background: #fff;
-  cursor: pointer;
-}
-.prod-bottle-img img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-.prod-bottle-img.out { filter: grayscale(1); opacity: 0.35; }
-.prod-bottle-img.ne-border { border: 2.5px solid var(--red); box-shadow: 0 0 6px rgba(220, 38, 38, 0.6); }
-
-.pos-badge {
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  background: var(--my-navy);
-  color: #fff;
-  font-size: 8px;
-  font-weight: 800;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: 'DM Mono', monospace;
-  z-index: 2;
-}
-
-.prod-bottle-shadow {
-  height: 4px;
-  width: 38px;
-  background: radial-gradient(ellipse at 50% 0%, rgba(0,0,0,0.25) 0%, transparent 100%);
-  margin-bottom: 2px;
-}
-.prod-bottle-label {
-  font-size: 7px;
-  font-weight: 700;
-  max-width: 42px;
-  text-align: center;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  color: #5a4020;
-}
-.prod-bottle-stock {
-  font-size: 8px;
-  font-family: 'DM Mono', monospace;
-  font-weight: 800;
-}
-.sok { color: var(--green); }
-.slow { color: var(--orange); }
-.sout { color: var(--red); }
-
-.wood-bottom {
-  height: 10px;
-  background: linear-gradient(180deg, #C8933A 0%, #8B5E1A 60%, #6B4010 100%);
-  border-top: 1px solid rgba(255,255,255,0.2);
-  box-shadow: 0 2px 5px rgba(0,0,0,0.4);
-}
-
-.shelf-hdr {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 6px 10px;
-  background: rgba(255,255,255,0.9);
-  border-bottom: 1px dashed rgba(0,0,0,0.12);
-  cursor: pointer;
-}
-.shelf-code-badge {
-  font-family: 'DM Mono', monospace;
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--my-navy);
-  background: #EEF2FF;
-  padding: 2px 6px;
-  border-radius: 4px;
-}
-.shelf-type {
-  font-size: 9px;
-  color: var(--muted);
-}
-.shelf-hdr-right {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-left: auto;
-  color: #000;
-}
-
-.shelf-detail {
-  display: none;
-  background: var(--white);
-  border-top: 1px solid var(--border);
-  color: #000;
-}
-.shelf-detail.open { display: block; }
-
-.shelf-prod-list { padding: 8px; background: #fff; }
-.prod-row {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  padding: 8px 0;
-  border-bottom: 1px solid var(--border);
-}
-.prod-row:last-child { border-bottom: none; }
-.prow-img {
-  width: 40px; height: 40px; border-radius: 6px;
-  background: #F0F2F8; display: flex; align-items: center; justify-content: center;
-  border: 1px solid var(--border); overflow: hidden;
-}
-.prow-img img { width: 100%; height: 100%; object-fit: contain; }
-.prow-body { flex: 1; min-width: 0; color: #000; }
-.prow-name { font-size: 11px; font-weight: 700; line-height: 1.25; margin-bottom: 2px; }
-.prow-bc { font-size: 8px; color: var(--muted); font-family: 'DM Mono', monospace; }
-.prow-actions { display: flex; gap: 4px; margin-top: 4px; }
-.ibtn {
-  padding: 3px 6px; border-radius: 4px; background: #EEF2FF;
-  border: none; cursor: pointer; color: var(--my-blue); font-size: 9px; font-weight: 700;
-}
-.prow-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
-.stock-ctrl { display: flex; align-items: center; gap: 4px; }
-.sbtn {
-  width: 22px; height: 22px; border-radius: 50%;
-  background: #EEF2FF; border: 1px solid var(--border);
-  font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center;
-  color: #000;
-}
-.snum { font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 700; min-width: 16px; text-align: center; }
-
-/* TIME CLOCK (MY SHIFT) */
-.shift-today-card {
-  background: linear-gradient(135deg, var(--my-blue), #0D1E40);
-  border: 1.5px solid var(--border);
-  border-radius: 18px;
-  padding: 16px;
-  margin: 16px 18px;
-}
-.shift-time-tick {
-  font-size: 28px;
-  font-family: 'DM Mono', monospace;
-  font-weight: 900;
-  letter-spacing: 0.5px;
-  color: #fff;
-  margin: 6px 0;
-}
-.clock-btn-row {
-  display: flex;
-  gap: 8px;
-  margin-top: 12px;
-}
-.clock-btn {
-  flex: 1;
-  border: none;
-  border-radius: 10px;
-  padding: 10px;
-  font-size: 11px;
-  font-weight: 900;
-  cursor: pointer;
-  color: #fff;
-  text-transform: uppercase;
-}
-.clock-btn.in { background: var(--green); }
-.clock-btn.out { background: var(--red); }
-.clock-btn.break { background: var(--orange); }
-
-.shift-log-table {
-  margin: 12px 18px;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  overflow: hidden;
-}
-.shift-log-row {
-  display: flex;
-  justify-content: space-between;
-  padding: 10px 12px;
-  border-bottom: 1px solid rgba(30, 58, 138, 0.4);
-  font-size: 11px;
-}
-.shift-log-row:last-child { border-bottom: none; }
-.shift-log-date { font-weight: 700; }
-.shift-log-times { font-family: 'DM Mono', monospace; color: var(--text2); }
-.shift-log-hrs { font-weight: 800; color: var(--accent); }
-
-/* DATA LOGGER */
-.telemetry-card {
-  margin: 16px 18px;
-  background: var(--card);
-  border: 1.5px solid var(--border);
-  border-radius: 16px;
-  padding: 16px;
-}
-.telemetry-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-}
-.fridge-temp-display {
-  font-size: 38px;
-  font-family: 'DM Mono', monospace;
-  font-weight: 900;
-  color: var(--green);
-  text-align: center;
-  margin: 14px 0;
-}
-.fridge-status-badge {
-  display: inline-block;
-  padding: 4px 10px;
-  border-radius: 20px;
-  font-size: 10px;
-  font-weight: 900;
-  background: rgba(34, 197, 94, 0.15);
-  color: var(--green);
-}
-
-/* EXCEL-STYLE GS1 SCANNER */
-.grid-workspace {
-  width: 100%;
-  overflow: auto;
-  background: #fff;
-  border: 1px solid #cbd5e1;
-  border-radius: 12px;
-  max-height: 48vh;
-}
-table.excel-sheet {
-  width: 100%;
-  border-collapse: collapse;
-  table-layout: fixed;
-  min-width: 900px;
-  color: #334155;
-}
-table.excel-sheet th {
-  background: #f8fafc;
-  border-right: 1px solid #cbd5e1;
-  border-bottom: 2px solid #cbd5e1;
-  padding: 8px;
-  font-weight: 800;
-  color: #475569;
-  text-align: left;
-  font-size: 11px;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
-table.excel-sheet th.row-index-col {
-  width: 40px;
-  text-align: center;
-  background: #e2e8f0;
-}
-table.excel-sheet td {
-  border-right: 1px solid #cbd5e1;
-  border-bottom: 1px solid #cbd5e1;
-  padding: 6px 8px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  height: 32px;
-  font-size: 12px;
-}
-table.excel-sheet td.row-index {
-  background: #f8fafc;
-  text-align: center;
-  font-weight: 800;
-  color: #64748b;
-  border-right: 2px solid #cbd5e1;
-}
-
-/* LABELS & DIALOGS */
-.bottom-nav {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(2, 11, 31, 0.97);
-  backdrop-filter: blur(18px);
-  border-top: 1px solid var(--border);
-  display: flex;
-  padding: 8px 0 calc(8px + var(--safe-bottom));
-  z-index: 150;
-}
-.nav {
-  flex: 1;
-  background: none;
-  border: none;
-  color: var(--text3);
-  font-size: 9px;
-  font-weight: 800;
-  text-align: center;
-  cursor: pointer;
-}
-.nav.active { color: var(--accent); }
-.nav i {
-  font-style: normal;
-  font-size: 20px;
-  display: block;
-  margin-bottom: 2px;
-}
-
-/* INTERACTIVE DIALOG MODALS */
-.mbk {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.52);
-  z-index: 300;
-  align-items: flex-end;
-}
-.mbk.open { display: flex; }
-.modal {
-  background: var(--white);
-  border-radius: 16px 16px 0 0;
-  width: 100%;
-  max-height: 90vh;
-  overflow-y: auto;
-  padding: 16px;
-  color: #000;
-}
-.modal h3 {
-  font-size: 14px;
-  font-weight: 900;
-  margin-bottom: 12px;
-}
-.fl {
-  font-size: 9px;
-  font-weight: 700;
-  color: var(--muted);
-  text-transform: uppercase;
-  margin-bottom: 4px;
-  display: block;
-}
-.fi {
-  width: 100%;
-  padding: 8px 10px;
-  border: 1.5px solid var(--border);
-  border-radius: 8px;
-  font-size: 12px;
-  color: var(--ink);
-  background: var(--white);
-  outline: none;
-  margin-bottom: 10px;
-}
-
-/* REAL-TIME PREVIEW TICKET (SHELF TALKER) */
-.ticket-preview-box {
-  border: 2px dashed var(--my-blue);
-  background: #FFFBEB;
-  border-radius: 10px;
-  padding: 12px;
-  margin: 10px 0;
-  color: #000;
-  text-align: left;
-}
-.ticket-promo-header {
-  background: var(--red);
-  color: #fff;
-  font-size: 10px;
-  font-weight: 900;
-  text-align: center;
-  padding: 2px;
-  margin-bottom: 6px;
-  text-transform: uppercase;
-}
-.ticket-title { font-size: 12px; font-weight: 800; margin-bottom: 4px; }
-.ticket-price-row { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 6px; }
-.ticket-price { font-size: 20px; font-weight: 900; font-family: 'DM Mono', monospace; color: var(--my-navy); }
-.ticket-barcode-mock { height: 16px; background: #000; margin-top: 6px; }
-
-/* PRODUCT DETAILS OVERLAY */
-.detail-card-box {
-  background: #F8FAFC;
-  border: 1px solid #CBD5E1;
-  border-radius: 10px;
-  padding: 12px;
-  margin-bottom: 12px;
-  font-size: 11px;
-}
-.detail-tag {
-  display: inline-block;
-  background: #EEF2FF;
-  color: var(--my-navy);
-  font-weight: 700;
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-family: 'DM Mono', monospace;
-  margin-right: 4px;
-}
-</style>
+    @media (max-width: 480px) { .planner-grid { grid-template-columns: 1fr; } }
+  </style>
 </head>
 <body>
-
-<!-- CINEMATIC LOADING WELCOME SPLASH -->
-<div id="splashScreen">
-  <div class="orbit-container">
-    <div class="orbit-ring ring-1"></div>
-    <div class="orbit-ring ring-2"></div>
-    <div class="splash-pill">💊</div>
-  </div>
-  <div class="splash-title">ShelfRx Core</div>
-  <div class="splash-author">BY VYSAKH</div>
-  <div class="splash-console" id="consoleLogs">
-    Initializing PDF Planogram catalog...<br>
-  </div>
-</div>
-
-<!-- TOP BAR -->
-<div class="topbar">
-  <div>
-    <div class="logo">ShelfRx <span>Pro</span></div>
-    <div class="date" id="dateText">Business Week 28</div>
-  </div>
-  <div class="topbar-right">
-    <div class="badge-total-sku" onclick="openStockAuditDashboard()">
-      <span>📦</span> <span id="badgeSkuText">122 / 840</span>
-    </div>
-  </div>
-</div>
-
-<div class="toast" id="toast" style="display:none">Saved</div>
-
-<!-- SCREEN 1: MENU / KPI TRACKS (FIRST OPENING SCREEN) -->
-<section class="screen active" id="screen-menu">
-  <div class="hero">
-    <div class="hero-title">MY KPI Tracks</div>
-    <div class="hero-sub">T3 Arrival Daily Targets</div>
-  </div>
-
-  <div class="agenda-section-title">⏱️ Daily Hourly Agenda Buttons</div>
-  <div class="agenda-container">
-    <div class="agenda-grid" id="agendaGrid">
-      <!-- 24 hourly buttons filled via JavaScript -->
-    </div>
-  </div>
-
-  <div class="agenda-section-title">📊 Dynamic KPI Integrator</div>
-  <div class="grid" id="kpiInputGrid">
-    <!-- Calculator KPI input cards filled via JavaScript -->
-  </div>
-</section>
-
-<!-- SCREEN 2: PLANNERRRR (RACK LEVEL MANAGEMENT) -->
-<section class="screen" id="screen-planner">
-  <div class="rack-tab-bar" id="rackTabs"></div>
-  <div class="rack-wrapper" id="rackWrap"></div>
-</section>
-
-<!-- SCREEN 3: MY SHIFT & RTA -->
-<section class="screen" id="screen-shift">
-  <div class="shift-today-card">
-    <div class="fl" style="color:rgba(255,255,255,0.7)">Today Shift ★ Vysakh</div>
-    <div class="shift-time-tick" id="liveTimeClock">00:00:00</div>
-    <div id="vysakhShiftStatus" style="font-size:12px; font-weight:700">Scheduled: 1-10 PM (Week 28 Roster)</div>
-    <div class="clock-btn-row">
-      <button class="clock-btn in" onclick="punchShift('In')">Clock In</button>
-      <button class="clock-btn break" onclick="punchShift('Break')">Break</button>
-      <button class="clock-btn out" onclick="punchShift('Out')">Clock Out</button>
-    </div>
-  </div>
-
-  <div class="agenda-section-title">📅 Week-Round Punch Logs</div>
-  <div class="shift-log-table" id="shiftPunchTable">
-    <!-- Log rows filled dynamically -->
-  </div>
-</section>
-
-<!-- SCREEN 4: DATA LOGGER & ORDER REPLENISHMENT -->
-<section class="screen" id="screen-logger">
-  <div class="telemetry-card">
-    <div class="telemetry-header">
-      <div class="fl">DATA LOGGER - Clinical fridge</div>
-      <div class="fridge-status-badge">Safe range: 2.0°C - 8.0°C</div>
-    </div>
-    <div class="fridge-temp-display" id="fridgeTemp">4.2 °C</div>
-    <div style="display:flex; gap:6px;">
-      <button class="ibtn" style="flex:1; padding:8px;" onclick="simulateFridgeExcursion()">Trigger Spike Alert</button>
-      <button class="ibtn" style="flex:1; padding:8px;" onclick="resetFridgeExcursion()">Reset Excursion</button>
-    </div>
-  </div>
-
-  <div class="agenda-section-title">📝 Consolidated Weekly Orders</div>
-  <div style="padding:0 18px 12px;">
-    <div id="orderFormContainer" style="background:var(--card); border:1px solid var(--border); border-radius:16px; padding:12px;">
-      <!-- Order items table filled dynamically -->
-    </div>
-    <button class="clock-btn in" style="width:100%; margin-top:12px; background:linear-gradient(135deg, var(--green), #107c41);" onclick="exportOrderCSV()">Export Order Spreadsheet (CSV)</button>
-  </div>
-</section>
-
-<!-- SCREEN 5: GS1 OFFLINE EXCEL WORKSPACE -->
-<section class="screen" id="screen-scan">
-  <div style="padding:14px 18px 8px;">
-    <div class="fl" style="color:var(--accent)">Offline Excel Ledger Workspace</div>
-    <div style="display:flex; gap:6px; margin:8px 0;">
-      <input class="fi" style="margin-bottom:0;" id="manualScanInput" placeholder="Enter manual GS1 string...">
-      <button class="ibtn" style="padding:0 14px;" onclick="parseManualGS1()">Add Raw</button>
-    </div>
-    <div class="grid-workspace">
-      <table class="excel-sheet">
-        <thead>
-          <tr>
-            <th class="row-index-col">#</th>
-            <th style="width:140px;">BARCODE</th>
-            <th style="width:220px;">GS1 STRING</th>
-            <th style="width:160px;">PRODUCT NAME</th>
-            <th style="width:110px;">EXPIRY</th>
-            <th style="width:90px;">BATCH</th>
-            <th style="width:70px; text-align:right;">QTY</th>
-          </tr>
-        </thead>
-        <tbody id="excelRows">
-          <!-- Spreadsheet entries filled dynamically -->
-        </tbody>
-      </table>
-    </div>
-    <button class="clock-btn out" style="width:100%; margin-top:10px; background:var(--aura-purple);" onclick="clearExcelRows()">Clear Excel Grid</button>
-  </div>
-</section>
-
-<!-- SCREEN 6: SYSTEM CONTROL & ROSTER OCR -->
-<section class="screen" id="screen-more">
-  <div style="padding:16px 18px;">
-    <div class="fl">Roster week 28 JPEG Parser</div>
-    <div style="background:var(--card); border:1px solid var(--border); border-radius:16px; padding:14px; margin-bottom:14px;">
-      <div style="font-size:11px; margin-bottom:8px; color:var(--text2)">
-        Sourced image: <b>1c666aa2-25ae-4483-8494-ca2a9bef889b.jpg</b> (Week 28, Fri 3-Jul-26 to Thu 9-Jul-26).
+<div class="app">
+  <!-- Header -->
+  <header class="header">
+    <div class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M10.5 20.5L3.5 13.5C1.5 11.5 1.5 8.17 3.5 6.17C5.5 4.17 8.83 4.17 10.83 6.17L17.83 13.17C19.83 15.17 19.83 18.5 17.83 20.5C15.83 22.5 12.5 22.5 10.5 20.5Z"/>
+          <line x1="10.12" y1="13.87" x2="13.88" y2="10.12"/>
+        </svg>
       </div>
-      <button class="clock-btn in" style="background:var(--purple);" onclick="extractRosterWeek28()">Trigger Week 28 OCR Parse</button>
-      <div id="rosterOcrFeedback" style="font-size:11px; margin-top:8px; font-family:'DM Mono', monospace; color:var(--accent);">
-        Click button to read digital rota matrix...
+      <span class="logo-text">PharmaTrack</span>
+    </div>
+    <button class="menu-btn" id="menuBtn" aria-label="Menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="3" y1="6" x2="21" y2="6"/>
+        <line x1="3" y1="12" x2="21" y2="12"/>
+        <line x1="3" y1="19" x2="21" y2="19"/>
+      </svg>
+    </button>
+  </header>
+
+  <main class="main">
+    <!-- Planner Page -->
+    <div class="page active" id="page-planner">
+      <div class="planner-container">
+        <div class="planner-header">
+          <span class="planner-title">📦 Planner - Expiry & Stock</span>
+          <div class="planner-stats">
+            <span id="totalItems">0 items</span>
+            <span id="expiryWarn">0 ⚠️</span>
+          </div>
+        </div>
+        <div class="planner-grid" id="plannerGrid"></div>
       </div>
     </div>
+  </main>
 
-    <div class="fl">Global Configuration</div>
-    <div style="background:var(--card); border:1px solid var(--border); border-radius:16px; padding:12px;">
-      <div style="margin-bottom:10px;">
-        <label class="fl">Store Code Location</label>
-        <input class="fi" id="cfgStore" value="Boots T3 Arrivals" style="background:var(--bg3); border-color:var(--border); color:#fff;">
+  <!-- Bottom Navigation -->
+  <nav class="nav">
+    <button class="nav-item" data-page="hourly" id="navHourly">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/>
+        <polyline points="12 6 12 12 16 14"/>
+      </svg>
+      <span>Hourly</span>
+    </button>
+    <button class="nav-item active" data-page="planner">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="4" width="18" height="18" rx="2"/>
+        <line x1="16" y1="2" x2="16" y2="6"/>
+        <line x1="8" y1="2" x2="8" y2="6"/>
+        <line x1="3" y1="10" x2="21" y2="10"/>
+      </svg>
+      <span>Planner</span>
+    </button>
+    <button class="nav-item" data-page="settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M12 1v6m0 10v6M1 12h6m10 0h6M4.22 4.22l4.24 4.24m7.08 7.08l4.24 4.24M4.22 19.78l4.24-4.24m7.08-7.08l4.24-4.24"/>
+      </svg>
+      <span>Settings</span>
+    </button>
+  </nav>
+
+  <!-- Toast -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- POPUP MODAL -->
+  <div class="popup-overlay" id="popupOverlay">
+    <div class="popup-card">
+      <div class="popup-header">
+        <span class="popup-title" id="popupTitle">Edit Product</span>
+        <button class="popup-close" id="popupClose">✕</button>
       </div>
-      <div style="margin-bottom:10px;">
-        <label class="fl">Target Register Goal (AED)</label>
-        <input class="fi" id="cfgTarget" type="number" value="25000" style="background:var(--bg3); border-color:var(--border); color:#fff;">
+      <div class="popup-field">
+        <label>Product Name</label>
+        <input class="popup-input" id="editName" placeholder="Product name...">
       </div>
-      <button class="clock-btn in" onclick="saveGlobalConfig()">Save Settings</button>
-    </div>
-  </div>
-</section>
-
-<!-- SYSTEM NAVIGATION BAR -->
-<nav class="bottom-nav">
-  <button class="nav active" id="nav-menu" onclick="switchNavTab('menu')"><i>📊</i>KPI Grid</button>
-  <button class="nav" id="nav-planner" onclick="switchNavTab('planner')"><i>🪵</i>Plannerrrr</button>
-  <button class="nav" id="nav-shift" onclick="switchNavTab('shift')"><i>★</i>My Shift</button>
-  <button class="nav" id="nav-logger" onclick="switchNavTab('logger')"><i>📝</i>Logger</button>
-  <button class="nav" id="nav-scan" onclick="switchNavTab('scan')"><i>📷</i>Excel</button>
-  <button class="nav" id="nav-more" onclick="switchNavTab('more')"><i>⚙️</i>Control</button>
-</nav>
-
-<!-- STOCK AUDIT DASHBOARD POPUP (TOTAL SKU WIDGET CLICK) -->
-<div class="mbk" id="modalStockAudit" onclick="closeModal('modalStockAudit')">
-  <div class="modal" onclick="event.stopPropagation()">
-    <div class="mhandle"></div>
-    <h3>📋 SKU / Stock Preservation Audit</h3>
-    <div style="display:flex; justify-content:space-between; margin-bottom:12px; font-size:11px;">
-      <div>Active SKUs: <b id="auditActiveCount">0</b></div>
-      <div>Stock Preservation Index: <b style="color:var(--green)">95.4%</b></div>
-    </div>
-    
-    <div class="fl">Urgent Stock replenishment Required</div>
-    <div style="max-height:220px; overflow-y:auto; border:1px solid var(--border); border-radius:8px; margin-bottom:12px; background:#fafafa; padding:8px;" id="auditOutList">
-      <!-- Out of stock list filled via JS -->
-    </div>
-    <button class="btn-s" onclick="closeModal('modalStockAudit')">Dismiss</button>
-  </div>
-</div>
-
-<!-- DAILY HOURLY AGENDA OVERRIDE FORM MODAL -->
-<div class="mbk" id="modalHourlyAgenda" onclick="closeModal('modalHourlyAgenda')">
-  <div class="modal" onclick="event.stopPropagation()">
-    <div class="mhandle"></div>
-    <h3 id="agendaModalHourHeader">Daily Task Events Agenda - 09:00 AM</h3>
-    <input type="hidden" id="agendaModalHourVal">
-    <div class="fg">
-      <label class="fl">Hourly Goal Tasks / Events</label>
-      <input class="fi" id="agendaHourGoal" placeholder="Log events / staff assignments...">
-    </div>
-    <div class="frow">
-      <div class="fg"><label class="fl">Cumulative Sales</label><input class="fi" type="number" id="agendaHourSales" placeholder="AED"></div>
-      <div class="fg"><label class="fl">ATV</label><input class="fi" type="number" id="agendaHourAtv" placeholder="AED"></div>
-    </div>
-    <div class="frow">
-      <div class="fg"><label class="fl">Conversion %</label><input class="fi" type="number" id="agendaHourConv" placeholder="%"></div>
-      <div class="fg"><label class="fl">No7 Focus (pcs)</label><input class="fi" type="number" id="agendaHourNo7" placeholder="pcs"></div>
-    </div>
-    <div class="fg">
-      <label class="fl">Aura linkage</label>
-      <input class="fi" id="agendaHourAura" placeholder="Links achieved...">
-    </div>
-    <button class="btn-p" onclick="saveHourlyAgendaItem()">Update Hour Record</button>
-    <button class="btn-s" onclick="closeModal('modalHourlyAgenda')">Cancel</button>
-  </div>
-</div>
-
-<!-- PRODUCT DETAILS & TICKET GENERATOR MODAL -->
-<div class="mbk" id="modalProductDetail" onclick="closeModal('modalProductDetail')">
-  <div class="modal" onclick="event.stopPropagation()">
-    <div class="mhandle"></div>
-    <h3 id="detProductName">Product Description</h3>
-    <input type="hidden" id="lblProductId">
-    
-    <div class="detail-card-box">
-      <div>Barcode: <span class="detail-tag" id="detBarcode">-</span></div>
-      <div style="margin-top:4px;">Alshaya Code (RMS): <span class="detail-tag" id="detRms">-</span></div>
-      <div style="margin-top:4px;">Location: <span class="detail-tag" id="detLoc">-</span> | Notch: <span class="detail-tag" id="detNotch">-</span></div>
-      <div style="margin-top:4px;">Shelf Type: <span class="detail-tag" id="detShelfType">-</span></div>
-      <div style="margin-top:4px;">Stock Units: <b id="detStock">0</b> | Facings: <b id="detFacing">0</b></div>
-    </div>
-
-    <div class="fg">
-      <label class="fl">Promo Template style</label>
-      <select class="fi" id="lblPromoTemplate" onchange="refreshLabelPreview()">
-        <option value="none">Standard Pricing Template</option>
-        <option value="save">SPECIAL OFFER / REDUCED</option>
-        <option value="new">NEW PRODUCT ARRIVAL</option>
-        <option value="boots">BOOTS VALUE BRAND CHOICE</option>
-      </select>
-    </div>
-    
-    <div class="frow">
-      <div class="fg"><label class="fl">Regular Price (AED)</label><input class="fi" type="number" id="lblRegularPrice" oninput="refreshLabelPreview()"></div>
-      <div class="fg"><label class="fl">Promo Price (AED)</label><input class="fi" type="number" id="lblPromoPrice" oninput="refreshLabelPreview()"></div>
-    </div>
-
-    <div class="fl">Interactive Ticket Preview</div>
-    <div class="ticket-preview-box" id="ticketPreview">
-      <div class="ticket-promo-header" id="ticketPromoHeader">Special Offer</div>
-      <div class="ticket-title" id="ticketProductName">PRO COLLAGENIUM 14X25ML</div>
-      <div class="ticket-price-row">
-        <div>Regular Price: <span style="text-decoration:line-through;" id="ticketRegPrice">AED 0</span></div>
-        <div class="ticket-price" id="ticketFinalPrice">AED 0</div>
+      <div class="popup-grid">
+        <div class="popup-field"><label>Expiry (YYMMDD)</label><input class="popup-input" id="editExpiry" placeholder="251231"></div>
+        <div class="popup-field"><label>Batch</label><input class="popup-input" id="editBatch" placeholder="BATCH001"></div>
+        <div class="popup-field"><label>Facing</label><input class="popup-input" id="editFacing" type="number" placeholder="2"></div>
+        <div class="popup-field"><label>Total Units</label><input class="popup-input" id="editUnits" type="number" placeholder="10"></div>
       </div>
-      <div class="ticket-barcode-mock"></div>
+      <div class="popup-field">
+        <label>Image</label>
+        <div style="display:flex; gap:8px;">
+          <button class="popup-btn secondary" style="flex:1;" id="imgCameraBtn">📷 Camera</button>
+          <button class="popup-btn secondary" style="flex:1;" id="imgGalleryBtn">🖼️ Gallery</button>
+          <button class="popup-btn secondary" style="flex:0 0 60px;" id="imgSearchBtn">🔍</button>
+        </div>
+        <div style="margin-top:6px; width:100%; height:60px; border-radius:10px; background:rgba(255,255,255,0.05); display:flex; align-items:center; justify-content:center; overflow:hidden; border:1px solid rgba(255,255,255,0.06);" id="imgPreviewContainer">
+          <span style="color:var(--gray-500); font-size:11px;">No image</span>
+        </div>
+      </div>
+      <div class="popup-footer">
+        <button class="popup-btn danger" id="popupDelete">Delete</button>
+        <button class="popup-btn primary" id="popupSave">✓ Save</button>
+      </div>
     </div>
-
-    <button class="btn-p" onclick="dispatchPrintJob()">Dispatch Print Job to Boots T3 Printer</button>
-    <button class="btn-s" onclick="closeModal('modalProductDetail')">Cancel</button>
   </div>
+
+  <!-- Hidden inputs -->
+  <input type="file" class="hidden-input" id="imageFileInput" accept="image/*" capture="environment">
+  <input type="file" class="hidden-input" id="galleryFileInput" accept="image/*">
 </div>
 
 <script>
-// EXCEL SCANNER DATA MODEL
-let excelGridData = [
-  { barcode: "00300020105557", gs1: "01003000201055571727031310BATCH1A", name: "TELFAST 180MG TABLETS 15S", expiry: "2027-03-13", batch: "BATCH1A", qty: 2 },
-  { barcode: "03499320010863", gs1: "01034993200108631726090510BATCH2B", name: "FUCIDIN CREAM 15GM", expiry: "2026-09-05", batch: "BATCH2B", qty: 4 },
-  { barcode: "04015630066599", gs1: "01040156300665991728111210BATCH3C", name: "ENTEROGERMINA 2 BILLION", expiry: "2028-11-12", batch: "BATCH3C", qty: 3 }
-];
+(function() {
+  'use strict';
 
-// PRELOADED PLANOGRAMS RACKS (Sourced from 7 MOD VITAMINS NSL UAE 2026 PDF)
-const SECTIONS = [
-  { name: 'Collagen & Skin Brightening', color: '#E11D48', bg: '#FFF1F2', racks: [1] },
-  { name: "Women's Health / Skin, Hair & Nails", color: '#7C3AED', bg: '#F5F3FF', racks: [2] },
-  { name: 'Multivitamins & Immunity', color: '#059669', bg: '#ECFDF5', racks: [3, 4] },
-  { name: 'Heart Health & Omega', color: '#0B3D91', bg: '#EEF2FF', racks: [5] },
-  { name: 'Joint Care & Bone', color: '#6366F1', bg: '#EEF2FF', racks: [6] },
-  { name: 'Weight Management', color: '#D97706', bg: '#FFFBEB', racks: [7] }
-];
+  // --- STATE ---
+  let products = [];
+  let editingId = null;
+  let pendingImageData = null;
 
-const PROD_IMG_SUGGESTIONS = {
-  'collagen': 'https://images.iherb.com/l/NCL-00165-1.jpg',
-  'omega': 'https://images.iherb.com/l/NOW-01640-3.jpg',
-  'vitamin c': 'https://images.iherb.com/l/SLG-55050-5.jpg',
-  'vitamin d': 'https://images.iherb.com/l/NOW-00372-3.jpg',
-  'calcium': 'https://images.iherb.com/l/SLG-53090-5.jpg',
-  'magnesium': 'https://images.iherb.com/l/SLG-55290-5.jpg',
-  'zinc': 'https://images.iherb.com/l/SLG-53040-5.jpg',
-  'hair': 'https://images.iherb.com/l/VIT-00023-3.jpg',
-  'biotin': 'https://images.iherb.com/l/NOW-00484-3.jpg'
-};
-
-function getProductImageUrl(name) {
-  const n = name.toLowerCase();
-  for (const [k, v] of Object.entries(PROD_IMG_SUGGESTIONS)) {
-    if (n.includes(k)) return v;
+  // Load from localStorage
+  function loadData() {
+    try {
+      const raw = localStorage.getItem('pharmatrack_planner');
+      if (raw) products = JSON.parse(raw);
+      else initDemoProducts();
+    } catch (e) { initDemoProducts(); }
   }
-  return '';
-}
-
-const PLANOGRAM_BASE = [
-  /* RACK 1: COLLAGEN & SKIN BRIGHTENING */
-  { id: 'p101', name: 'NEOCELL SUPER COLLAGEN 7OZ', barcode: '16185019867', alshaya: 'WOBOWOM01986', rack: 1, shelf: 1, notch: '33', shelfType: '12" Wooden', facing: 2, stock: 6, price: 185 },
-  { id: 'p102', name: 'NEOCELL COLLAGEN POWDER PEPTIDES 198G', barcode: '16185129900', alshaya: '129816897', rack: 1, shelf: 1, notch: '33', shelfType: '12" Wooden', facing: 2, stock: 6, price: 190 },
-  { id: 'p103', name: 'SWEDISH NATURA COLLAGEN 10000 300GM', barcode: '7301337323422', alshaya: '129816897', rack: 1, shelf: 1, notch: '33', shelfType: '12" Wooden', facing: 1, stock: 2, price: 120 },
-  { id: 'p104', name: 'SAKAI COLLAGEN COMPLETE 332G', barcode: '8423245105248', alshaya: '333920279', rack: 1, shelf: 1, notch: '33', shelfType: '12" Wooden', facing: 1, stock: 1, price: 115 },
-  { id: 'p105', name: 'SKINAGE COLLAGEN TRI ACTIVE 500ML', barcode: '3858893381112', alshaya: '333464221', rack: 1, shelf: 1, notch: '33', shelfType: '12" Wooden', facing: 1, stock: 3, price: 160 },
-  { id: 'p106', name: 'PRO COLLAGENIUM 14X25ML', barcode: '7629999061590', alshaya: 'B2BOB29039117', rack: 1, shelf: 2, notch: '26', shelfType: '12" Wooden', facing: 2, stock: 1, price: 145 },
-  { id: 'p107', name: 'SKINAGE COLLAGEN PRESTIGE 15 AMPOULES', barcode: '220212282', alshaya: '3859892980627', rack: 1, shelf: 2, notch: '26', shelfType: '12" Wooden', facing: 2, stock: 2, price: 210 },
-  { id: 'p108', name: 'PURE GOLD COLLAGEN 10X50ML', barcode: '5060259570009', alshaya: 'B2BOB2259570001', rack: 1, shelf: 3, notch: '19', shelfType: '12" Wooden', facing: 2, stock: 8, price: 240 },
-  { id: 'p109', name: 'PURE GOLD COLLAGEN FORTE 10X50ML', barcode: '5060259570179', alshaya: '339999551', rack: 1, shelf: 3, notch: '19', shelfType: '12" Wooden', facing: 1, stock: 4, price: 275 },
-  { id: 'p110', name: 'LA BELLE COLLAGEN 10G DRINK 15 BOTTLES', barcode: '6285078000150', alshaya: 'B2BOB28000150', rack: 1, shelf: 4, notch: '13', shelfType: '15" Wooden', facing: 1, stock: 4, price: 295 },
-  { id: 'p111', name: 'COLLAGEN BEAUTY SHOTS 12 SHOTS', barcode: '5903260902822', alshaya: 'Y1BOY10902822', rack: 1, shelf: 4, notch: '13', shelfType: '15" Wooden', facing: 1, stock: 3, price: 85 },
-  { id: 'p112', name: 'SWEDISH MARINE COLLAGEN SHOTS 20S', barcode: '7350122360685', alshaya: '129826893', rack: 1, shelf: 4, notch: '13', shelfType: '15" Wooden', facing: 1, stock: 4, price: 140 },
-  { id: 'p113', name: 'NEOCELL COLLAGEN POMEGRANATE LIQ 473ML', barcode: '16185132955', alshaya: '342714922', rack: 1, shelf: 5, notch: '7', shelfType: '15" Wooden', facing: 2, stock: 10, price: 125 },
-
-  /* RACK 2: WOMEN'S HEALTH / SKIN, HAIR & NAILS */
-  { id: 'p201', name: 'PRIORIN NCAP 90S', barcode: '6285074003575', alshaya: 'WUBOWUPRIO001', rack: 2, shelf: 1, notch: '33', shelfType: '12" Wooden', facing: 1, stock: 5, price: 210 },
-  { id: 'p202', name: 'PRIORIN EXTRA BLISTER 60 CAPS', barcode: '6285074005661', alshaya: '345355261', rack: 2, shelf: 1, notch: '33', shelfType: '12" Wooden', facing: 1, stock: 5, price: 180 },
-  { id: 'p203', name: 'VITABIOTICS PERFECTIL PLUS HAIR 60S', barcode: '5021265245741', alshaya: 'WOBOWO5245741', rack: 2, shelf: 1, notch: '33', shelfType: '12" Wooden', facing: 1, stock: 5, price: 165 },
-  { id: 'p204', name: 'VITABIOTICS HAIRFOLLIC WOMEN 60TAB', barcode: '5021265248780', alshaya: 'WEBOWEVITS3848', rack: 2, shelf: 1, notch: '33', shelfType: '12" Wooden', facing: 1, stock: 7, price: 195 },
-  { id: 'p205', name: 'DUCRAY ANACAPS HAIR SUPP 60 CAP', barcode: '3282779065863', alshaya: '220215086', rack: 2, shelf: 2, notch: '26', shelfType: '12" Wooden', facing: 1, stock: 7, price: 140 },
-  { id: 'p206', name: 'ALLINE PROCAP 75 CAPSULES', barcode: '5425003041587', alshaya: 'B2BOB23041587', rack: 2, shelf: 2, notch: '26', shelfType: '12" Wooden', facing: 1, stock: 6, price: 175 },
-  { id: 'p207', name: 'PANTOGAR 90 CAPS', barcode: '4046222750909', alshaya: 'XSBOXS2750909', rack: 2, shelf: 2, notch: '26', shelfType: '12" Wooden', facing: 1, stock: 45, price: 210 },
-  { id: 'p208', name: 'HEALTH AID HAIR VIT CAPS 30S', barcode: '5019781000234', alshaya: 'WMBOWM1000234', rack: 2, shelf: 3, notch: '19', shelfType: '12" Wooden', facing: 1, stock: 3, price: 85 },
-  { id: 'p209', name: 'VITABIOTICS PERFECTIL 30S', barcode: '5021265220038', alshaya: 'WOBOWOMV201', rack: 2, shelf: 3, notch: '19', shelfType: '12" Wooden', facing: 1, stock: 4, price: 95 },
-  { id: 'p210', name: 'NOW BIOTIN 10MG 120 VCAPS', barcode: '733739004796', alshaya: 'WOBOWO9004796', rack: 2, shelf: 4, notch: '13', shelfType: '15" Wooden', facing: 1, stock: 5, price: 110 },
-
-  /* RACK 3: MULTIVITAMINS & IMMUNITY */
-  { id: 'p301', name: 'ADDITIVA VITC EFF 1GM LEMON 20S', barcode: '965014200001', alshaya: 'Y5BOY5PSFV05', rack: 3, shelf: 1, notch: '33', shelfType: '12" Wooden', facing: 1, stock: 1, price: 35 },
-  { id: 'p302', name: 'HEALTH AID VIT C 1000MG EFF 20S', barcode: '5019781011605', alshaya: '220218793', rack: 3, shelf: 1, notch: '33', shelfType: '12" Wooden', facing: 1, stock: 9, price: 40 },
-  { id: 'p303', name: 'VALUPAK EFFERVESCENT VIT C 1000MG', barcode: '5024874015422', alshaya: 'B2BOB2VALU422', rack: 3, shelf: 1, notch: '33', shelfType: '12" Wooden', facing: 1, stock: 8, price: 25 },
-  { id: 'p304', name: 'SOLGAR VITAMIN C 1000 MG TAB 90S', barcode: '33984032750', alshaya: '220192279', rack: 3, shelf: 2, notch: '26', shelfType: '12" Wooden', facing: 1, stock: 4, price: 120 },
-  { id: 'p305', name: 'SOLGAR ZINC 50 TAB 100S', barcode: '33984037205', alshaya: '220190454', rack: 3, shelf: 4, notch: '13', shelfType: '15" Wooden', facing: 1, stock: 6, price: 75 },
-  { id: 'p306', name: 'SOLGAR CHELATED ZINC TAB 100S', barcode: '33984008007', alshaya: '220123582', rack: 3, shelf: 4, notch: '13', shelfType: '15" Wooden', facing: 1, stock: 8, price: 85 },
-
-  /* RACK 4: MULTIVITAMINS CONTINUED */
-  { id: 'p401', name: 'CENTRUM LUTEIN 100S', barcode: '6251613000503', alshaya: 'BZBTSLOCEN00503', rack: 4, shelf: 1, notch: '33', shelfType: '12" Wooden', facing: 1, stock: 4, price: 90 },
-  { id: 'p402', name: 'CENTRUM ENERGY TAB 30S', barcode: '5415062331736', alshaya: 'Y3BOY32331736', rack: 4, shelf: 1, notch: '33', shelfType: '12" Wooden', facing: 1, stock: 4, price: 45 },
-  { id: 'p403', name: 'CENTRUM SILVER 100S', barcode: '6251613000534', alshaya: 'Y3BOY3CENSIL1000', rack: 4, shelf: 2, notch: '26', shelfType: '12" Wooden', facing: 1, stock: 5, price: 95 },
-  { id: 'p404', name: 'VITABIOTICS WELLMAN TAB 30S', barcode: '5021265221301', alshaya: 'WEBOWEMMS0002', rack: 4, shelf: 3, notch: '19', shelfType: '12" Wooden', facing: 1, stock: 9, price: 65 },
-
-  /* RACK 5: HEART HEALTH & OMEGA */
-  { id: 'p501', name: 'WILEYS PEAK EPA SOFTGEL 30S', barcode: '857188004012', alshaya: 'B2BOB28004012', rack: 5, shelf: 1, notch: '33', shelfType: '12" Wooden', facing: 2, stock: 8, price: 160 },
-  { id: 'p502', name: 'NORDIC NATURALS ULTIMATE OMEGA 60S', barcode: '768990017902', alshaya: 'WOBOWO0017902', rack: 5, shelf: 1, notch: '33', shelfType: '12" Wooden', facing: 3, stock: 12, price: 210 },
-  { id: 'p503', name: 'NOW ULTRA OMEGA 3 FISH OIL 90SG', barcode: '733739016614', alshaya: '342704906', rack: 5, shelf: 3, notch: '19', shelfType: '12" Wooden', facing: 2, stock: 8, price: 140 },
-
-  /* RACK 6: JOINT CARE & BONE */
-  { id: 'p601', name: 'CH ALPHA 30X25ML', barcode: '9650364002465', alshaya: 'B2BOB2A3025ML', rack: 6, shelf: 1, notch: '33', shelfType: '12" Wooden', facing: 1, stock: 4, price: 220 },
-  { id: 'p602', name: 'CH ALPHA PLUS 30X25ML', barcode: '4260133180949', alshaya: '273794953', rack: 6, shelf: 1, notch: '33', shelfType: '12" Wooden', facing: 1, stock: 2, price: 250 },
-  { id: 'p603', name: 'FLEXAMIN TABS 120+40S', barcode: '699866068448', alshaya: 'ZIBOZI69986606832', rack: 6, shelf: 2, notch: '26', shelfType: '12" Wooden', facing: 1, stock: 4, price: 180 },
-
-  /* RACK 7: WEIGHT MANAGEMENT */
-  { id: 'p701', name: '21ST CENTURY HERBAL SLIMMING TEA 24S', barcode: '740985224052', alshaya: 'WOBOWOMTC22402', rack: 7, shelf: 1, notch: '33', shelfType: '12" Wooden', facing: 2, stock: 10, price: 35 },
-  { id: 'p702', name: 'NATURES ANSWER NUTRA TRIM MAX 180S', barcode: '83000164569', alshaya: 'B2BOB20164569', rack: 7, shelf: 2, notch: '26', shelfType: '12" Wooden', facing: 2, stock: 8, price: 160 },
-  { id: 'p703', name: 'NUTRITIONL APPLE CIDER VINEGAR 100S', barcode: '810011080911', alshaya: 'B2BOB21080911', rack: 7, shelf: 4, notch: '13', shelfType: '15" Wooden', facing: 2, stock: 14, price: 75 }
-];
-
-const PRELOADED_ROSTER_MOCK = {
-  nadiya: ["NIGHT OFF", "6-3PM", "1-10 PM", "9-6PM", "6-3PM", "10-6AM (Night)", "10-6AM (Night)"],
-  aditya: ["10-6AM (Night)", "10-6AM (Night)", "NIGHT OFF", "1-10 PM", "1-10 PM", "1-10 PM", "1-10 PM"],
-  nitheesh: ["AL", "AL", "AL", "AL", "AL", "6-3PM", "6-3PM"],
-  vysakh: ["1-10 PM", "1-10 PM", "10-6AM (Night)", "10-6AM (Night)", "NIGHT OFF", "1-10 PM", "TLR(15.06)"],
-  saravanan: ["6-3PM(+1)", "9-3PM(-1.5)", "6-3PM(+1)", "6-3PM", "10-6AM (Night)", "HO/SM MEET @9AM", "DO"]
-};
-
-// INITIALISE LOCAL STORAGE STATE OR DEFAULTS
-let PLANOGRAM = [...PLANOGRAM_BASE];
-let S = {
-  photos: {},
-  openShelves: {},
-  stockOverrides: {},
-  extras: {},
-  prodImgs: {},
-  customProds: [],
-  hourlyAgenda: {},
-  kpiCalcData: {
-    "totalSales": { formula: "25+26+270+100", sum: 421 },
-    "transactions": { formula: "12+44", sum: 56 },
-    "no7sales": { formula: "100+40", sum: 140 },
-    "aurasales": { formula: "2+5", sum: 7 }
-  },
-  shiftPunches: [
-    { date: "2026-07-17", start: "01:00 PM", end: "10:00 PM", total: 9, status: "Normal" },
-    { date: "2026-07-18", start: "01:00 PM", end: "10:00 PM", total: 9, status: "Normal" }
-  ],
-  fridgeExcursionAlert: false,
-  globalConfig: {
-    storeName: "Boots T3 Arrivals",
-    targetGoal: 25000
+  function saveData() {
+    try {
+      localStorage.setItem('pharmatrack_planner', JSON.stringify(products));
+    } catch (e) {}
   }
-};
 
-let currentRack = 1;
-const SPR = 6;
-let timeTickerInterval = null;
+  function initDemoProducts() {
+    products = [
+      { id: 'p1', name: 'Paracetamol 500mg', expiry: '260630', batch: 'B001', facing: 3, units: 12, image: '' },
+      { id: 'p2', name: 'Ibuprofen 400mg', expiry: '250915', batch: 'B002', facing: 2, units: 5, image: '' },
+      { id: 'p3', name: 'Amoxicillin 250mg', expiry: '241101', batch: 'B003', facing: 4, units: 2, image: '' },
+      { id: 'p4', name: 'Loratadine 10mg', expiry: '260101', batch: 'B004', facing: 2, units: 8, image: '' },
+      { id: 'p5', name: 'Omeprazole 20mg', expiry: '250701', batch: 'B005', facing: 3, units: 15, image: '' },
+    ];
+    saveData();
+  }
 
-// RUN ON LOAD
-window.onload = function() {
-  loadIndexedState();
-  initializeConsoleLogs();
-};
+  function generateId() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 5); }
 
-function loadIndexedState() {
-  try {
-    const raw = localStorage.getItem('shelfrx_consolidated_state');
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      S = Object.assign(S, parsed);
+  // --- DOM REFS ---
+  const $ = id => document.getElementById(id);
+  const grid = $('plannerGrid');
+  const totalItems = $('totalItems');
+  const expiryWarn = $('expiryWarn');
+  const popupOverlay = $('popupOverlay');
+  const popupClose = $('popupClose');
+  const popupTitle = $('popupTitle');
+  const editName = $('editName');
+  const editExpiry = $('editExpiry');
+  const editBatch = $('editBatch');
+  const editFacing = $('editFacing');
+  const editUnits = $('editUnits');
+  const popupSave = $('popupSave');
+  const popupDelete = $('popupDelete');
+  const imgPreviewContainer = $('imgPreviewContainer');
+  const imageFileInput = $('imageFileInput');
+  const galleryFileInput = $('galleryFileInput');
+  const imgCameraBtn = $('imgCameraBtn');
+  const imgGalleryBtn = $('imgGalleryBtn');
+  const imgSearchBtn = $('imgSearchBtn');
+
+  // --- HELPERS ---
+  function getExpiryStatus(expiry) {
+    if (!expiry || expiry.length < 6) return 'normal';
+    const year = 2000 + parseInt(expiry.slice(0, 2));
+    const month = parseInt(expiry.slice(2, 4)) - 1;
+    const day = parseInt(expiry.slice(4, 6));
+    const exp = new Date(year, month, day);
+    const now = new Date();
+    const diffMonths = (exp - now) / (1000 * 60 * 60 * 24 * 30);
+    if (diffMonths < 0) return 'critical';
+    if (diffMonths < 4) return 'soon';
+    return 'normal';
+  }
+
+  function getBatteryLevel(units) {
+    const u = parseInt(units) || 0;
+    if (u <= 2) return { level: 'critical', pct: 10, label: '🔴 Empty' };
+    if (u <= 6) return { level: 'low', pct: 30, label: '🟠 Low' };
+    if (u <= 10) return { level: 'medium', pct: 60, label: '🟡 Half' };
+    return { level: 'full', pct: 100, label: '🟢 Full' };
+  }
+
+  function getImageUrl(product) {
+    if (product.image && product.image.startsWith('data:')) return product.image;
+    const name = product.name.toLowerCase();
+    const imgMap = {
+      'paracetamol': '💊', 'ibuprofen': '💊', 'amoxicillin': '💊',
+      'loratadine': '💊', 'omeprazole': '💊', 'aspirin': '💊',
+      'vitamin': '🧪', 'collagen': '🧴', 'omega': '🧴',
+    };
+    for (const [key, emoji] of Object.entries(imgMap)) {
+      if (name.includes(key)) return emoji;
     }
-  } catch (e) {
-    console.error("Local storage load failed. Using fallback states.");
+    return '💊';
   }
-}
 
-function saveIndexedState() {
-  try {
-    localStorage.setItem('shelfrx_consolidated_state', JSON.stringify(S));
-  } catch (e) {
-    console.error("Local storage save failed.");
-  }
-}
-
-// 2-SECOND CINEMATIC TERMINAL LOGGER
-function initializeConsoleLogs() {
-  const loggerBox = document.getElementById('consoleLogs');
-  const messages = [
-    "Parsing PDF planogram '7 MOD VITAMINS UAE'...",
-    "Extracting 122 medicine SKUs, Barcodes & Alshaya RMS...",
-    "Syncing Rack Notches (33, 26, 19, 13, 7, 1)...",
-    "Synchronising RTA Vysakh Shift clock...",
-    "Loading T3 Arrivals planogram...",
-    "App successfully compiled by Vysakh!"
-  ];
-  
-  let index = 0;
-  const interval = setInterval(() => {
-    if (index < messages.length) {
-      loggerBox.innerHTML += `<br>> ${messages[index]}`;
-      index++;
-    } else {
-      clearInterval(interval);
-      setTimeout(() => {
-        document.getElementById('splashScreen').classList.add('hide');
-        initialiseAppWidgets();
-      }, 500);
+  function getProductImageHtml(product) {
+    const src = product.image && product.image.startsWith('data:') ? product.image : '';
+    if (src) {
+      return `<img src="${src}" alt="${product.name}" onerror="this.parentElement.innerHTML='<span class=\\'placeholder\\'>💊</span>'">`;
     }
-  }, 250);
-}
-
-function initialiseAppWidgets() {
-  renderHourlyAgendaGrid();
-  renderKpiInputGrid();
-  renderRackTabs();
-  renderShelves();
-  renderMyShiftHistory();
-  startLiveClock();
-  simulateFridgeTelemetry();
-  renderOrderFormTable();
-  renderExcelSpreadsheet();
-  updateTotalSkuBadge();
-  updateDateHeader();
-  registerPwaServiceWorker();
-}
-
-function updateTotalSkuBadge() {
-  const activeCount = PLANOGRAM.length;
-  let totalUnits = 0;
-  PLANOGRAM.forEach(p => {
-    totalUnits += getStockValue(p.id);
-  });
-  document.getElementById('badgeSkuText').textContent = `${activeCount} / ${totalUnits}`;
-}
-
-function updateDateHeader() {
-  const d = new Date();
-  document.getElementById('dateText').textContent = d.toLocaleDateString('en-GB', {
-    weekday: 'long', day: '2-digit', month: 'short', year: 'numeric'
-  });
-}
-
-// NAVIGATION TABS CONTROL
-function switchNavTab(tabId) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.nav').forEach(n => n.classList.remove('active'));
-  
-  const targetScreen = document.getElementById(`screen-${tabId}`);
-  const targetNav = document.getElementById(`nav-${tabId}`);
-  
-  if (targetScreen) targetScreen.classList.add('active');
-  if (targetNav) targetNav.classList.add('active');
-
-  if (tabId === 'planner') {
-    renderRackTabs();
-    renderShelves();
-  } else if (tabId === 'logger') {
-    renderOrderFormTable();
+    return `<span class="placeholder">${getImageUrl(product)}</span>`;
   }
-}
 
-// POPUP DIALOGS UTIL
-function openModal(modalId) {
-  const modal = document.getElementById(modalId);
-  if (modal) modal.classList.add('open');
-}
-function closeModal(modalId) {
-  const modal = document.getElementById(modalId);
-  if (modal) modal.classList.remove('open');
-}
-
-// WIDGET 1: STOCK AUDIT DASHBOARD OVERLAY
-function openStockAuditDashboard() {
-  const activeCount = PLANOGRAM.length;
-  document.getElementById('auditActiveCount').textContent = activeCount;
-  
-  const oosList = PLANOGRAM.filter(p => getStockValue(p.id) === 0);
-  const auditListDiv = document.getElementById('auditOutList');
-  
-  if (oosList.length === 0) {
-    auditListDiv.innerHTML = '<div style="color:var(--green)">All medicine stocks are safe. No OOS detected!</div>';
-  } else {
-    auditListDiv.innerHTML = oosList.map(p => `
-      <div style="padding:4px 0; border-bottom:1px solid #eee; display:flex; justify-content:space-between; font-size:11px;">
-        <span>❌ ${p.name} (Rack ${p.rack})</span>
-        <button class="ibtn" onclick="adjStockValue('${p.id}', 5); closeModal('modalStockAudit'); renderShelves();">Quick Restock 5u</button>
-      </div>
-    `).join('');
-  }
-  openModal('modalStockAudit');
-}
-
-// WIDGET 2: HOURLY AGENDA MODAL & GRID
-function renderHourlyAgendaGrid() {
-  const container = document.getElementById('agendaGrid');
-  let html = '';
-  for (let i = 0; i < 24; i++) {
-    const period = i < 12 ? 'AM' : 'PM';
-    const displayHour = i === 0 ? 12 : i > 12 ? i - 12 : i;
-    const hourString = `${String(displayHour).padStart(2, '0')}:00 ${period}`;
-    const isLogged = S.hourlyAgenda[hourString] ? 'logged' : '';
-    
-    html += `
-      <button class="agenda-hour-btn ${isLogged}" onclick="triggerHourlyAgendaOverlay('${hourString}')">
-        <span>${displayHour} ${period}</span>
-        ${S.hourlyAgenda[hourString] ? 'Logged' : '+ Log'}
-      </button>
-    `;
-  }
-  container.innerHTML = html;
-}
-
-function triggerHourlyAgendaOverlay(hourKey) {
-  document.getElementById('agendaModalHourHeader').textContent = `Daily Task Agenda - ${hourKey}`;
-  document.getElementById('agendaModalHourVal').value = hourKey;
-  
-  const loggedData = S.hourlyAgenda[hourKey] || { goal: '', sales: '', atv: '', conv: '', no7: '', aura: '' };
-  document.getElementById('agendaHourGoal').value = loggedData.goal;
-  document.getElementById('agendaHourSales').value = loggedData.sales;
-  document.getElementById('agendaHourAtv').value = loggedData.atv;
-  document.getElementById('agendaHourConv').value = loggedData.conv;
-  document.getElementById('agendaHourNo7').value = loggedData.no7;
-  document.getElementById('agendaHourAura').value = loggedData.aura;
-  
-  openModal('modalHourlyAgenda');
-}
-
-function saveHourlyAgendaItem() {
-  const hourKey = document.getElementById('agendaModalHourVal').value;
-  S.hourlyAgenda[hourKey] = {
-    goal: document.getElementById('agendaHourGoal').value,
-    sales: document.getElementById('agendaHourSales').value,
-    atv: document.getElementById('agendaHourAtv').value,
-    conv: document.getElementById('agendaHourConv').value,
-    no7: document.getElementById('agendaHourNo7').value,
-    aura: document.getElementById('agendaHourAura').value
-  };
-  saveIndexedState();
-  closeModal('modalHourlyAgenda');
-  renderHourlyAgendaGrid();
-  toastFeedback("Agenda hours logs saved!");
-}
-
-// WIDGET 3: DYNAMIC KPI CALCULATOR INPUT GRID
-const KPI_METRICS_LIST = [
-  { key: 'totalSales', label: '💰 Total Sales Target', suf: 'AED' },
-  { key: 'transactions', label: '🧾 Transactions Count', suf: 'TRN' },
-  { key: 'no7sales', label: '🧴 No7 Retail Share', suf: 'AED' },
-  { key: 'aurasales', label: '✨ Aura linkage Rate', suf: 'Links' }
-];
-
-function renderKpiInputGrid() {
-  const grid = document.getElementById('kpiInputGrid');
-  grid.innerHTML = KPI_METRICS_LIST.map(m => {
-    const stateVal = S.kpiCalcData[m.key] || { formula: '', sum: 0 };
-    return `
-      <div class="entry-card">
-        <label>${m.label}</label>
-        <input type="text" id="kpi-f-${m.key}" placeholder="e.g. 25+26+270" value="${stateVal.formula}" oninput="evaluateInlineKpiCalculation('${m.key}')">
-        <div class="calc-row2">
-          <button class="eq-btn" onclick="triggerCalculatorEval('${m.key}')">= Total</button>
-          <button class="eq-btn" onclick="clearCalculatorField('${m.key}')">Clear</button>
-        </div>
-        <div class="calc-field" id="kpi-s-${m.key}">Sum: ${stateVal.sum} ${m.suf}</div>
-        <div class="calc-history-list" id="kpi-b-${m.key}">
-          ${stateVal.formula ? `Breakdown: ${stateVal.formula.split('+').join(' + ')}` : 'Awaiting logs...'}
-        </div>
-      </div>
-    `;
-  }).join('');
-}
-
-function evaluateInlineKpiCalculation(key) {
-  const rawInput = document.getElementById(`kpi-f-${key}`).value;
-  const breakdownDiv = document.getElementById(`kpi-b-${key}`);
-  if (rawInput) {
-    breakdownDiv.textContent = `Breakdown: ${rawInput.split('+').join(' + ')}`;
-  } else {
-    breakdownDiv.textContent = 'Awaiting logs...';
-  }
-}
-
-function triggerCalculatorEval(key) {
-  const inputEl = document.getElementById(`kpi-f-${key}`);
-  const rawValue = inputEl.value;
-  
-  if (!rawValue) return;
-  
-  try {
-    const calculatedSum = evaluateSimpleStringExpression(rawValue);
-    S.kpiCalcData[key] = { formula: rawValue, sum: calculatedSum };
-    saveIndexedState();
-    
-    document.getElementById(`kpi-s-${key}`).textContent = `Sum: ${calculatedSum}`;
-    toastFeedback("Cumulative value processed!");
-  } catch (err) {
-    toastFeedback("Invalid math structure entered.");
-  }
-}
-
-function evaluateSimpleStringExpression(str) {
-  const parts = str.split('+').map(Number);
-  let total = 0;
-  parts.forEach(p => {
-    if (!isNaN(p)) total += p;
-  });
-  return total;
-}
-
-function clearCalculatorField(key) {
-  document.getElementById(`kpi-f-${key}`).value = '';
-  document.getElementById(`kpi-s-${key}`).textContent = `Sum: 0`;
-  document.getElementById(`kpi-b-${key}`).textContent = 'Awaiting logs...';
-  S.kpiCalcData[key] = { formula: '', sum: 0 };
-  saveIndexedState();
-}
-
-// PLANNERRRR: DYNAMIC WOODEN RACKS DRAW
-function renderRackTabs() {
-  const tabWrap = document.getElementById('rackTabs');
-  let tabs = '';
-  for (let r = 1; r <= 7; r++) {
-    const hasExp = PLANOGRAM.filter(p => p.rack === r).some(p => isProductNearExpiry(p.id));
-    tabs += `<button class="rtab ${r === currentRack ? 'active' : ''} ${hasExp ? 'exp' : ''}" onclick="selectActiveRack(${r})">Rack ${r}</button>`;
-  }
-  tabWrap.innerHTML = tabs;
-}
-
-function selectActiveRack(n) {
-  currentRack = n;
-  renderRackTabs();
-  renderShelves();
-}
-
-function getStockValue(id) {
-  return (id in S.stockOverrides) ? S.stockOverrides[id] : (PLANOGRAM.find(p => p.id === id)?.stock || 0);
-}
-
-function setStockValue(id, val) {
-  S.stockOverrides[id] = Math.max(0, val);
-  saveIndexedState();
-  updateTotalSkuBadge();
-}
-
-function isProductNearExpiry(id) {
-  return false;
-}
-
-function renderShelves() {
-  const rn = currentRack;
-  const sec = SECTIONS.find(s => s.racks.includes(rn)) || SECTIONS[0];
-  let html = `
-    <div class="rack-header">
-      <span class="rack-chip" style="background:${sec.bg}; color:${sec.color}">${sec.name}</span>
-    </div>
-  `;
-
-  for (let sh = 1; sh <= SPR; sh++) {
-    const code = `${rn}.${sh}`;
-    const products = PLANOGRAM.filter(p => p.rack === rn && p.shelf === sh);
-    const open = S.openShelves[code];
-    const shelfTypeLabel = products[0] ? `${products[0].shelfType} (Notch ${products[0].notch})` : '12" Wooden Shelf';
-
-    let bottlesHtml = products.map((p, i) => {
-      const v = getStockValue(p.id);
-      const stockCls = v === 0 ? 'sout' : v < 5 ? 'slow' : 'sok';
-      const imgUrl = getProductImageUrl(p.name);
-
-      return `
-        <div class="prod-bottle">
-          <div class="prod-bottle-img ${v === 0 ? 'out' : ''}" onclick="openProductDetailModal('${p.id}')">
-            <div class="pos-badge">${i + 1}</div>
-            ${imgUrl ? `<img src="${imgUrl}" alt="bottle" onerror="this.parentElement.innerHTML='<span style=\\'font-size:22px\\'>💊</span>'">` : `<span style="font-size:22px">💊</span>`}
+  // --- RENDER ---
+  function renderPlanner() {
+    let html = '';
+    let warnCount = 0;
+    products.forEach(p => {
+      const status = getExpiryStatus(p.expiry);
+      if (status === 'soon' || status === 'critical') warnCount++;
+      const battery = getBatteryLevel(p.units);
+      const expiryLabel = p.expiry ? `${p.expiry.slice(0,2)}/${p.expiry.slice(2,4)}/${p.expiry.slice(4,6)}` : '—';
+      const statusClass = status === 'critical' ? 'expiry-critical' : status === 'soon' ? 'expiry-soon' : 'expiry-normal';
+      const imgHtml = getProductImageHtml(p);
+      html += `
+        <div class="planner-card ${statusClass}" data-id="${p.id}" onclick="openEdit('${p.id}')">
+          <div class="card-img">
+            ${imgHtml}
+            <div class="camera-overlay" onclick="event.stopPropagation(); openEdit('${p.id}'); setTimeout(()=>document.getElementById('imgCameraBtn').click(), 300);">📷</div>
           </div>
-          <div class="prod-bottle-shadow"></div>
-          <div class="prod-bottle-label">${p.name.split(' ').slice(0, 2).join(' ')}</div>
-          <div class="prod-bottle-stock ${stockCls}">${v === 0 ? 'OUT' : v + 'u'}</div>
+          <div class="card-name">${p.name}</div>
+          <div class="card-details">
+            <span>📅 ${expiryLabel}</span>
+            <span>🧬 ${p.batch || '—'}</span>
+            <span class="card-expiry-badge">${status === 'critical' ? '⚠️ EXPIRED' : status === 'soon' ? '⏳ SOON' : '✓ OK'}</span>
+          </div>
+          <div class="card-bottom">
+            <div class="battery-indicator">
+              <span>${battery.label}</span>
+              <div class="battery-bar">
+                <div class="battery-fill ${battery.level}" style="width:${battery.pct}%"></div>
+              </div>
+              <span style="font-size:8px;color:var(--gray-500);">${p.units || 0}u</span>
+            </div>
+            <span style="font-size:9px;color:var(--gray-500);">F:${p.facing || 0}</span>
+          </div>
         </div>
       `;
-    }).join('');
-
-    if (products.length === 0) {
-      bottlesHtml = `<div style="padding:12px; font-size:11px; color:#5a4020; font-style:italic">Ready for planogram assignment</div>`;
-    }
-
-    html += `
-      <div class="shelf-unit">
-        <div class="wood-top"></div>
-        <div class="shelf-hdr" onclick="toggleShelfOpen('${code}')">
-          <span class="shelf-code-badge">Shelf ${code}</span>
-          <span class="shelf-type">${shelfTypeLabel}</span>
-          <div class="shelf-hdr-right">
-            <span style="font-size:11px; color:var(--text3); font-weight:700;">${products.length} Products</span>
-            <span style="font-size:10px;">${open ? '▲' : '▼'}</span>
-          </div>
-        </div>
-        <div class="shelf-face">${bottlesHtml}</div>
-        <div class="wood-bottom"></div>
-        
-        <div class="shelf-detail ${open ? 'open' : ''}">
-          <div class="shelf-prod-list">
-            ${products.map((p, idx) => {
-              const currentStock = getStockValue(p.id);
-              const imgUrl = getProductImageUrl(p.name);
-              return `
-                <div class="prod-row">
-                  <div class="prow-img" onclick="openProductDetailModal('${p.id}')">
-                    ${imgUrl ? `<img src="${imgUrl}">` : '💊'}
-                  </div>
-                  <div class="prow-body">
-                    <div class="prow-name">${idx + 1}. ${p.name}</div>
-                    <div class="prow-bc">Barcode: ${p.barcode} | Alshaya: ${p.alshaya}</div>
-                    <div class="prow-actions">
-                      <button class="ibtn" onclick="openProductDetailModal('${p.id}')">🔍 Details & Label</button>
-                    </div>
-                  </div>
-                  <div class="prow-right">
-                    <div class="stock-ctrl">
-                      <button class="sbtn" onclick="adjStockValue('${p.id}', -1)">-</button>
-                      <span class="snum">${currentStock}</span>
-                      <button class="sbtn" onclick="adjStockValue('${p.id}', 1)">+</button>
-                    </div>
-                  </div>
-                </div>
-              `;
-            }).join('')}
-          </div>
-        </div>
-      </div>
-    `;
-  }
-  document.getElementById('rackWrap').innerHTML = html;
-}
-
-function toggleShelfOpen(code) {
-  S.openShelves[code] = !S.openShelves[code];
-  saveIndexedState();
-  renderShelves();
-}
-
-function adjStockValue(id, amount) {
-  const current = getStockValue(id);
-  setStockValue(id, current + amount);
-  renderShelves();
-}
-
-// OPEN PRODUCT DETAILS & LABEL GENERATOR MODAL
-function openProductDetailModal(productId) {
-  const product = PLANOGRAM.find(p => p.id === productId);
-  if (!product) return;
-  
-  document.getElementById('lblProductId').value = productId;
-  document.getElementById('detProductName').textContent = product.name;
-  document.getElementById('detBarcode').textContent = product.barcode;
-  document.getElementById('detRms').textContent = product.alshaya || 'N/A';
-  document.getElementById('detLoc').textContent = `${product.rack}.${product.shelf}`;
-  document.getElementById('detNotch').textContent = product.notch || '33';
-  document.getElementById('detShelfType').textContent = product.shelfType || 'Wooden';
-  document.getElementById('detStock').textContent = getStockValue(product.id);
-  document.getElementById('detFacing').textContent = product.facing || 1;
-
-  document.getElementById('ticketProductName').textContent = product.name;
-  const regularPrice = product.price || 120;
-  document.getElementById('lblRegularPrice').value = regularPrice;
-  document.getElementById('lblPromoPrice').value = Math.round(regularPrice * 0.8);
-  
-  refreshLabelPreview();
-  openModal('modalProductDetail');
-}
-
-function refreshLabelPreview() {
-  const promoStyle = document.getElementById('lblPromoTemplate').value;
-  const regPrice = parseFloat(document.getElementById('lblRegularPrice').value) || 0;
-  const promoPrice = parseFloat(document.getElementById('lblPromoPrice').value) || 0;
-  
-  const header = document.getElementById('ticketPromoHeader');
-  const regSpan = document.getElementById('ticketRegPrice');
-  const finalPriceDiv = document.getElementById('ticketFinalPrice');
-  const previewBox = document.getElementById('ticketPreview');
-  
-  if (promoStyle === 'none') {
-    header.style.display = 'none';
-    regSpan.parentElement.style.display = 'none';
-    finalPriceDiv.textContent = `AED ${regPrice}`;
-    previewBox.style.background = '#FFFFFF';
-  } else if (promoStyle === 'save') {
-    header.style.display = 'block';
-    header.textContent = "SPECIAL DISCOUNT OFFER";
-    header.style.background = "var(--red)";
-    regSpan.parentElement.style.display = 'block';
-    regSpan.textContent = `AED ${regPrice}`;
-    finalPriceDiv.textContent = `AED ${promoPrice}`;
-    previewBox.style.background = '#FEF2F2';
-  } else if (promoStyle === 'new') {
-    header.style.display = 'block';
-    header.textContent = "NEW ARRIVAL AT BOOTS";
-    header.style.background = "var(--purple)";
-    regSpan.parentElement.style.display = 'none';
-    finalPriceDiv.textContent = `AED ${regPrice}`;
-    previewBox.style.background = '#F5F3FF';
-  } else if (promoStyle === 'boots') {
-    header.style.display = 'block';
-    header.textContent = "BOOTS BRAND VALUE CHOICE";
-    header.style.background = "var(--green)";
-    regSpan.parentElement.style.display = 'none';
-    finalPriceDiv.textContent = `AED ${regPrice}`;
-    previewBox.style.background = '#ECFDF5';
-  }
-}
-
-function dispatchPrintJob() {
-  toastFeedback("Broadcasting to Boots T3 Thermal printer...");
-  setTimeout(() => {
-    toastFeedback("Print job completed successfully!");
-    closeModal('modalProductDetail');
-  }, 1000);
-}
-
-// REAL-TIME TIME CLOCK (MY SHIFT)
-function startLiveClock() {
-  if (timeTickerInterval) clearInterval(timeTickerInterval);
-  
-  timeTickerInterval = setInterval(() => {
-    const now = new Date();
-    document.getElementById('liveTimeClock').textContent = now.toLocaleTimeString('en-US', {
-      hour12: false
     });
-  }, 1000);
-}
+    grid.innerHTML = html;
+    totalItems.textContent = products.length + ' items';
+    expiryWarn.textContent = warnCount + ' ⚠️';
+  }
 
-function punchShift(action) {
-  const now = new Date();
-  const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-  const dateStr = now.toISOString().slice(0, 10);
-  
-  if (action === 'In') {
-    S.shiftPunches.unshift({
-      date: dateStr,
-      start: timeStr,
-      end: 'Active',
-      total: 0,
-      status: 'In Progress'
-    });
-    toastFeedback("Clock In registered!");
-  } else if (action === 'Out') {
-    if (S.shiftPunches.length > 0 && S.shiftPunches[0].end === 'Active') {
-      S.shiftPunches[0].end = timeStr;
-      S.shiftPunches[0].total = 9;
-      S.shiftPunches[0].status = 'Normal';
-      toastFeedback("Clock Out registered!");
+  // --- POPUP ---
+  function openEdit(id) {
+    const p = products.find(x => x.id === id);
+    if (!p) return;
+    editingId = id;
+    popupTitle.textContent = '✏️ Edit Product';
+    editName.value = p.name || '';
+    editExpiry.value = p.expiry || '';
+    editBatch.value = p.batch || '';
+    editFacing.value = p.facing || 0;
+    editUnits.value = p.units || 0;
+    pendingImageData = p.image || null;
+    updateImagePreview();
+    popupOverlay.classList.add('active');
+  }
+
+  function closePopup() {
+    popupOverlay.classList.remove('active');
+    editingId = null;
+    pendingImageData = null;
+  }
+
+  function updateImagePreview() {
+    if (pendingImageData && pendingImageData.startsWith('data:')) {
+      imgPreviewContainer.innerHTML = `<img src="${pendingImageData}" style="width:100%;height:100%;object-fit:contain;">`;
     } else {
-      toastFeedback("No active shift clock in found.");
+      imgPreviewContainer.innerHTML = `<span style="color:var(--gray-500); font-size:11px;">No image</span>`;
     }
-  } else if (action === 'Break') {
-    toastFeedback("Break punched successfully.");
   }
-  
-  saveIndexedState();
-  renderMyShiftHistory();
-}
 
-function renderMyShiftHistory() {
-  const container = document.getElementById('shiftPunchTable');
-  if (S.shiftPunches.length === 0) {
-    container.innerHTML = '<div style="padding:12px; font-size:11px; color:var(--text2)">No punches logged.</div>';
-    return;
+  function saveProduct() {
+    const id = editingId;
+    const p = products.find(x => x.id === id);
+    if (!p) { toast('Product not found', 'error'); return; }
+    p.name = editName.value.trim() || 'Unnamed';
+    p.expiry = editExpiry.value.trim().replace(/\D/g, '');
+    p.batch = editBatch.value.trim();
+    p.facing = parseInt(editFacing.value) || 0;
+    p.units = parseInt(editUnits.value) || 0;
+    if (pendingImageData) p.image = pendingImageData;
+    saveData();
+    renderPlanner();
+    closePopup();
+    toast('Product updated!', 'success');
   }
-  
-  container.innerHTML = S.shiftPunches.map(p => `
-    <div class="shift-log-row">
-      <div class="shift-log-date">${p.date}</div>
-      <div class="shift-log-times">${p.start} - ${p.end}</div>
-      <div class="shift-log-hrs">${p.total} Hours (${p.status})</div>
-    </div>
-  `).join('');
-}
 
-// DATA LOGGER: TEMPERATURE SIMULATION
-function simulateFridgeTelemetry() {
-  setInterval(() => {
-    if (!S.fridgeExcursionAlert) {
-      const base = 4.0;
-      const variation = (Math.random() * 1.2) - 0.6;
-      document.getElementById('fridgeTemp').textContent = `${(base + variation).toFixed(1)} °C`;
-      document.getElementById('fridgeTemp').style.color = "var(--green)";
-    }
-  }, 3000);
-}
-
-function simulateFridgeExcursion() {
-  S.fridgeExcursionAlert = true;
-  saveIndexedState();
-  document.getElementById('fridgeTemp').textContent = "11.8 °C EXCURSION ALERT";
-  document.getElementById('fridgeTemp').style.color = "var(--red)";
-  toastFeedback("Fridge temperature threshold breached!");
-}
-
-function resetFridgeExcursion() {
-  S.fridgeExcursionAlert = false;
-  saveIndexedState();
-  document.getElementById('fridgeTemp').textContent = "4.2 °C";
-  document.getElementById('fridgeTemp').style.color = "var(--green)";
-  toastFeedback("Excursion warning alert cleared.");
-}
-
-// WEEKLY ORDER FORM AND CSV GENERATION
-function renderOrderFormTable() {
-  const container = document.getElementById('orderFormContainer');
-  const lowStockProducts = PLANOGRAM.filter(p => getStockValue(p.id) < 5);
-  
-  if (lowStockProducts.length === 0) {
-    container.innerHTML = '<div style="font-size:11px; color:var(--text2);">All planogram medicines are fully stocked.</div>';
-    return;
+  function deleteProduct() {
+    if (!editingId) return;
+    if (!confirm('Delete this product?')) return;
+    products = products.filter(p => p.id !== editingId);
+    saveData();
+    renderPlanner();
+    closePopup();
+    toast('Deleted', 'warning');
   }
-  
-  let rowsHtml = lowStockProducts.map(p => {
-    const currentStock = getStockValue(p.id);
-    const required = 10 - currentStock;
-    return `
-      <tr style="border-bottom:1px solid rgba(255,255,255,0.1);">
-        <td style="padding:6px 0; font-size:11px;">${p.name}</td>
-        <td style="text-align:center; font-family:'DM Mono', monospace;">${currentStock}</td>
-        <td style="text-align:right;">
-          <div style="display:flex; justify-content:flex-end; align-items:center; gap:4px;">
-            <button class="ibtn" onclick="setStockValue('${p.id}', ${currentStock - 1}); renderOrderFormTable();">-</button>
-            <span style="font-family:'DM Mono', monospace; font-weight:700; width:20px; text-align:center;">${required}</span>
-            <button class="ibtn" onclick="setStockValue('${p.id}', ${currentStock + 1}); renderOrderFormTable();">+</button>
-          </div>
-        </td>
-      </tr>
+
+  // --- IMAGE HANDLING ---
+  function handleImageFile(file) {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      pendingImageData = e.target.result;
+      updateImagePreview();
+      toast('Image loaded', 'success');
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function searchImageOnline() {
+    const name = editName.value.trim() || 'medicine';
+    toast('Searching for: ' + name, 'warning');
+    setTimeout(() => {
+      const randomId = Math.floor(Math.random() * 200);
+      pendingImageData = `https://picsum.photos/seed/${randomId}/200/200`;
+      updateImagePreview();
+      toast('Image found!', 'success');
+    }, 800);
+  }
+
+  // --- TOAST ---
+  function toast(msg, type = 'info') {
+    const container = $('toastContainer');
+    const div = document.createElement('div');
+    div.className = `toast ${type}`;
+    div.innerHTML = `
+      <svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="8" x2="12" y2="12"/>
+        <line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      <span class="toast-text">${msg}</span>
     `;
-  }).join('');
-  
-  container.innerHTML = `
-    <table style="width:100%; border-collapse:collapse; color:#fff;">
-      <thead>
-        <tr style="border-bottom:2px solid var(--border); font-size:9px; text-transform:uppercase; color:var(--text2);">
-          <th style="text-align:left; padding-bottom:6px;">Medicine Description</th>
-          <th style="text-align:center;">Stock</th>
-          <th style="text-align:right;">Order Qty</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${rowsHtml}
-      </tbody>
-    </table>
-  `;
-}
-
-function exportOrderCSV() {
-  const lowStockProducts = PLANOGRAM.filter(p => getStockValue(p.id) < 5);
-  if (lowStockProducts.length === 0) {
-    toastFeedback("No active orders pending download.");
-    return;
+    container.appendChild(div);
+    setTimeout(() => div.remove(), 2500);
   }
-  
-  let csvContent = "data:text/csv;charset=utf-8,";
-  csvContent += "Date & Time,Product Name,Barcode,Alshaya Code,Remaining Quantity,Required Quantity\n";
-  
-  const timestamp = new Date().toLocaleString();
-  lowStockProducts.forEach(p => {
-    const current = getStockValue(p.id);
-    const req = 10 - current;
-    csvContent += `"${timestamp}","${p.name}","${p.barcode}","${p.alshaya||''}",${current},${req}\n`;
-  });
-  
-  const encodedUri = encodeURI(csvContent);
-  const link = document.createElement("a");
-  link.setAttribute("href", encodedUri);
-  link.setAttribute("download", `Weekly_Boots_Order_${new Date().toISOString().slice(0,10)}.csv`);
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  toastFeedback("Order CSV spreadsheet downloaded!");
-}
 
-// EXCEL GS1 OFFLINE LEDGER SPREADSHEET
-function renderExcelSpreadsheet() {
-  const container = document.getElementById('excelRows');
-  if (excelGridData.length === 0) {
-    container.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#999;">Workspace empty. Enter manual barcodes.</td></tr>`;
-    return;
+  // --- NAVIGATION ---
+  function navigateTo(pageId) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    const target = document.getElementById(`page-${pageId}`);
+    if (target) target.classList.add('active');
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    const nav = document.querySelector(`.nav-item[data-page="${pageId}"]`);
+    if (nav) nav.classList.add('active');
   }
-  
-  container.innerHTML = excelGridData.map((row, idx) => `
-    <tr>
-      <td class="row-index">${idx + 1}</td>
-      <td style="font-family:'DM Mono', monospace; font-weight:700;">${row.barcode}</td>
-      <td style="font-family:'DM Mono', monospace; color:var(--green); font-size:10px;">${row.gs1}</td>
-      <td>${row.name}</td>
-      <td>${row.expiry}</td>
-      <td>${row.batch}</td>
-      <td style="text-align:right; font-weight:700;">${row.qty}</td>
-    </tr>
-  `).join('');
-}
 
-function parseManualGS1() {
-  const inputEl = document.getElementById('manualScanInput');
-  const val = inputEl.value.trim();
-  if (!val) return;
-  
-  const barcode = val.substring(0, 14) || "Unknown Barcode";
-  const name = "Decoded Medicine Item";
-  const expiry = "2027-12-31";
-  const batch = "B4429";
-  
-  excelGridData.push({
-    barcode: barcode,
-    gs1: val,
-    name: name,
-    expiry: expiry,
-    batch: batch,
-    qty: 1
-  });
-  
-  inputEl.value = '';
-  renderExcelSpreadsheet();
-  toastFeedback("Row processed and inserted.");
-}
+  // --- INIT ---
+  function init() {
+    loadData();
+    renderPlanner();
 
-function clearExcelRows() {
-  excelGridData = [];
-  renderExcelSpreadsheet();
-  toastFeedback("Spreadsheet workspace cleared.");
-}
+    // Navigation
+    document.querySelectorAll('.nav-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const page = item.dataset.page;
+        navigateTo(page);
+        if (page === 'planner') renderPlanner();
+      });
+    });
 
-// ROSTER INTERACTIVE OCR PARSER
-function extractRosterWeek28() {
-  const textDiv = document.getElementById('rosterOcrFeedback');
-  textDiv.textContent = "Scanning jpeg data matrix elements...";
-  
-  setTimeout(() => {
-    textDiv.innerHTML = `
-      <b>Week 28 OCR Successful!</b><br>
-      • Nadiya: Saturday 6-3PM<br>
-      • Aditya: Friday 10-6AM Night<br>
-      • Nitheesh: AL Sunday<br>
-      • Vysakh: TLR Shift parsed!<br>
-      Roster week loaded into active memory database.
-    `;
-    toastFeedback("Boots T3 Arrivals Rota synced.");
-  }, 1200);
-}
+    // Menu button (dummy)
+    $('menuBtn').addEventListener('click', () => toast('Menu coming soon', 'info'));
 
-// SETTINGS CONTROL
-function saveGlobalConfig() {
-  const store = document.getElementById('cfgStore').value;
-  const target = document.getElementById('cfgTarget').value;
-  
-  S.globalConfig = { storeName: store, targetGoal: parseInt(target) };
-  saveIndexedState();
-  toastFeedback("Configurations saved successfully.");
-}
+    // Popup events
+    popupClose.addEventListener('click', closePopup);
+    popupOverlay.addEventListener('click', (e) => { if (e.target === popupOverlay) closePopup(); });
+    popupSave.addEventListener('click', saveProduct);
+    popupDelete.addEventListener('click', deleteProduct);
 
-// FEEDBACK TOAST UTIL
-function toastFeedback(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.style.display = 'block';
-  setTimeout(() => {
-    t.style.display = 'none';
-  }, 2000);
-}
+    // Image buttons
+    imgCameraBtn.addEventListener('click', () => { imageFileInput.click(); });
+    imgGalleryBtn.addEventListener('click', () => { galleryFileInput.click(); });
+    imgSearchBtn.addEventListener('click', searchImageOnline);
 
-// REGISTER PWA SERVICE WORKER FOR OFFLINE ACCESS
-function registerPwaServiceWorker() {
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js')
-      .then(() => console.log("PWA Service Worker loaded successfully."))
-      .catch(err => console.warn("PWA Service Worker offline fallback failed: ", err));
+    imageFileInput.addEventListener('change', (e) => {
+      if (e.target.files.length) handleImageFile(e.target.files[0]);
+      e.target.value = '';
+    });
+    galleryFileInput.addEventListener('change', (e) => {
+      if (e.target.files.length) handleImageFile(e.target.files[0]);
+      e.target.value = '';
+    });
+
+    // Global exposure for onclick
+    window.openEdit = openEdit;
+    window.closePopup = closePopup;
+    window.saveProduct = saveProduct;
+    window.deleteProduct = deleteProduct;
+    window.navigateTo = navigateTo;
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && popupOverlay.classList.contains('active')) closePopup();
+      if (e.key === 'Enter' && popupOverlay.classList.contains('active')) saveProduct();
+    });
+
+    toast('Planner ready', 'success');
   }
-}
+
+  // Start
+  init();
+})();
 </script>
 </body>
 </html>
-
