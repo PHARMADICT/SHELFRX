@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#0f172a">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>PharmaTrack - Planner</title>
+  <title>PharmaTrack - Complete</title>
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,11 +14,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     :root {
-      /* New Dark Cyan & Blue Colour Scheme */
       --gradient-start: #0f172a;
       --gradient-mid:   #1e293b;
       --gradient-end:   #020617;
-      --purple-light:   #22d3ee; 
+      --purple-light:   #22d3ee;
       --purple-primary: #06b6d4;
       --purple-dark:    #0891b2;
       --purple-glow:    rgba(6, 182, 212, 0.40);
@@ -57,7 +56,6 @@
     @keyframes pulse-scan { 0% { box-shadow: 0 0 0 0 var(--purple-glow); } 70% { box-shadow: 0 0 0 20px rgba(6, 182, 212, 0); } 100% { box-shadow: 0 0 0 0 rgba(6, 182, 212, 0); } }
     @keyframes scanMove { 0%, 100% { top: 10%; } 50% { top: 90%; } }
     @keyframes popIn { 0% { transform: scale(0.9); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-    @keyframes shake { 10%, 90% { transform: translate3d(-2px, 0, 0); } 20%, 80% { transform: translate3d(4px, 0, 0); } 30%, 50%, 70% { transform: translate3d(-6px, 0, 0); } 40%, 60% { transform: translate3d(6px, 0, 0); } }
     @keyframes toastIn { from { opacity: 0; transform: translateY(-20px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
 
     .app {
@@ -143,6 +141,185 @@
     .nav-item:active svg { transform: scale(0.85); }
     .nav-item span { font-size: 11px; font-weight: 600; }
 
+    /* SCANNER PAGE */
+    .scan-fab {
+      position: absolute;
+      bottom: calc(var(--nav-height) + 25px);
+      left: 50%; transform: translateX(-50%);
+      width: 60px; height: 60px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--purple-primary) 0%, var(--purple-dark) 100%);
+      border: none; color: var(--white);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 8px 25px var(--purple-glow);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 50;
+    }
+    .scan-fab:hover, .scan-fab:active { transform: translateX(-50%) scale(0.92); box-shadow: 0 4px 15px var(--purple-glow); }
+    .scan-fab.scanning { animation: pulse-scan 1.5s infinite; }
+    .scan-fab svg { width: 28px; height: 28px; }
+    .scanner-container { flex: 1; display: flex; flex-direction: column; position: relative; }
+    .scanner-area { flex: 1; position: relative; background: #000; overflow: hidden; }
+    #video-preview { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; }
+    .scanner-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; }
+    .viewfinder { width: 260px; height: 260px; position: relative; }
+    .vf-corner {
+      position: absolute; width: 40px; height: 40px;
+      border-color: var(--accent); border-style: solid; border-width: 4px;
+      border-radius: 12px;
+    }
+    .vf-corner.tl { top: 0; left: 0; border-right: none; border-bottom: none; border-radius: 16px 0 0 0; }
+    .vf-corner.tr { top: 0; right: 0; border-left: none; border-bottom: none; border-radius: 0 16px 0 0; }
+    .vf-corner.bl { bottom: 0; left: 0; border-right: none; border-top: none; border-radius: 0 0 0 16px; }
+    .vf-corner.br { bottom: 0; right: 0; border-left: none; border-top: none; border-radius: 0 0 16px 0; }
+    .scan-line {
+      position: absolute; left: 5%; right: 5%; height: 3px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      animation: scanMove 2.5s ease-in-out infinite;
+      box-shadow: 0 0 20px 2px var(--accent);
+      display: none;
+      border-radius: 50%;
+    }
+    .scanning .scan-line { display: block; }
+    .scanner-hint {
+      position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
+      background: rgba(15, 23, 42, 0.85); padding: 10px 20px; border-radius: 20px;
+      font-size: 14px; font-weight: 500; color: var(--accent-light);
+      backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+    .manual-bar {
+      padding: 16px; background: rgba(2, 6, 23, 0.7);
+      backdrop-filter: blur(15px); display: flex; gap: 12px;
+    }
+    .manual-input {
+      flex: 1; height: 48px; padding: 0 16px;
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 14px; color: var(--white);
+      font-family: 'JetBrains Mono', monospace; font-size: 14px; outline: none;
+      transition: all 0.3s ease;
+    }
+    .manual-input:focus { border-color: var(--accent); background: rgba(255,255,255,0.08); box-shadow: 0 0 0 3px var(--purple-glow); }
+    .manual-input::placeholder { color: var(--gray-500); }
+    .icon-btn {
+      width: 48px; height: 48px; border-radius: 14px;
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+      color: var(--accent); display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .icon-btn:hover, .icon-btn:active { background: rgba(255,255,255,0.12); transform: scale(0.92); border-color: var(--accent); }
+    .icon-btn svg { width: 22px; height: 22px; }
+
+    /* HISTORY PAGE */
+    .history-container { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    .search-bar { padding: 16px; background: transparent; }
+    .search-wrapper { position: relative; }
+    .search-input {
+      width: 100%; height: 48px; padding: 0 16px 0 48px;
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px; color: var(--white); font-size: 15px; outline: none;
+      transition: all 0.3s ease;
+    }
+    .search-input:focus { border-color: var(--accent); background: rgba(255,255,255,0.08); box-shadow: 0 0 0 3px var(--purple-glow); }
+    .search-input::placeholder { color: var(--gray-500); }
+    .search-icon {
+      position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+      width: 20px; height: 20px; color: var(--gray-500);
+    }
+    .filter-row {
+      display: flex; gap: 10px; padding: 0 16px 16px;
+      overflow-x: auto; -webkit-overflow-scrolling: touch;
+    }
+    .filter-row::-webkit-scrollbar { display: none; }
+    .filter-chip {
+      padding: 8px 18px; background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08); border-radius: 20px;
+      color: var(--gray-300); font-size: 13px; font-weight: 600;
+      white-space: nowrap; cursor: pointer; transition: all 0.3s ease;
+    }
+    .filter-chip:active { transform: scale(0.92); }
+    .filter-chip.active { background: var(--purple-primary); border-color: var(--purple-primary); color: var(--gradient-end); box-shadow: 0 4px 12px var(--purple-glow); }
+    .history-list {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 0 16px 110px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 14px;
+      align-content: start;
+    }
+    .history-card {
+      background: rgba(255,255,255,0.03);
+      border-radius: 16px;
+      padding: 16px;
+      border: 1px solid rgba(255,255,255,0.06);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      animation: slideUpFade 0.4s ease-out forwards;
+    }
+    .history-card:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.12); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
+    .history-card:active { transform: scale(0.97); }
+    .history-card.status-expired { border-left: 4px solid var(--red); }
+    .history-card.status-expired .product-name,
+    .history-card.status-expired .history-value { color: var(--red); text-decoration: line-through; text-decoration-color: rgba(255,255,255,0.4); text-decoration-thickness: 1px; }
+    .history-card.status-soon { border-left: 4px solid var(--orange); }
+    .history-card.status-soon .product-name { color: var(--orange); }
+    .history-card.status-ok { border-left: 4px solid var(--green); }
+    .history-card.status-ok .product-name { color: var(--green); }
+    .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+    .product-name { font-size: 15px; font-weight: 700; flex: 1; margin-right: 12px; color: var(--white); }
+    .qty-badge { padding: 4px 10px; border-radius: 8px; background: var(--purple-glow); color: var(--accent-light); font-size: 12px; font-weight: 700; border: 1px solid rgba(6, 182, 212, 0.2); }
+    .card-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .card-field { min-width: 0; background: rgba(0,0,0,0.2); padding: 8px; border-radius: 10px; }
+    .field-label { font-size: 10px; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; font-weight: 600; }
+    .history-value { font-size: 13px; font-family: 'JetBrains Mono', monospace; font-weight: 500; color: var(--gray-100); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .edit-btn {
+      position: absolute; top: 12px; right: 12px;
+      width: 32px; height: 32px; border-radius: 10px;
+      background: rgba(255,255,255,0.08); border: none; color: var(--gray-300);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; opacity: 0; transition: all 0.3s ease;
+    }
+    .history-card:hover .edit-btn, .history-card:active .edit-btn { opacity: 1; background: rgba(255,255,255,0.15); color: var(--white); }
+    .edit-btn svg { width: 16px; height: 16px; }
+
+    /* PASTE PAGE */
+    .paste-container { flex: 1; display: flex; flex-direction: column; padding: 16px; }
+    .paste-textarea {
+      flex: 1; min-height: 180px; padding: 16px;
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px; color: var(--white);
+      font-family: 'JetBrains Mono', monospace; font-size: 14px; line-height: 1.6;
+      resize: none; outline: none; margin-bottom: 20px;
+      transition: all 0.3s ease;
+    }
+    .paste-textarea:focus { border-color: var(--accent); background: rgba(255,255,255,0.05); box-shadow: 0 0 0 3px var(--purple-glow); }
+    .paste-textarea::placeholder { color: var(--gray-600); }
+    .paste-stats {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(70px, 1fr)); gap: 12px;
+      margin-bottom: 20px; display: none;
+    }
+    .paste-stats.visible { display: grid; animation: slideUpFade 0.3s ease-out forwards; }
+    .paste-stat { background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
+    .stat-num { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+    .stat-num.green { color: var(--green); }
+    .stat-num.red { color: var(--red); }
+    .stat-num.orange { color: var(--orange); }
+    .stat-txt { font-size: 10px; color: var(--gray-400); text-transform: uppercase; font-weight: 600; }
+    .btn-row { display: flex; gap: 12px; }
+    .btn {
+      flex: 1; height: 52px; border-radius: 14px; border: none;
+      font-size: 15px; font-weight: 600; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .btn:hover { transform: translateY(-2px); }
+    .btn:active { transform: translateY(0) scale(0.95); }
+    .btn-primary { background: linear-gradient(135deg, var(--purple-primary) 0%, var(--purple-dark) 100%); color: var(--white); box-shadow: 0 4px 15px var(--purple-glow); }
+    .btn-secondary { background: rgba(255,255,255,0.08); color: var(--white); border: 1px solid rgba(255,255,255,0.1); }
+    .btn svg { width: 20px; height: 20px; }
+
     /* PLANNER PAGE */
     .planner-container {
       flex: 1;
@@ -158,17 +335,8 @@
       margin-bottom: 10px;
       flex-shrink: 0;
     }
-    .planner-title {
-      font-size: 16px;
-      font-weight: 700;
-      color: var(--accent);
-    }
-    .planner-stats {
-      display: flex;
-      gap: 12px;
-      font-size: 11px;
-      color: var(--gray-400);
-    }
+    .planner-title { font-size: 16px; font-weight: 700; color: var(--accent); }
+    .planner-stats { display: flex; gap: 12px; font-size: 11px; color: var(--gray-400); }
     .planner-stats span { background: rgba(255,255,255,0.06); padding: 4px 10px; border-radius: 12px; }
     .planner-grid {
       display: grid;
@@ -195,117 +363,93 @@
     .planner-card:active { transform: scale(0.97); }
     .planner-card:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15); }
     .planner-card.expiry-normal { border-color: rgba(255,255,255,0.08); }
-    .planner-card.expiry-soon { 
-      border-color: var(--orange); 
-      background: rgba(245, 158, 11, 0.15);
-      box-shadow: 0 0 20px rgba(245, 158, 11, 0.15);
-    }
+    .planner-card.expiry-soon { border-color: var(--orange); background: rgba(245, 158, 11, 0.15); box-shadow: 0 0 20px rgba(245, 158, 11, 0.15); }
     .planner-card.expiry-soon .card-expiry-badge { background: var(--orange); color: #000; }
-    .planner-card.expiry-critical { 
-      border-color: var(--red); 
-      background: rgba(239, 68, 68, 0.18);
-      box-shadow: 0 0 25px rgba(239, 68, 68, 0.20);
-    }
+    .planner-card.expiry-critical { border-color: var(--red); background: rgba(239, 68, 68, 0.18); box-shadow: 0 0 25px rgba(239, 68, 68, 0.20); }
     .planner-card.expiry-critical .card-expiry-badge { background: var(--red); color: #fff; }
     .planner-card .card-img {
-      width: 100%;
-      height: 70px;
-      border-radius: 10px;
+      width: 100%; height: 70px; border-radius: 10px;
       background: rgba(255,255,255,0.06);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      margin-bottom: 6px;
-      position: relative;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden; margin-bottom: 6px; position: relative;
       border: 1px solid rgba(255,255,255,0.06);
     }
-    .planner-card .card-img img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-    }
-    .planner-card .card-img .placeholder {
-      font-size: 28px;
-      opacity: 0.5;
-    }
+    .planner-card .card-img img { width: 100%; height: 100%; object-fit: contain; }
+    .planner-card .card-img .placeholder { font-size: 28px; opacity: 0.5; }
     .planner-card .card-img .camera-overlay {
-      position: absolute;
-      bottom: 4px;
-      right: 4px;
-      background: rgba(0,0,0,0.7);
-      border-radius: 50%;
-      width: 26px;
-      height: 26px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-      cursor: pointer;
+      position: absolute; bottom: 4px; right: 4px;
+      background: rgba(0,0,0,0.7); border-radius: 50%;
+      width: 26px; height: 26px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; cursor: pointer;
       border: 1px solid rgba(255,255,255,0.15);
-      opacity: 0;
-      transition: opacity 0.2s;
+      opacity: 0; transition: opacity 0.2s;
     }
     .planner-card:hover .card-img .camera-overlay,
     .planner-card:active .card-img .camera-overlay { opacity: 1; }
-    .planner-card .card-name {
-      font-size: 11px;
-      font-weight: 600;
-      margin-bottom: 4px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .planner-card .card-details {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 4px 8px;
-      font-size: 9px;
-      color: var(--gray-400);
-      margin-bottom: 4px;
-    }
+    .planner-card .card-name { font-size: 11px; font-weight: 600; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .planner-card .card-details { display: flex; flex-wrap: wrap; gap: 4px 8px; font-size: 9px; color: var(--gray-400); margin-bottom: 4px; }
     .planner-card .card-details span { background: rgba(255,255,255,0.05); padding: 1px 6px; border-radius: 6px; }
-    .planner-card .card-expiry-badge {
-      font-size: 8px;
-      font-weight: 700;
-      padding: 1px 8px;
-      border-radius: 10px;
-      background: rgba(255,255,255,0.1);
-    }
-    .planner-card .card-bottom {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: auto;
-    }
-    .battery-indicator {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      font-size: 9px;
-      font-weight: 600;
-    }
-    .battery-bar {
-      width: 36px;
-      height: 8px;
-      border-radius: 4px;
-      background: rgba(255,255,255,0.1);
-      overflow: hidden;
-      border: 1px solid rgba(255,255,255,0.1);
-      position: relative;
-    }
-    .battery-fill {
-      height: 100%;
-      border-radius: 3px;
-      transition: width 0.3s ease;
-    }
+    .planner-card .card-expiry-badge { font-size: 8px; font-weight: 700; padding: 1px 8px; border-radius: 10px; background: rgba(255,255,255,0.1); }
+    .planner-card .card-bottom { display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
+    .battery-indicator { display: flex; align-items: center; gap: 4px; font-size: 9px; font-weight: 600; }
+    .battery-bar { width: 36px; height: 8px; border-radius: 4px; background: rgba(255,255,255,0.1); overflow: hidden; border: 1px solid rgba(255,255,255,0.1); position: relative; }
+    .battery-fill { height: 100%; border-radius: 3px; transition: width 0.3s ease; }
     .battery-fill.critical { background: var(--red); }
     .battery-fill.low { background: var(--orange); }
     .battery-fill.medium { background: #eab308; }
     .battery-fill.high { background: var(--green); }
     .battery-fill.full { background: var(--accent); }
 
-    /* POPUP MODAL */
+    /* SETTINGS PAGE */
+    .settings-container { flex: 1; padding: 16px; overflow-y: auto; }
+    .settings-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    .settings-card-title { font-size: 13px; font-weight: 600; color: var(--accent); margin-bottom: 12px; }
+    .settings-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+    .settings-row:last-child { border-bottom: none; }
+    .settings-row label { font-size: 13px; color: var(--gray-300); }
+    .settings-row input {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 8px;
+      padding: 6px 12px;
+      color: var(--white);
+      font-size: 13px;
+      width: 120px;
+      outline: none;
+    }
+    .settings-row input:focus { border-color: var(--accent); }
+
+    /* TOAST & MODALS */
+    .toast-container {
+      position: fixed; top: calc(var(--safe-top) + 80px); left: 50%;
+      transform: translateX(-50%); z-index: 400;
+      display: flex; flex-direction: column; gap: 10px; pointer-events: none;
+      width: 90%; max-width: 400px;
+    }
+    .toast {
+      background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.1); padding: 14px 20px; border-radius: 14px;
+      display: flex; align-items: center; gap: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      animation: toastIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: auto;
+    }
+    .toast.success { border-color: rgba(16, 185, 129, 0.5); }
+    .toast.error { border-color: rgba(239, 68, 68, 0.5); }
+    .toast.warning { border-color: rgba(245, 158, 11, 0.5); }
+    .toast-icon { width: 22px; height: 22px; flex-shrink: 0; }
+    .toast.success .toast-icon { color: var(--green); }
+    .toast.error .toast-icon { color: var(--red); }
+    .toast.warning .toast-icon { color: var(--orange); }
+    .toast-text { font-size: 14px; font-weight: 500; color: var(--white); }
+
     .popup-overlay {
       position: fixed;
       inset: 0;
@@ -330,14 +474,7 @@
       border: 1px solid rgba(255,255,255,0.08);
       box-shadow: 0 20px 60px rgba(0,0,0,0.6);
     }
-    .popup-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 14px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-    }
+    .popup-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.06); }
     .popup-title { font-size: 18px; font-weight: 700; color: var(--accent); }
     .popup-close {
       width: 36px; height: 36px; border-radius: 50%;
@@ -348,11 +485,7 @@
     }
     .popup-close:hover { background: rgba(255,255,255,0.15); transform: scale(0.92); }
     .popup-field { margin-bottom: 12px; }
-    .popup-field label {
-      display: block; font-size: 11px; font-weight: 600;
-      color: var(--gray-400); text-transform: uppercase;
-      letter-spacing: 0.5px; margin-bottom: 4px;
-    }
+    .popup-field label { display: block; font-size: 11px; font-weight: 600; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
     .popup-input {
       width: 100%; height: 44px; padding: 0 14px;
       background: rgba(255,255,255,0.06);
@@ -364,50 +497,23 @@
     }
     .popup-input:focus { border-color: var(--accent); background: rgba(255,255,255,0.08); box-shadow: 0 0 0 3px var(--purple-glow); }
     .popup-input::placeholder { color: var(--gray-600); }
-    .popup-grid {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
-    }
+    .popup-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .popup-grid .popup-field { margin-bottom: 0; }
-    .popup-footer {
-      display: flex; gap: 10px; margin-top: 16px;
-      padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.06);
-    }
+    .popup-footer { display: flex; gap: 10px; margin-top: 16px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.06); }
     .popup-btn {
       flex: 1; height: 48px; border-radius: 14px; border: none;
       font-size: 14px; font-weight: 600; cursor: pointer;
       transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .popup-btn:active { transform: scale(0.95); }
-    .popup-btn.primary {
-      background: linear-gradient(135deg, var(--purple-primary) 0%, var(--purple-dark) 100%);
-      color: #fff;
-      box-shadow: 0 4px 15px var(--purple-glow);
-    }
+    .popup-btn.primary { background: linear-gradient(135deg, var(--purple-primary) 0%, var(--purple-dark) 100%); color: #fff; box-shadow: 0 4px 15px var(--purple-glow); }
     .popup-btn.secondary { background: rgba(255,255,255,0.08); color: var(--gray-300); border: 1px solid rgba(255,255,255,0.08); }
     .popup-btn.danger { background: var(--red-bg); color: var(--red); border: 1px solid rgba(239,68,68,0.2); }
 
-    .toast-container {
-      position: fixed; top: calc(var(--safe-top) + 80px); left: 50%;
-      transform: translateX(-50%); z-index: 400;
-      display: flex; flex-direction: column; gap: 10px; pointer-events: none;
-      width: 90%; max-width: 400px;
-    }
-    .toast {
-      background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(12px);
-      border: 1px solid rgba(255,255,255,0.1); padding: 14px 20px; border-radius: 14px;
-      display: flex; align-items: center; gap: 12px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
-      animation: toastIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-      pointer-events: auto;
-    }
-    .toast.success { border-color: rgba(16, 185, 129, 0.5); }
-    .toast.error { border-color: rgba(239, 68, 68, 0.5); }
-    .toast.warning { border-color: rgba(245, 158, 11, 0.5); }
-    .toast-icon { width: 22px; height: 22px; flex-shrink: 0; }
-    .toast.success .toast-icon { color: var(--green); }
-    .toast.error .toast-icon { color: var(--red); }
-    .toast.warning .toast-icon { color: var(--orange); }
-    .toast-text { font-size: 14px; font-weight: 500; color: var(--white); }
+    .empty-state { text-align: center; padding: 80px 24px; grid-column: 1 / -1; }
+    .empty-icon { width: 72px; height: 72px; margin: 0 auto 20px; color: var(--gray-600); opacity: 0.4; }
+    .empty-title { font-size: 18px; font-weight: 700; color: var(--gray-300); margin-bottom: 8px; }
+    .empty-desc { font-size: 14px; color: var(--gray-500); }
 
     .hidden-input { display: none; }
     ::-webkit-scrollbar { width: 6px; }
@@ -415,7 +521,11 @@
     ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 6px; }
     ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
 
-    @media (max-width: 480px) { .planner-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 480px) {
+      .history-list { grid-template-columns: 1fr; }
+      .planner-grid { grid-template-columns: 1fr; }
+      .viewfinder { width: 220px; height: 220px; }
+    }
   </style>
 </head>
 <body>
@@ -441,7 +551,94 @@
   </header>
 
   <main class="main">
-    <!-- Planner Page -->
+    <!-- SCANNER PAGE -->
+    <div class="page" id="page-scan">
+      <div class="scanner-container">
+        <div class="scanner-area">
+          <video id="video-preview" autoplay playsinline muted></video>
+          <div class="scanner-overlay">
+            <div class="viewfinder">
+              <div class="vf-corner tl"></div><div class="vf-corner tr"></div>
+              <div class="vf-corner bl"></div><div class="vf-corner br"></div>
+              <div class="scan-line"></div>
+            </div>
+          </div>
+          <div class="scanner-hint" id="scannerHint">Tap scan to start</div>
+        </div>
+        <div class="manual-bar">
+          <input type="text" class="manual-input" id="manualInput" placeholder="Enter barcode...">
+          <button class="icon-btn" id="btnManualAdd" title="Add">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="12" y1="5" x2="12" y2="19"/>
+              <line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+          </button>
+          <button class="icon-btn" id="btnUploadImg" title="Scan Image">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="2"/>
+              <circle cx="8.5" cy="8.5" r="1.5"/>
+              <path d="M21 15l-5-5L5 21"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <button class="scan-fab" id="scanFab" aria-label="Scan">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M23 19a2 2 0 0 1-2 2h-3v-2h3V5h-3V3h3a2 2 0 0 1 2 2z"/>
+          <path d="M1 5a2 2 0 0 1 2-2h3v2H3v14h3v2H3a2 2 0 0 1-2-2z"/>
+          <line x1="7" y1="12" x2="17" y2="12"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- HISTORY PAGE -->
+    <div class="page" id="page-history">
+      <div class="history-container">
+        <div class="search-bar">
+          <div class="search-wrapper">
+            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/>
+              <path d="M21 21l-4.35-4.35"/>
+            </svg>
+            <input type="text" class="search-input" id="searchInput" placeholder="Search GTIN, product, batch...">
+          </div>
+        </div>
+        <div class="filter-row">
+          <button class="filter-chip active" data-filter="all">All</button>
+          <button class="filter-chip" data-filter="expired">Expired</button>
+          <button class="filter-chip" data-filter="soon">Expiring</button>
+          <button class="filter-chip" data-filter="ok">Good</button>
+        </div>
+        <div class="history-list" id="historyList"></div>
+      </div>
+    </div>
+
+    <!-- PASTE PAGE -->
+    <div class="page" id="page-paste">
+      <div class="paste-container">
+        <textarea class="paste-textarea" id="pasteTextarea" placeholder="Paste GS1 barcodes here (one per line)...
+Example:
+(01)06297000001234(17)250630(10)ABC001
+(01)06297000002345(17)251231(10)XYZ789"></textarea>
+        <div class="paste-stats" id="pasteStats">
+          <div class="paste-stat"><div class="stat-num" id="statTotal">0</div><div class="stat-txt">Total</div></div>
+          <div class="paste-stat"><div class="stat-num green" id="statValid">0</div><div class="stat-txt">Valid</div></div>
+          <div class="paste-stat"><div class="stat-num red" id="statInvalid">0</div><div class="stat-txt">Invalid</div></div>
+          <div class="paste-stat"><div class="stat-num orange" id="statMerged">0</div><div class="stat-txt">Merged</div></div>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-primary" id="btnProcessPaste">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+            Process
+          </button>
+          <button class="btn btn-secondary" id="btnClearPaste">Clear</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PLANNER PAGE -->
     <div class="page active" id="page-planner">
       <div class="planner-container">
         <div class="planner-header">
@@ -454,16 +651,56 @@
         <div class="planner-grid" id="plannerGrid"></div>
       </div>
     </div>
+
+    <!-- SETTINGS PAGE -->
+    <div class="page" id="page-settings">
+      <div class="settings-container">
+        <div class="settings-card">
+          <div class="settings-card-title">⚙️ General Settings</div>
+          <div class="settings-row">
+            <label>Store Name</label>
+            <input id="setStore" value="PharmaTrack Store">
+          </div>
+          <div class="settings-row">
+            <label>Default Target</label>
+            <input id="setTarget" type="number" value="25000">
+          </div>
+        </div>
+        <div class="settings-card">
+          <div class="settings-card-title">📊 Data Management</div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button class="btn btn-secondary" style="flex:1; min-width:100px;" onclick="exportData()">📤 Export</button>
+            <button class="btn btn-secondary" style="flex:1; min-width:100px;" onclick="importData()">📥 Import</button>
+            <button class="btn btn-danger" style="flex:1; min-width:100px; background:var(--red-bg); color:var(--red); border:1px solid rgba(239,68,68,0.2);" onclick="clearAll()">🗑️ Clear All</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </main>
 
   <!-- Bottom Navigation -->
   <nav class="nav">
-    <button class="nav-item" data-page="hourly" id="navHourly">
+    <button class="nav-item" data-page="scan">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M23 19a2 2 0 0 1-2 2h-3v-2h3V5h-3V3h3a2 2 0 0 1 2 2z"/>
+        <path d="M1 5a2 2 0 0 1 2-2h3v2H3v14h3v2H3a2 2 0 0 1-2-2z"/>
+        <rect x="7" y="7" width="10" height="10" rx="1"/>
+      </svg>
+      <span>Scan</span>
+    </button>
+    <button class="nav-item" data-page="history">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <circle cx="12" cy="12" r="10"/>
         <polyline points="12 6 12 12 16 14"/>
       </svg>
-      <span>Hourly</span>
+      <span>History</span>
+    </button>
+    <button class="nav-item" data-page="paste">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+        <rect x="8" y="2" width="8" height="4" rx="1"/>
+      </svg>
+      <span>Paste</span>
     </button>
     <button class="nav-item active" data-page="planner">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -524,6 +761,7 @@
   <!-- Hidden inputs -->
   <input type="file" class="hidden-input" id="imageFileInput" accept="image/*" capture="environment">
   <input type="file" class="hidden-input" id="galleryFileInput" accept="image/*">
+  <input type="file" class="hidden-input" id="importFileInput" accept=".json">
 </div>
 
 <script>
@@ -532,20 +770,27 @@
 
   // --- STATE ---
   let products = [];
+  let history = [];
   let editingId = null;
   let pendingImageData = null;
+  let scanning = false;
+  let stream = null;
 
-  // Load from localStorage
+  // Load data
   function loadData() {
     try {
-      const raw = localStorage.getItem('pharmatrack_planner');
-      if (raw) products = JSON.parse(raw);
+      const p = localStorage.getItem('pharmatrack_planner');
+      if (p) products = JSON.parse(p);
       else initDemoProducts();
+      const h = localStorage.getItem('pharmatrack_history');
+      if (h) history = JSON.parse(h);
     } catch (e) { initDemoProducts(); }
   }
+
   function saveData() {
     try {
       localStorage.setItem('pharmatrack_planner', JSON.stringify(products));
+      localStorage.setItem('pharmatrack_history', JSON.stringify(history));
     } catch (e) {}
   }
 
@@ -567,6 +812,7 @@
   const grid = $('plannerGrid');
   const totalItems = $('totalItems');
   const expiryWarn = $('expiryWarn');
+  const historyList = $('historyList');
   const popupOverlay = $('popupOverlay');
   const popupClose = $('popupClose');
   const popupTitle = $('popupTitle');
@@ -628,7 +874,7 @@
     return `<span class="placeholder">${getImageUrl(product)}</span>`;
   }
 
-  // --- RENDER ---
+  // --- RENDER PLANNER ---
   function renderPlanner() {
     let html = '';
     let warnCount = 0;
@@ -667,6 +913,37 @@
     grid.innerHTML = html;
     totalItems.textContent = products.length + ' items';
     expiryWarn.textContent = warnCount + ' ⚠️';
+  }
+
+  // --- RENDER HISTORY ---
+  function renderHistory() {
+    if (!historyList) return;
+    if (history.length === 0) {
+      historyList.innerHTML = `
+        <div class="empty-state">
+          <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="3" y="3" width="18" height="18" rx="2"/>
+            <path d="M7 7h.01M7 12h.01M7 17h.01M12 7h5M12 12h5M12 17h5"/>
+          </svg>
+          <div class="empty-title">No scans yet</div>
+          <div class="empty-desc">Start scanning to build history</div>
+        </div>
+      `;
+      return;
+    }
+    historyList.innerHTML = history.slice(0, 50).map(h => `
+      <div class="history-card status-${h.status || 'ok'}">
+        <div class="card-header">
+          <span class="product-name">${h.name || 'Unknown'}</span>
+          <span class="qty-badge">Qty ${h.qty || 1}</span>
+        </div>
+        <div class="card-grid">
+          <div class="card-field"><div class="field-label">GTIN</div><div class="history-value">${h.gtin || '—'}</div></div>
+          <div class="card-field"><div class="field-label">Expiry</div><div class="history-value">${h.expiry || '—'}</div></div>
+          <div class="card-field"><div class="field-label">Batch</div><div class="history-value">${h.batch || '—'}</div></div>
+        </div>
+      </div>
+    `).join('');
   }
 
   // --- POPUP ---
@@ -748,6 +1025,113 @@
     }, 800);
   }
 
+  // --- SCANNER ---
+  async function startScanner() {
+    if (scanning) return;
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'environment', width: { ideal: 640 }, height: { ideal: 480 } }
+      });
+      const video = $('video-preview');
+      video.srcObject = stream;
+      await video.play();
+      scanning = true;
+      const fab = $('scanFab');
+      fab.classList.add('scanning');
+      $('scannerHint').textContent = 'Scanning...';
+      let detected = false;
+      const detectLoop = () => {
+        if (!scanning) return;
+        if (Math.random() < 0.02) {
+          const fakeGtin = '0629700000' + String(Math.floor(Math.random() * 100000)).padStart(5, '0');
+          const entry = {
+            id: generateId(),
+            gtin: fakeGtin,
+            name: 'Scanned Product',
+            qty: 1,
+            expiry: '251231',
+            batch: 'B' + String(Math.floor(Math.random() * 999)),
+            status: 'ok'
+          };
+          history.unshift(entry);
+          saveData();
+          renderHistory();
+          toast('Barcode detected!', 'success');
+          stopScanner();
+          detected = true;
+          return;
+        }
+        if (scanning) requestAnimationFrame(detectLoop);
+      };
+      detectLoop();
+      setTimeout(() => {
+        if (scanning) { stopScanner(); toast('Scan timed out', 'warning'); }
+      }, 10000);
+    } catch (err) {
+      toast('Camera access denied', 'error');
+      $('scannerHint').textContent = 'Camera unavailable';
+    }
+  }
+
+  function stopScanner() {
+    scanning = false;
+    const fab = $('scanFab');
+    fab.classList.remove('scanning');
+    $('scannerHint').textContent = 'Tap scan to start';
+    if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
+    const video = $('video-preview');
+    video.srcObject = null;
+  }
+
+  function manualAdd() {
+    const raw = $('manualInput').value.trim();
+    if (!raw) { toast('Enter a barcode', 'warning'); return; }
+    const entry = {
+      id: generateId(),
+      gtin: raw,
+      name: 'Manual Entry',
+      qty: 1,
+      expiry: '260101',
+      batch: 'MANUAL',
+      status: 'ok'
+    };
+    history.unshift(entry);
+    saveData();
+    renderHistory();
+    $('manualInput').value = '';
+    toast('Entry added', 'success');
+  }
+
+  // --- PASTE ---
+  function processPaste() {
+    const text = $('pasteTextarea').value;
+    if (!text.trim()) { toast('Paste some barcodes first', 'warning'); return; }
+    const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+    let valid = 0, invalid = 0;
+    lines.forEach(raw => {
+      try {
+        const entry = {
+          id: generateId(),
+          gtin: raw.substring(0, 14) || raw,
+          name: 'Pasted Product',
+          qty: 1,
+          expiry: '260101',
+          batch: 'PASTE',
+          status: 'ok'
+        };
+        history.unshift(entry);
+        valid++;
+      } catch (e) { invalid++; }
+    });
+    saveData();
+    renderHistory();
+    $('statTotal').textContent = lines.length;
+    $('statValid').textContent = valid;
+    $('statInvalid').textContent = invalid;
+    $('pasteStats').classList.add('visible');
+    toast(`Processed ${valid} barcodes`, 'success');
+  }
+
   // --- TOAST ---
   function toast(msg, type = 'info') {
     const container = $('toastContainer');
@@ -773,62 +1157,180 @@
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     const nav = document.querySelector(`.nav-item[data-page="${pageId}"]`);
     if (nav) nav.classList.add('active');
+    if (pageId !== 'scan') stopScanner();
+    if (pageId === 'history') renderHistory();
+    if (pageId === 'planner') renderPlanner();
+  }
+
+  // --- EXPORT/IMPORT ---
+  function exportData() {
+    const data = JSON.stringify({ products, history }, null, 2);
+    const blob = new Blob([data], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `pharmatrack_backup_${new Date().toISOString().slice(0,10)}.json`;
+    a.click();
+    toast('Backup exported', 'success');
+  }
+
+  function importData() {
+    $('importFileInput').click();
+  }
+
+  function clearAll() {
+    if (!confirm('Delete all data?')) return;
+    products = [];
+    history = [];
+    saveData();
+    renderPlanner();
+    renderHistory();
+    toast('All data cleared', 'warning');
   }
 
   // --- INIT ---
   function init() {
     loadData();
     renderPlanner();
+    renderHistory();
 
     // Navigation
     document.querySelectorAll('.nav-item').forEach(item => {
       item.addEventListener('click', () => {
-        const page = item.dataset.page;
-        navigateTo(page);
-        if (page === 'planner') renderPlanner();
+        navigateTo(item.dataset.page);
       });
     });
 
-    // Menu button (dummy)
-    $('menuBtn').addEventListener('click', () => toast('Menu coming soon', 'info'));
+    // Scan
+    $('scanFab').addEventListener('click', () => {
+      if (scanning) { stopScanner(); } else { navigateTo('scan'); startScanner(); }
+    });
 
-    // Popup events
+    // Manual add
+    $('btnManualAdd').addEventListener('click', manualAdd);
+    $('manualInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') manualAdd(); });
+
+    // Upload image
+    $('btnUploadImg').addEventListener('click', () => { $('imageFileInput').click(); });
+    $('imageFileInput').addEventListener('change', (e) => {
+      if (e.target.files.length) {
+        const file = e.target.files[0];
+        toast('Image received, decoding...', 'warning');
+        setTimeout(() => {
+          const entry = {
+            id: generateId(),
+            gtin: 'IMG' + String(Math.floor(Math.random() * 100000)),
+            name: 'Image Decoded',
+            qty: 1,
+            expiry: '260101',
+            batch: 'IMG',
+            status: 'ok'
+          };
+          history.unshift(entry);
+          saveData();
+          renderHistory();
+          toast('Image decoded!', 'success');
+        }, 1500);
+      }
+      e.target.value = '';
+    });
+
+    // Paste
+    $('btnProcessPaste').addEventListener('click', processPaste);
+    $('btnClearPaste').addEventListener('click', () => {
+      $('pasteTextarea').value = '';
+      $('pasteStats').classList.remove('visible');
+      toast('Cleared', 'info');
+    });
+
+    // Search
+    $('searchInput').addEventListener('input', (e) => {
+      const term = e.target.value.toLowerCase();
+      if (!historyList) return;
+      const cards = historyList.querySelectorAll('.history-card');
+      cards.forEach(card => {
+        const text = card.textContent.toLowerCase();
+        card.style.display = text.includes(term) ? '' : 'none';
+      });
+    });
+
+    // Filters
+    document.querySelectorAll('.filter-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        const filter = chip.dataset.filter;
+        if (!historyList) return;
+        const cards = historyList.querySelectorAll('.history-card');
+        cards.forEach(card => {
+          if (filter === 'all') { card.style.display = ''; return; }
+          const status = card.className.match(/status-(\w+)/);
+          const cardStatus = status ? status[1] : 'ok';
+          card.style.display = cardStatus === filter ? '' : 'none';
+        });
+      });
+    });
+
+    // Popup
     popupClose.addEventListener('click', closePopup);
     popupOverlay.addEventListener('click', (e) => { if (e.target === popupOverlay) closePopup(); });
     popupSave.addEventListener('click', saveProduct);
     popupDelete.addEventListener('click', deleteProduct);
 
-    // Image buttons
     imgCameraBtn.addEventListener('click', () => { imageFileInput.click(); });
     imgGalleryBtn.addEventListener('click', () => { galleryFileInput.click(); });
     imgSearchBtn.addEventListener('click', searchImageOnline);
 
-    imageFileInput.addEventListener('change', (e) => {
-      if (e.target.files.length) handleImageFile(e.target.files[0]);
-      e.target.value = '';
-    });
     galleryFileInput.addEventListener('change', (e) => {
       if (e.target.files.length) handleImageFile(e.target.files[0]);
       e.target.value = '';
     });
 
-    // Global exposure for onclick
-    window.openEdit = openEdit;
-    window.closePopup = closePopup;
-    window.saveProduct = saveProduct;
-    window.deleteProduct = deleteProduct;
-    window.navigateTo = navigateTo;
+    $('importFileInput').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        try {
+          const data = JSON.parse(ev.target.result);
+          if (data.products) products = data.products;
+          if (data.history) history = data.history;
+          saveData();
+          renderPlanner();
+          renderHistory();
+          toast('Import successful', 'success');
+        } catch (err) { toast('Invalid file', 'error'); }
+      };
+      reader.readAsText(file);
+      e.target.value = '';
+    });
 
-    // Keyboard shortcuts
+    // Settings handlers
+    document.getElementById('setStore').addEventListener('change', (e) => {
+      localStorage.setItem('pharmatrack_store', e.target.value);
+    });
+    document.getElementById('setTarget').addEventListener('change', (e) => {
+      localStorage.setItem('pharmatrack_target', e.target.value);
+    });
+
+    // Keyboard
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && popupOverlay.classList.contains('active')) closePopup();
       if (e.key === 'Enter' && popupOverlay.classList.contains('active')) saveProduct();
     });
 
-    toast('Planner ready', 'success');
+    // Global
+    window.openEdit = openEdit;
+    window.closePopup = closePopup;
+    window.saveProduct = saveProduct;
+    window.deleteProduct = deleteProduct;
+    window.navigateTo = navigateTo;
+    window.exportData = exportData;
+    window.importData = importData;
+    window.clearAll = clearAll;
+
+    toast('App ready', 'success');
   }
 
-  // Start
   init();
 })();
 </script>
