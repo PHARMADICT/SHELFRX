@@ -1,1338 +1,468 @@
+Here is a single, complete HTML document that merges the Pharmacy Tracker app with the specific document arrangement you requested. It's a fully functional mobile-friendly interface with barcode scanning, history, manual entry, and settings, including the facing and total quantity display logic from the earlier design.
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="theme-color" content="#0f172a">
+  <meta name="theme-color" content="#F5F7FA">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>PharmaTrack - Complete</title>
-  <link rel="manifest" href="manifest.json">
-  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <title>PharmaTrack · Complete</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
   <style>
     :root {
-      --gradient-start: #0f172a;
-      --gradient-mid:   #1e293b;
-      --gradient-end:   #020617;
-      --purple-light:   #22d3ee;
-      --purple-primary: #06b6d4;
-      --purple-dark:    #0891b2;
-      --purple-glow:    rgba(6, 182, 212, 0.40);
-      --accent:       #38bdf8;
-      --accent-light: #bae6fd;
-      --green: #10b981;
-      --green-bg: rgba(16, 185, 129, 0.15);
-      --orange: #f59e0b;
-      --orange-bg: rgba(245, 158, 11, 0.15);
-      --red: #ef4444;
-      --red-bg: rgba(239, 68, 68, 0.15);
-      --white: #ffffff;
-      --gray-100: #f8fafc;
-      --gray-200: #e2e8f0;
-      --gray-300: #cbd5e1;
-      --gray-400: #94a3b8;
-      --gray-500: #64748b;
-      --gray-600: #475569;
-      --gray-700: #334155;
-      --gray-800: #1e293b;
-      --safe-top: env(safe-area-inset-top, 0px);
-      --safe-bottom: env(safe-area-inset-bottom, 20px);
+      --bg-main: #F5F7FA;
+      --bg-card: #FFFFFF;
+      --bg-input: #F0F3F8;
+      --coral: #FF6B6B;
+      --coral-light: #FFE5E5;
+      --coral-dark: #E85555;
+      --teal: #4ECDC4;
+      --teal-light: #E0F7F5;
+      --teal-dark: #3DB9B1;
+      --yellow: #FFD93D;
+      --yellow-light: #FFF8E0;
+      --yellow-dark: #E5C235;
+      --blue: #6C9BCF;
+      --blue-light: #E8F1FA;
+      --blue-dark: #5A89BD;
+      --purple: #9B7EDE;
+      --purple-light: #F0EBFA;
+      --text-dark: #2D3748;
+      --text-medium: #4A5568;
+      --text-light: #718096;
+      --text-muted: #A0AEC0;
+      --success: #48BB78;
+      --success-bg: #E6F7ED;
+      --warning: #F6AD55;
+      --warning-bg: #FFF5E6;
+      --danger: #FC8181;
+      --danger-bg: #FFF0F0;
+      --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
+      --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
+      --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
+      --shadow-colored: 0 8px 24px rgba(78,205,196,0.25);
+      --font-main: 'Poppins', sans-serif;
+      --radius-sm: 12px;
+      --radius-md: 16px;
+      --radius-lg: 24px;
+      --radius-xl: 32px;
+      --radius-full: 9999px;
+      --header-height: 60px;
       --nav-height: 70px;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --transition-fast: 0.15s ease;
+      --transition-default: 0.25s ease;
     }
-    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    html, body { height: 100%; overflow: hidden; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; -webkit-tap-highlight-color: transparent; }
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: linear-gradient(180deg, var(--gradient-start) 0%, var(--gradient-mid) 50%, var(--gradient-end) 100%);
-      color: var(--white);
+      font-family: var(--font-main);
+      background: var(--bg-main);
+      color: var(--text-dark);
       line-height: 1.5;
+      min-height: 100vh;
+      overflow-x: hidden;
       -webkit-font-smoothing: antialiased;
     }
-    @keyframes fadeInScale { from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: scale(1); } }
-    @keyframes slideUpFade { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes pulse-scan { 0% { box-shadow: 0 0 0 0 var(--purple-glow); } 70% { box-shadow: 0 0 0 20px rgba(6, 182, 212, 0); } 100% { box-shadow: 0 0 0 0 rgba(6, 182, 212, 0); } }
-    @keyframes scanMove { 0%, 100% { top: 10%; } 50% { top: 90%; } }
-    @keyframes popIn { 0% { transform: scale(0.9); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-    @keyframes toastIn { from { opacity: 0; transform: translateY(-20px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
-
-    .app {
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      padding-top: var(--safe-top);
-      position: relative;
-      overflow: hidden;
+    .bg-decoration { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
+    .bg-blob { position: absolute; border-radius: 50%; filter: blur(60px); opacity: 0.4; }
+    .bg-blob-1 { width: 200px; height: 200px; background: var(--coral); top: -50px; right: -50px; }
+    .bg-blob-2 { width: 150px; height: 150px; background: var(--teal); bottom: 30%; left: -40px; }
+    .bg-blob-3 { width: 180px; height: 180px; background: var(--yellow); bottom: -60px; right: 20%; }
+    .app { position: relative; display: flex; flex-direction: column; min-height: 100vh; padding-top: var(--safe-top); z-index: 1; }
+    .app-header {
+      position: sticky; top: 0; z-index: 100; height: var(--header-height); padding: 0 16px;
+      background: rgba(255,255,255,0.9); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      display: flex; align-items: center; justify-content: space-between;
     }
-    .header {
-      height: 60px;
-      padding: 0 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: rgba(15, 23, 42, 0.6);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-      flex-shrink: 0;
-      z-index: 100;
-    }
-    .logo { display: flex; align-items: center; gap: 12px; }
+    .header-left { display: flex; align-items: center; gap: 8px; }
+    .logo { display: flex; align-items: center; gap: 10px; }
     .logo-icon {
-      width: 38px; height: 38px;
-      background: linear-gradient(135deg, var(--purple-light) 0%, var(--purple-dark) 100%);
-      border-radius: 12px;
-      display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 4px 15px var(--purple-glow);
-      transition: transform 0.3s ease;
+      width: 44px; height: 44px; background: #FFFFFF; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-md); overflow: hidden;
     }
-    .logo-icon:hover { transform: rotate(5deg) scale(1.05); }
-    .logo-icon svg { width: 22px; height: 22px; color: var(--white); }
-    .logo-text {
-      font-size: 19px; font-weight: 700; letter-spacing: -0.5px;
-      background: linear-gradient(135deg, var(--accent-light) 0%, var(--accent) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
+    .logo-icon img { width: 38px; height: 38px; object-fit: contain; }
+    .logo-text { display: flex; flex-direction: column; }
+    .logo-name { font-size: 1.1rem; font-weight: 700; color: var(--text-dark); letter-spacing: -0.02em; }
+    .logo-branch { font-size: 0.625rem; font-weight: 500; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.05em; }
+    .header-right { display: flex; align-items: center; gap: 8px; }
     .menu-btn {
-      width: 44px; height: 44px; border-radius: 12px;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.08);
-      color: var(--accent);
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer; transition: all 0.3s ease;
+      width: 40px; height: 40px; border-radius: 12px; background: var(--bg-card); border: none;
+      color: var(--text-medium); display: flex; align-items: center; justify-content: center; cursor: pointer;
+      box-shadow: var(--shadow-sm); transition: all var(--transition-fast);
     }
-    .menu-btn:hover, .menu-btn:active { background: rgba(255,255,255,0.12); transform: scale(0.92); }
-    .menu-btn svg { width: 22px; height: 22px; }
-    .main { flex: 1; overflow: hidden; position: relative; }
-    .page {
-      position: absolute; inset: 0;
-      display: none; flex-direction: column; overflow: hidden;
-    }
-    .page.active { display: flex; animation: fadeInScale 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-    .nav {
-      height: var(--nav-height);
-      background: rgba(2, 6, 23, 0.8);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border-top: 1px solid rgba(255,255,255,0.08);
-      display: flex; align-items: center; justify-content: space-around;
-      padding: 0 20px; padding-bottom: var(--safe-bottom);
-      flex-shrink: 0; position: relative;
-    }
-    .nav-item {
-      flex: 1; display: flex; flex-direction: column;
-      align-items: center; justify-content: center; gap: 6px;
-      padding: 8px 4px; border: none; background: none;
-      color: var(--gray-500); cursor: pointer;
-      transition: all 0.3s ease; border-radius: 12px; position: relative;
-    }
-    .nav-item.active { color: var(--accent); }
-    .nav-item.active::before {
-      content: ''; position: absolute; top: -1px; left: 50%;
-      transform: translateX(-50%); width: 24px; height: 3px;
-      background: var(--accent); border-radius: 0 0 4px 4px;
-      box-shadow: 0 2px 8px var(--purple-glow);
-    }
-    .nav-item svg { width: 24px; height: 24px; transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
-    .nav-item:active svg { transform: scale(0.85); }
-    .nav-item span { font-size: 11px; font-weight: 600; }
+    .menu-btn:active { background: var(--teal-light); color: var(--teal); }
+    .menu-btn svg { width: 20px; height: 20px; }
+    .main-content { flex: 1; padding-bottom: calc(var(--nav-height) + var(--safe-bottom) + 20px); }
+    .page { display: none; animation: fadeIn 0.25s ease; }
+    .page.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* SCANNER PAGE */
-    .scan-fab {
-      position: absolute;
-      bottom: calc(var(--nav-height) + 25px);
-      left: 50%; transform: translateX(-50%);
-      width: 60px; height: 60px; border-radius: 50%;
-      background: linear-gradient(135deg, var(--purple-primary) 0%, var(--purple-dark) 100%);
-      border: none; color: var(--white);
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer;
-      box-shadow: 0 8px 25px var(--purple-glow);
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-      z-index: 50;
-    }
-    .scan-fab:hover, .scan-fab:active { transform: translateX(-50%) scale(0.92); box-shadow: 0 4px 15px var(--purple-glow); }
-    .scan-fab.scanning { animation: pulse-scan 1.5s infinite; }
-    .scan-fab svg { width: 28px; height: 28px; }
-    .scanner-container { flex: 1; display: flex; flex-direction: column; position: relative; }
-    .scanner-area { flex: 1; position: relative; background: #000; overflow: hidden; }
-    #video-preview { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; }
-    .scanner-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; }
-    .viewfinder { width: 260px; height: 260px; position: relative; }
-    .vf-corner {
-      position: absolute; width: 40px; height: 40px;
-      border-color: var(--accent); border-style: solid; border-width: 4px;
-      border-radius: 12px;
-    }
-    .vf-corner.tl { top: 0; left: 0; border-right: none; border-bottom: none; border-radius: 16px 0 0 0; }
-    .vf-corner.tr { top: 0; right: 0; border-left: none; border-bottom: none; border-radius: 0 16px 0 0; }
-    .vf-corner.bl { bottom: 0; left: 0; border-right: none; border-top: none; border-radius: 0 0 0 16px; }
-    .vf-corner.br { bottom: 0; right: 0; border-left: none; border-top: none; border-radius: 0 0 16px 0; }
-    .scan-line {
-      position: absolute; left: 5%; right: 5%; height: 3px;
-      background: linear-gradient(90deg, transparent, var(--accent), transparent);
-      animation: scanMove 2.5s ease-in-out infinite;
-      box-shadow: 0 0 20px 2px var(--accent);
-      display: none;
-      border-radius: 50%;
-    }
-    .scanning .scan-line { display: block; }
-    .scanner-hint {
-      position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
-      background: rgba(15, 23, 42, 0.85); padding: 10px 20px; border-radius: 20px;
-      font-size: 14px; font-weight: 500; color: var(--accent-light);
-      backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1);
-      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-    }
-    .manual-bar {
-      padding: 16px; background: rgba(2, 6, 23, 0.7);
-      backdrop-filter: blur(15px); display: flex; gap: 12px;
-    }
-    .manual-input {
-      flex: 1; height: 48px; padding: 0 16px;
-      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 14px; color: var(--white);
-      font-family: 'JetBrains Mono', monospace; font-size: 14px; outline: none;
-      transition: all 0.3s ease;
-    }
-    .manual-input:focus { border-color: var(--accent); background: rgba(255,255,255,0.08); box-shadow: 0 0 0 3px var(--purple-glow); }
-    .manual-input::placeholder { color: var(--gray-500); }
-    .icon-btn {
-      width: 48px; height: 48px; border-radius: 14px;
-      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
-      color: var(--accent); display: flex; align-items: center; justify-content: center;
-      cursor: pointer; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .icon-btn:hover, .icon-btn:active { background: rgba(255,255,255,0.12); transform: scale(0.92); border-color: var(--accent); }
-    .icon-btn svg { width: 22px; height: 22px; }
+    /* SCANNER */
+    .scanner-page { padding: 16px; display: flex; flex-direction: column; align-items: center; }
+    .page-title { font-size: 1.5rem; font-weight: 700; color: var(--text-dark); text-align: center; margin-bottom: 16px; }
+    .scanner-card { width: 100%; max-width: 280px; background: var(--bg-card); border-radius: 24px; padding: 16px; box-shadow: var(--shadow-md); margin-bottom: 16px; }
+    .scanner-container { position: relative; width: 100%; aspect-ratio: 1; background: linear-gradient(135deg, var(--teal-light), var(--blue-light)); border-radius: 16px; overflow: hidden; }
+    #reader { width: 100% !important; height: 100% !important; border: none !important; }
+    #reader video { width: 100% !important; height: 100% !important; object-fit: cover !important; border-radius: 16px !important; }
+    #reader__scan_region { background: transparent !important; min-height: 100% !important; }
+    #reader__scan_region video { object-fit: cover !important; }
+    #reader img, #reader__dashboard_section, #reader__dashboard_section_csr, #reader__dashboard_section_swaplink,
+    #reader__header_message, #reader__camera_selection, #reader__filescan_input, #html5-qrcode-anchor-scan-type-change,
+    #html5-qrcode-button-camera-permission, #html5-qrcode-button-camera-stop, #html5-qrcode-button-camera-start,
+    #reader a, #reader__scan_region img[alt="Info icon"], #reader__scan_region br { display: none !important; }
+    .scanner-overlay { position: absolute; inset: 0; pointer-events: none; z-index: 10; display: flex; align-items: center; justify-content: center; }
+    .viewfinder { width: 65%; height: 65%; position: relative; }
+    .vf-corner { position: absolute; width: 24px; height: 24px; border: 3px solid var(--teal); }
+    .vf-corner.tl { top: 0; left: 0; border-right: none; border-bottom: none; border-radius: 8px 0 0 0; }
+    .vf-corner.tr { top: 0; right: 0; border-left: none; border-bottom: none; border-radius: 0 8px 0 0; }
+    .vf-corner.bl { bottom: 0; left: 0; border-right: none; border-top: none; border-radius: 0 0 0 8px; }
+    .vf-corner.br { bottom: 0; right: 0; border-left: none; border-top: none; border-radius: 0 0 8px 0; }
+    .scan-line { position: absolute; left: 10%; right: 10%; height: 2px; background: linear-gradient(90deg, transparent, var(--teal), transparent); box-shadow: 0 0 10px var(--teal); display: none; animation: scanMove 2s ease-in-out infinite; }
+    .scanner-container.scanning .scan-line { display: block; }
+    @keyframes scanMove { 0%, 100% { top: 15%; } 50% { top: 85%; } }
+    .scanner-placeholder { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--teal); }
+    .scanner-placeholder svg { width: 48px; height: 48px; margin-bottom: 8px; opacity: 0.6; }
+    .scanner-placeholder span { font-size: 0.75rem; color: var(--text-light); }
+    .scanner-actions { display: flex; gap: 8px; margin-top: 16px; width: 100%; max-width: 280px; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 16px; border: none; border-radius: 16px; font-family: var(--font-main); font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: all var(--transition-fast); }
+    .btn:active { transform: scale(0.96); }
+    .btn svg { width: 18px; height: 18px; }
+    .btn-primary { flex: 1; background: linear-gradient(135deg, var(--teal), var(--teal-dark)); color: white; box-shadow: 0 4px 16px rgba(78,205,196,0.35); }
+    .btn-secondary { background: var(--bg-card); color: var(--text-medium); box-shadow: var(--shadow-sm); }
+    .btn-coral { background: linear-gradient(135deg, var(--coral), var(--coral-dark)); color: white; box-shadow: 0 4px 16px rgba(255,107,107,0.35); }
+    .btn-icon { width: 44px; height: 44px; padding: 0; border-radius: 12px; }
+    .btn-lg { padding: 14px 20px; font-size: 1rem; border-radius: 20px; }
+    .manual-entry-section { width: 100%; max-width: 350px; margin-top: 24px; }
+    .section-title { font-size: 0.875rem; font-weight: 600; color: var(--text-dark); margin-bottom: 8px; }
+    .input-group { display: flex; gap: 8px; }
+    .form-input { flex: 1; padding: 10px 16px; background: var(--bg-card); border: 2px solid transparent; border-radius: 16px; font-size: 0.9375rem; color: var(--text-dark); box-shadow: var(--shadow-sm); transition: all var(--transition-fast); }
+    .form-input:focus { outline: none; border-color: var(--teal); box-shadow: 0 0 0 4px var(--teal-light); }
+    .form-input::placeholder { color: var(--text-muted); }
+    .recent-section { width: 100%; max-width: 350px; margin-top: 24px; }
+    .recent-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .view-all-link { font-size: 0.75rem; font-weight: 600; color: var(--teal); cursor: pointer; }
+    .recent-list { display: flex; flex-direction: column; gap: 8px; }
+    .recent-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 16px; background: var(--bg-card); border-radius: 16px; box-shadow: var(--shadow-sm); }
+    .recent-item-title { font-size: 0.8125rem; font-weight: 600; color: var(--text-dark); }
+    .recent-item-sub { font-size: 0.6875rem; color: var(--text-light); }
+    .recent-item-right { font-weight: 600; color: var(--teal); }
 
-    /* HISTORY PAGE */
-    .history-container { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-    .search-bar { padding: 16px; background: transparent; }
-    .search-wrapper { position: relative; }
-    .search-input {
-      width: 100%; height: 48px; padding: 0 16px 0 48px;
-      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 14px; color: var(--white); font-size: 15px; outline: none;
-      transition: all 0.3s ease;
-    }
-    .search-input:focus { border-color: var(--accent); background: rgba(255,255,255,0.08); box-shadow: 0 0 0 3px var(--purple-glow); }
-    .search-input::placeholder { color: var(--gray-500); }
-    .search-icon {
-      position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
-      width: 20px; height: 20px; color: var(--gray-500);
-    }
-    .filter-row {
-      display: flex; gap: 10px; padding: 0 16px 16px;
-      overflow-x: auto; -webkit-overflow-scrolling: touch;
-    }
-    .filter-row::-webkit-scrollbar { display: none; }
-    .filter-chip {
-      padding: 8px 18px; background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.08); border-radius: 20px;
-      color: var(--gray-300); font-size: 13px; font-weight: 600;
-      white-space: nowrap; cursor: pointer; transition: all 0.3s ease;
-    }
-    .filter-chip:active { transform: scale(0.92); }
-    .filter-chip.active { background: var(--purple-primary); border-color: var(--purple-primary); color: var(--gradient-end); box-shadow: 0 4px 12px var(--purple-glow); }
-    .history-list {
-      flex: 1;
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
-      padding: 0 16px 110px;
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 14px;
-      align-content: start;
-    }
-    .history-card {
-      background: rgba(255,255,255,0.03);
-      border-radius: 16px;
-      padding: 16px;
-      border: 1px solid rgba(255,255,255,0.06);
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-      position: relative;
-      animation: slideUpFade 0.4s ease-out forwards;
-    }
-    .history-card:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.12); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
-    .history-card:active { transform: scale(0.97); }
-    .history-card.status-expired { border-left: 4px solid var(--red); }
-    .history-card.status-expired .product-name,
-    .history-card.status-expired .history-value { color: var(--red); text-decoration: line-through; text-decoration-color: rgba(255,255,255,0.4); text-decoration-thickness: 1px; }
-    .history-card.status-soon { border-left: 4px solid var(--orange); }
-    .history-card.status-soon .product-name { color: var(--orange); }
-    .history-card.status-ok { border-left: 4px solid var(--green); }
-    .history-card.status-ok .product-name { color: var(--green); }
-    .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
-    .product-name { font-size: 15px; font-weight: 700; flex: 1; margin-right: 12px; color: var(--white); }
-    .qty-badge { padding: 4px 10px; border-radius: 8px; background: var(--purple-glow); color: var(--accent-light); font-size: 12px; font-weight: 700; border: 1px solid rgba(6, 182, 212, 0.2); }
-    .card-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-    .card-field { min-width: 0; background: rgba(0,0,0,0.2); padding: 8px; border-radius: 10px; }
-    .field-label { font-size: 10px; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; font-weight: 600; }
-    .history-value { font-size: 13px; font-family: 'JetBrains Mono', monospace; font-weight: 500; color: var(--gray-100); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .edit-btn {
-      position: absolute; top: 12px; right: 12px;
-      width: 32px; height: 32px; border-radius: 10px;
-      background: rgba(255,255,255,0.08); border: none; color: var(--gray-300);
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer; opacity: 0; transition: all 0.3s ease;
-    }
-    .history-card:hover .edit-btn, .history-card:active .edit-btn { opacity: 1; background: rgba(255,255,255,0.15); color: var(--white); }
-    .edit-btn svg { width: 16px; height: 16px; }
+    /* HISTORY */
+    .history-page { padding: 16px; }
+    .search-box { display: flex; align-items: center; gap: 8px; padding: 10px 16px; background: var(--bg-card); border-radius: 24px; box-shadow: var(--shadow-sm); margin-bottom: 16px; }
+    .search-box svg { width: 20px; height: 20px; color: var(--text-muted); }
+    .search-box input { flex: 1; border: none; background: transparent; font-size: 0.9375rem; color: var(--text-dark); }
+    .search-box input:focus { outline: none; }
+    .filter-tabs { display: flex; gap: 4px; margin-bottom: 16px; overflow-x: auto; padding-bottom: 4px; }
+    .filter-tab { padding: 6px 16px; border-radius: 9999px; border: none; background: var(--bg-card); color: var(--text-medium); font-size: 0.75rem; font-weight: 600; cursor: pointer; white-space: nowrap; transition: all var(--transition-fast); }
+    .filter-tab.active { background: var(--teal); color: white; }
+    .history-list { display: flex; flex-direction: column; gap: 8px; }
+    .history-item { padding: 16px; background: var(--bg-card); border-radius: 16px; box-shadow: var(--shadow-sm); }
+    .history-title { font-size: 0.9375rem; font-weight: 600; color: var(--text-dark); }
+    .history-meta { font-size: 0.75rem; color: var(--text-light); }
+    .empty-state { padding: 24px; text-align: center; color: var(--text-light); }
+    .empty-state svg { width: 48px; height: 48px; margin-bottom: 8px; opacity: 0.4; }
+    .empty-state-text { font-size: 0.8125rem; }
 
-    /* PASTE PAGE */
-    .paste-container { flex: 1; display: flex; flex-direction: column; padding: 16px; }
-    .paste-textarea {
-      flex: 1; min-height: 180px; padding: 16px;
-      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 16px; color: var(--white);
-      font-family: 'JetBrains Mono', monospace; font-size: 14px; line-height: 1.6;
-      resize: none; outline: none; margin-bottom: 20px;
-      transition: all 0.3s ease;
-    }
-    .paste-textarea:focus { border-color: var(--accent); background: rgba(255,255,255,0.05); box-shadow: 0 0 0 3px var(--purple-glow); }
-    .paste-textarea::placeholder { color: var(--gray-600); }
-    .paste-stats {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(70px, 1fr)); gap: 12px;
-      margin-bottom: 20px; display: none;
-    }
-    .paste-stats.visible { display: grid; animation: slideUpFade 0.3s ease-out forwards; }
-    .paste-stat { background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
-    .stat-num { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
-    .stat-num.green { color: var(--green); }
-    .stat-num.red { color: var(--red); }
-    .stat-num.orange { color: var(--orange); }
-    .stat-txt { font-size: 10px; color: var(--gray-400); text-transform: uppercase; font-weight: 600; }
-    .btn-row { display: flex; gap: 12px; }
-    .btn {
-      flex: 1; height: 52px; border-radius: 14px; border: none;
-      font-size: 15px; font-weight: 600; cursor: pointer;
-      display: flex; align-items: center; justify-content: center; gap: 8px;
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .btn:hover { transform: translateY(-2px); }
-    .btn:active { transform: translateY(0) scale(0.95); }
-    .btn-primary { background: linear-gradient(135deg, var(--purple-primary) 0%, var(--purple-dark) 100%); color: var(--white); box-shadow: 0 4px 15px var(--purple-glow); }
-    .btn-secondary { background: rgba(255,255,255,0.08); color: var(--white); border: 1px solid rgba(255,255,255,0.1); }
-    .btn svg { width: 20px; height: 20px; }
+    /* MANUAL PAGE */
+    .manual-page { padding: 16px; }
+    .card { background: var(--bg-card); border-radius: 24px; box-shadow: var(--shadow-md); overflow: hidden; }
+    .card-header { padding: 16px; border-bottom: 1px solid var(--bg-input); }
+    .card-title { font-size: 1rem; font-weight: 600; color: var(--text-dark); }
+    .card-body { padding: 16px; }
+    .textarea { width: 100%; min-height: 150px; padding: 16px; background: var(--bg-input); border: 2px solid transparent; border-radius: 16px; font-family: 'Courier New', monospace; font-size: 0.8125rem; color: var(--text-dark); resize: vertical; transition: all var(--transition-fast); }
+    .textarea:focus { outline: none; border-color: var(--teal); background: white; }
+    .paste-actions { display: flex; gap: 8px; margin-top: 16px; }
+    .stats-grid { display: none; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 16px; }
+    .stats-grid.visible { display: grid; }
+    .stat-card { padding: 16px; background: var(--bg-input); border-radius: 16px; text-align: center; }
+    .stat-value { font-size: 1.5rem; font-weight: 700; color: var(--teal); }
+    .stat-label { font-size: 0.6875rem; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.05em; }
 
-    /* PLANNER PAGE */
-    .planner-container {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      padding: 12px 14px;
-      overflow: hidden;
-    }
-    .planner-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-      flex-shrink: 0;
-    }
-    .planner-title { font-size: 16px; font-weight: 700; color: var(--accent); }
-    .planner-stats { display: flex; gap: 12px; font-size: 11px; color: var(--gray-400); }
-    .planner-stats span { background: rgba(255,255,255,0.06); padding: 4px 10px; border-radius: 12px; }
-    .planner-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-      flex: 1;
-      overflow-y: auto;
-      padding-bottom: 80px;
-      align-content: start;
-    }
-    .planner-card {
-      background: rgba(255,255,255,0.05);
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,0.08);
-      padding: 10px;
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-      position: relative;
-      cursor: pointer;
-      min-height: 140px;
-      display: flex;
-      flex-direction: column;
-      animation: slideUpFade 0.4s ease-out forwards;
-    }
-    .planner-card:active { transform: scale(0.97); }
-    .planner-card:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15); }
-    .planner-card.expiry-normal { border-color: rgba(255,255,255,0.08); }
-    .planner-card.expiry-soon { border-color: var(--orange); background: rgba(245, 158, 11, 0.15); box-shadow: 0 0 20px rgba(245, 158, 11, 0.15); }
-    .planner-card.expiry-soon .card-expiry-badge { background: var(--orange); color: #000; }
-    .planner-card.expiry-critical { border-color: var(--red); background: rgba(239, 68, 68, 0.18); box-shadow: 0 0 25px rgba(239, 68, 68, 0.20); }
-    .planner-card.expiry-critical .card-expiry-badge { background: var(--red); color: #fff; }
-    .planner-card .card-img {
-      width: 100%; height: 70px; border-radius: 10px;
-      background: rgba(255,255,255,0.06);
-      display: flex; align-items: center; justify-content: center;
-      overflow: hidden; margin-bottom: 6px; position: relative;
-      border: 1px solid rgba(255,255,255,0.06);
-    }
-    .planner-card .card-img img { width: 100%; height: 100%; object-fit: contain; }
-    .planner-card .card-img .placeholder { font-size: 28px; opacity: 0.5; }
-    .planner-card .card-img .camera-overlay {
-      position: absolute; bottom: 4px; right: 4px;
-      background: rgba(0,0,0,0.7); border-radius: 50%;
-      width: 26px; height: 26px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 14px; cursor: pointer;
-      border: 1px solid rgba(255,255,255,0.15);
-      opacity: 0; transition: opacity 0.2s;
-    }
-    .planner-card:hover .card-img .camera-overlay,
-    .planner-card:active .card-img .camera-overlay { opacity: 1; }
-    .planner-card .card-name { font-size: 11px; font-weight: 600; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .planner-card .card-details { display: flex; flex-wrap: wrap; gap: 4px 8px; font-size: 9px; color: var(--gray-400); margin-bottom: 4px; }
-    .planner-card .card-details span { background: rgba(255,255,255,0.05); padding: 1px 6px; border-radius: 6px; }
-    .planner-card .card-expiry-badge { font-size: 8px; font-weight: 700; padding: 1px 8px; border-radius: 10px; background: rgba(255,255,255,0.1); }
-    .planner-card .card-bottom { display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
-    .battery-indicator { display: flex; align-items: center; gap: 4px; font-size: 9px; font-weight: 600; }
-    .battery-bar { width: 36px; height: 8px; border-radius: 4px; background: rgba(255,255,255,0.1); overflow: hidden; border: 1px solid rgba(255,255,255,0.1); position: relative; }
-    .battery-fill { height: 100%; border-radius: 3px; transition: width 0.3s ease; }
-    .battery-fill.critical { background: var(--red); }
-    .battery-fill.low { background: var(--orange); }
-    .battery-fill.medium { background: #eab308; }
-    .battery-fill.high { background: var(--green); }
-    .battery-fill.full { background: var(--accent); }
+    /* SETTINGS */
+    .master-page { padding: 16px; }
+    .upload-zone { padding: 32px; border: 2px dashed var(--teal); border-radius: 24px; text-align: center; cursor: pointer; background: var(--teal-light); transition: all var(--transition-default); }
+    .upload-zone:hover { background: var(--bg-card); border-color: var(--teal-dark); }
+    .upload-zone.dragover { background: var(--bg-card); border-color: var(--teal-dark); transform: scale(1.02); }
+    .upload-icon { width: 56px; height: 56px; margin: 0 auto 16px; background: var(--teal); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; }
+    .upload-icon svg { width: 28px; height: 28px; }
+    .upload-text { font-size: 0.9375rem; color: var(--text-medium); }
+    .upload-text strong { color: var(--teal); }
+    .upload-hint { font-size: 0.75rem; color: var(--text-light); margin-top: 4px; }
+    .master-status { margin-top: 16px; padding: 16px; background: var(--success-bg); border-radius: 16px; display: flex; align-items: center; gap: 8px; }
+    .master-status svg { width: 24px; height: 24px; color: var(--success); }
+    .master-status-title { font-size: 0.875rem; font-weight: 600; color: var(--success); }
+    .master-status-details { font-size: 0.75rem; color: var(--text-medium); }
+    .settings-section { margin-top: 24px; }
+    .settings-item { display: flex; align-items: center; justify-content: space-between; padding: 16px; background: var(--bg-card); border-radius: 16px; margin-bottom: 8px; box-shadow: var(--shadow-sm); cursor: pointer; }
+    .settings-item-left { display: flex; align-items: center; gap: 12px; }
+    .settings-icon { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; }
+    .settings-icon.teal { background: var(--teal-light); color: var(--teal); }
+    .settings-icon.coral { background: var(--coral-light); color: var(--coral); }
+    .settings-icon.yellow { background: var(--yellow-light); color: var(--yellow-dark); }
+    .settings-icon svg { width: 20px; height: 20px; }
+    .settings-label { font-size: 0.875rem; font-weight: 500; color: var(--text-dark); }
+    .settings-hint { font-size: 0.6875rem; color: var(--text-light); }
+    .toggle { position: relative; width: 48px; height: 28px; }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider { position: absolute; inset: 0; background: var(--bg-input); border-radius: 9999px; cursor: pointer; transition: all var(--transition-fast); }
+    .toggle-slider::before { content: ''; position: absolute; width: 22px; height: 22px; left: 3px; bottom: 3px; background: white; border-radius: 50%; box-shadow: var(--shadow-sm); transition: all var(--transition-fast); }
+    .toggle input:checked + .toggle-slider { background: var(--teal); }
+    .toggle input:checked + .toggle-slider::before { transform: translateX(20px); }
 
-    /* SETTINGS PAGE */
-    .settings-container { flex: 1; padding: 16px; overflow-y: auto; }
-    .settings-card {
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.06);
-      border-radius: 16px;
-      padding: 16px;
-      margin-bottom: 16px;
-    }
-    .settings-card-title { font-size: 13px; font-weight: 600; color: var(--accent); margin-bottom: 12px; }
-    .settings-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
-    .settings-row:last-child { border-bottom: none; }
-    .settings-row label { font-size: 13px; color: var(--gray-300); }
-    .settings-row input {
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 8px;
-      padding: 6px 12px;
-      color: var(--white);
-      font-size: 13px;
-      width: 120px;
-      outline: none;
-    }
-    .settings-row input:focus { border-color: var(--accent); }
+    /* BOTTOM NAV */
+    .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; z-index: 100; height: var(--nav-height); padding: 0 8px; padding-bottom: var(--safe-bottom); background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); box-shadow: 0 -4px 20px rgba(0,0,0,0.08); display: flex; align-items: center; justify-content: space-around; }
+    .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 6px; background: none; border: none; color: var(--text-muted); cursor: pointer; transition: all var(--transition-fast); max-width: 80px; }
+    .nav-item.active { color: var(--teal); }
+    .nav-item-icon { position: relative; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; }
+    .nav-item.active .nav-item-icon { background: var(--teal-light); border-radius: 12px; }
+    .nav-item svg { width: 22px; height: 22px; }
+    .nav-item span { font-size: 0.625rem; font-weight: 600; }
+    .nav-badge { position: absolute; top: -4px; right: -4px; min-width: 16px; height: 16px; padding: 0 4px; background: var(--coral); border-radius: 9999px; font-size: 0.625rem; font-weight: 700; color: white; display: flex; align-items: center; justify-content: center; }
 
-    /* TOAST & MODALS */
-    .toast-container {
-      position: fixed; top: calc(var(--safe-top) + 80px); left: 50%;
-      transform: translateX(-50%); z-index: 400;
-      display: flex; flex-direction: column; gap: 10px; pointer-events: none;
-      width: 90%; max-width: 400px;
-    }
-    .toast {
-      background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(12px);
-      border: 1px solid rgba(255,255,255,0.1); padding: 14px 20px; border-radius: 14px;
-      display: flex; align-items: center; gap: 12px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-      animation: toastIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-      pointer-events: auto;
-    }
-    .toast.success { border-color: rgba(16, 185, 129, 0.5); }
-    .toast.error { border-color: rgba(239, 68, 68, 0.5); }
-    .toast.warning { border-color: rgba(245, 158, 11, 0.5); }
-    .toast-icon { width: 22px; height: 22px; flex-shrink: 0; }
-    .toast.success .toast-icon { color: var(--green); }
-    .toast.error .toast-icon { color: var(--red); }
-    .toast.warning .toast-icon { color: var(--orange); }
-    .toast-text { font-size: 14px; font-weight: 500; color: var(--white); }
+    /* MODALS */
+    .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 200; display: none; align-items: center; justify-content: center; padding: 16px; }
+    .modal-backdrop.active { display: flex; }
+    .modal { width: 100%; max-width: 340px; background: var(--bg-card); border-radius: 32px; box-shadow: var(--shadow-lg); overflow: hidden; animation: modalIn 0.3s ease; }
+    @keyframes modalIn { from { opacity: 0; transform: scale(0.9) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+    .modal-header { padding: 24px; text-align: center; }
+    .modal-icon { width: 64px; height: 64px; margin: 0 auto 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+    .modal-icon.teal { background: var(--teal-light); color: var(--teal); }
+    .modal-icon.coral { background: var(--coral-light); color: var(--coral); }
+    .modal-icon.yellow { background: var(--yellow-light); color: var(--yellow-dark); }
+    .modal-icon svg { width: 32px; height: 32px; }
+    .modal-title { font-size: 1.25rem; font-weight: 700; color: var(--text-dark); margin-bottom: 4px; }
+    .modal-subtitle { font-size: 0.875rem; color: var(--text-light); }
+    .modal-body { padding: 0 24px 24px; }
+    .modal-footer { padding: 16px 24px 24px; display: flex; gap: 8px; }
+    .modal-footer .btn { flex: 1; }
+    .result-field { margin-bottom: 16px; }
+    .result-label { font-size: 0.6875rem; font-weight: 600; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+    .result-value { font-size: 1rem; font-weight: 600; color: var(--text-dark); }
+    .result-value.mono { font-family: 'Courier New', monospace; font-size: 0.875rem; padding: 8px; background: var(--bg-input); border-radius: 12px; }
+    .result-value.large { font-size: 1.25rem; }
+    .result-expiry { display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 16px; }
+    .result-expiry.expired { background: var(--danger-bg); color: var(--danger); }
+    .result-expiry.soon { background: var(--warning-bg); color: var(--warning); }
+    .result-expiry.ok { background: var(--success-bg); color: var(--success); }
+    .result-expiry svg { width: 20px; height: 20px; }
+    .qty-control { display: flex; align-items: center; gap: 8px; }
+    .qty-btn { width: 40px; height: 40px; border: none; border-radius: 12px; background: var(--bg-input); color: var(--text-medium); font-size: 1.25rem; font-weight: 600; cursor: pointer; transition: all var(--transition-fast); }
+    .qty-btn:hover { background: var(--teal-light); color: var(--teal); }
+    .qty-input { width: 60px; text-align: center; font-size: 1.25rem; font-weight: 700; background: var(--bg-input); border: none; border-radius: 12px; padding: 8px; color: var(--text-dark); }
+    .qty-input:focus { outline: none; background: var(--teal-light); }
 
-    .popup-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.85);
-      backdrop-filter: blur(10px);
-      display: none;
-      align-items: flex-end;
-      justify-content: center;
-      z-index: 300;
-      padding: 16px;
-      animation: popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
-    .popup-overlay.active { display: flex; }
-    .popup-card {
-      background: linear-gradient(180deg, var(--gradient-mid) 0%, var(--gradient-start) 100%);
-      border-radius: 24px;
-      padding: 24px;
-      width: 100%;
-      max-width: 420px;
-      max-height: 90vh;
-      overflow-y: auto;
-      border: 1px solid rgba(255,255,255,0.08);
-      box-shadow: 0 20px 60px rgba(0,0,0,0.6);
-    }
-    .popup-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.06); }
-    .popup-title { font-size: 18px; font-weight: 700; color: var(--accent); }
-    .popup-close {
-      width: 36px; height: 36px; border-radius: 50%;
-      background: rgba(255,255,255,0.08); border: none;
-      color: var(--gray-400); font-size: 20px;
-      cursor: pointer; display: flex; align-items: center; justify-content: center;
-      transition: all 0.3s ease;
-    }
-    .popup-close:hover { background: rgba(255,255,255,0.15); transform: scale(0.92); }
-    .popup-field { margin-bottom: 12px; }
-    .popup-field label { display: block; font-size: 11px; font-weight: 600; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
-    .popup-input {
-      width: 100%; height: 44px; padding: 0 14px;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 12px; color: var(--white);
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 14px; outline: none;
-      transition: all 0.3s ease;
-    }
-    .popup-input:focus { border-color: var(--accent); background: rgba(255,255,255,0.08); box-shadow: 0 0 0 3px var(--purple-glow); }
-    .popup-input::placeholder { color: var(--gray-600); }
-    .popup-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .popup-grid .popup-field { margin-bottom: 0; }
-    .popup-footer { display: flex; gap: 10px; margin-top: 16px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.06); }
-    .popup-btn {
-      flex: 1; height: 48px; border-radius: 14px; border: none;
-      font-size: 14px; font-weight: 600; cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .popup-btn:active { transform: scale(0.95); }
-    .popup-btn.primary { background: linear-gradient(135deg, var(--purple-primary) 0%, var(--purple-dark) 100%); color: #fff; box-shadow: 0 4px 15px var(--purple-glow); }
-    .popup-btn.secondary { background: rgba(255,255,255,0.08); color: var(--gray-300); border: 1px solid rgba(255,255,255,0.08); }
-    .popup-btn.danger { background: var(--red-bg); color: var(--red); border: 1px solid rgba(239,68,68,0.2); }
+    .export-options { display: flex; flex-direction: column; gap: 8px; }
+    .export-option { display: flex; align-items: center; gap: 16px; padding: 16px; background: var(--bg-input); border-radius: 16px; cursor: pointer; transition: all var(--transition-fast); }
+    .export-option:hover { background: var(--teal-light); }
+    .export-option-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; }
+    .export-option-icon.excel { background: #E6F4EA; color: #34A853; }
+    .export-option-icon svg { width: 24px; height: 24px; }
+    .export-option-text { flex: 1; }
+    .export-option-title { font-size: 0.9375rem; font-weight: 600; color: var(--text-dark); }
+    .export-option-desc { font-size: 0.75rem; color: var(--text-light); }
 
-    .empty-state { text-align: center; padding: 80px 24px; grid-column: 1 / -1; }
-    .empty-icon { width: 72px; height: 72px; margin: 0 auto 20px; color: var(--gray-600); opacity: 0.4; }
-    .empty-title { font-size: 18px; font-weight: 700; color: var(--gray-300); margin-bottom: 8px; }
-    .empty-desc { font-size: 14px; color: var(--gray-500); }
+    /* SIDE MENU */
+    .side-menu-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 150; opacity: 0; visibility: hidden; transition: all var(--transition-default); }
+    .side-menu-backdrop.active { opacity: 1; visibility: visible; }
+    .side-menu { position: fixed; top: 0; right: 0; bottom: 0; width: 280px; background: var(--bg-card); z-index: 151; transform: translateX(100%); transition: transform var(--transition-default); display: flex; flex-direction: column; }
+    .side-menu.active { transform: translateX(0); }
+    .side-menu-header { padding: 24px; border-bottom: 1px solid var(--bg-input); }
+    .side-menu-title { font-size: 1.125rem; font-weight: 700; color: var(--text-dark); }
+    .side-menu-content { flex: 1; overflow-y: auto; padding: 16px; }
+    .side-menu-section { margin-bottom: 24px; }
+    .side-menu-section-title { font-size: 0.6875rem; font-weight: 600; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; padding: 0 8px; }
+    .side-menu-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 16px; border-radius: 16px; cursor: pointer; transition: all var(--transition-fast); }
+    .side-menu-item:hover { background: var(--bg-input); }
+    .side-menu-item-left { display: flex; align-items: center; gap: 8px; }
+    .side-menu-item svg { width: 20px; height: 20px; color: var(--text-muted); }
+    .side-menu-item-label { font-size: 0.875rem; color: var(--text-dark); }
+    .side-menu-footer { padding: 16px; border-top: 1px solid var(--bg-input); text-align: center; }
+    .version-text { font-size: 0.6875rem; color: var(--text-muted); }
 
     .hidden-input { display: none; }
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 6px; }
-    ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
-
-    @media (max-width: 480px) {
-      .history-list { grid-template-columns: 1fr; }
-      .planner-grid { grid-template-columns: 1fr; }
-      .viewfinder { width: 220px; height: 220px; }
-    }
+    .toast-container { position: fixed; top: calc(var(--header-height) + 16px); left: 50%; transform: translateX(-50%); z-index: 300; display: flex; flex-direction: column; gap: 8px; pointer-events: none; width: calc(100% - 32px); max-width: 360px; }
+    .toast { padding: 16px; background: var(--bg-card); border-radius: 16px; box-shadow: var(--shadow-lg); display: flex; align-items: center; gap: 8px; animation: toastIn 0.3s ease; pointer-events: auto; }
+    @keyframes toastIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+    .toast-icon { width: 36px; height: 36px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .toast-icon svg { width: 20px; height: 20px; }
+    .toast.success .toast-icon { background: var(--success-bg); color: var(--success); }
+    .toast.warning .toast-icon { background: var(--warning-bg); color: var(--warning); }
+    .toast.error .toast-icon { background: var(--danger-bg); color: var(--danger); }
+    .toast.info .toast-icon { background: var(--teal-light); color: var(--teal); }
+    .toast-content { flex: 1; }
+    .toast-title { font-size: 0.875rem; font-weight: 600; color: var(--text-dark); }
+    .toast-message { font-size: 0.75rem; color: var(--text-light); }
   </style>
 </head>
 <body>
-<div class="app">
-  <!-- Header -->
-  <header class="header">
-    <div class="logo">
-      <div class="logo-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-          <path d="M10.5 20.5L3.5 13.5C1.5 11.5 1.5 8.17 3.5 6.17C5.5 4.17 8.83 4.17 10.83 6.17L17.83 13.17C19.83 15.17 19.83 18.5 17.83 20.5C15.83 22.5 12.5 22.5 10.5 20.5Z"/>
-          <line x1="10.12" y1="13.87" x2="13.88" y2="10.12"/>
-        </svg>
+  <div class="bg-decoration"><div class="bg-blob bg-blob-1"></div><div class="bg-blob bg-blob-2"></div><div class="bg-blob bg-blob-3"></div></div>
+  <div class="app">
+    <header class="app-header">
+      <div class="header-left">
+        <div class="logo">
+          <div class="logo-icon"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%234ECDC4'%3E%3Cpath d='M3 3h18v18H3z'/%3E%3C/svg%3E" alt="Boots"></div>
+          <div class="logo-text"><div class="logo-name">PharmaTrack</div><div class="logo-branch">Oasis Mall Branch</div></div>
+        </div>
       </div>
-      <span class="logo-text">PharmaTrack</span>
-    </div>
-    <button class="menu-btn" id="menuBtn" aria-label="Menu">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <line x1="3" y1="6" x2="21" y2="6"/>
-        <line x1="3" y1="12" x2="21" y2="12"/>
-        <line x1="3" y1="19" x2="21" y2="19"/>
-      </svg>
-    </button>
-  </header>
-
-  <main class="main">
-    <!-- SCANNER PAGE -->
-    <div class="page" id="page-scan">
-      <div class="scanner-container">
-        <div class="scanner-area">
-          <video id="video-preview" autoplay playsinline muted></video>
-          <div class="scanner-overlay">
-            <div class="viewfinder">
-              <div class="vf-corner tl"></div><div class="vf-corner tr"></div>
-              <div class="vf-corner bl"></div><div class="vf-corner br"></div>
-              <div class="scan-line"></div>
+      <div class="header-right"><button class="menu-btn" id="btnMenu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button></div>
+    </header>
+    <main class="main-content">
+      <!-- SCAN PAGE -->
+      <div class="page active" id="page-scan">
+        <div class="scanner-page">
+          <h1 class="page-title">Scan Barcode</h1>
+          <div class="scanner-card">
+            <div class="scanner-container" id="scannerContainer">
+              <div id="reader"></div>
+              <div class="scanner-overlay"><div class="viewfinder"><div class="vf-corner tl"></div><div class="vf-corner tr"></div><div class="vf-corner bl"></div><div class="vf-corner br"></div><div class="scan-line"></div></div></div>
+              <div class="scanner-placeholder" id="scannerPlaceholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="7" y1="12" x2="17" y2="12"/></svg><span>Tap to start scanning</span></div>
             </div>
           </div>
-          <div class="scanner-hint" id="scannerHint">Tap scan to start</div>
-        </div>
-        <div class="manual-bar">
-          <input type="text" class="manual-input" id="manualInput" placeholder="Enter barcode...">
-          <button class="icon-btn" id="btnManualAdd" title="Add">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-              <line x1="12" y1="5" x2="12" y2="19"/>
-              <line x1="5" y1="12" x2="19" y2="12"/>
-            </svg>
-          </button>
-          <button class="icon-btn" id="btnUploadImg" title="Scan Image">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="3" y="3" width="18" height="18" rx="2"/>
-              <circle cx="8.5" cy="8.5" r="1.5"/>
-              <path d="M21 15l-5-5L5 21"/>
-            </svg>
-          </button>
-        </div>
-      </div>
-      <button class="scan-fab" id="scanFab" aria-label="Scan">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M23 19a2 2 0 0 1-2 2h-3v-2h3V5h-3V3h3a2 2 0 0 1 2 2z"/>
-          <path d="M1 5a2 2 0 0 1 2-2h3v2H3v14h3v2H3a2 2 0 0 1-2-2z"/>
-          <line x1="7" y1="12" x2="17" y2="12"/>
-        </svg>
-      </button>
-    </div>
-
-    <!-- HISTORY PAGE -->
-    <div class="page" id="page-history">
-      <div class="history-container">
-        <div class="search-bar">
-          <div class="search-wrapper">
-            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="11" cy="11" r="8"/>
-              <path d="M21 21l-4.35-4.35"/>
-            </svg>
-            <input type="text" class="search-input" id="searchInput" placeholder="Search GTIN, product, batch...">
+          <div class="scanner-actions">
+            <button class="btn btn-primary btn-lg" id="btnStartScanner"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/></svg><span id="btnScannerText">Start Scanner</span></button>
+            <button class="btn btn-secondary btn-icon" id="btnSwitchCamera" title="Flip Camera"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 19H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/><path d="M13 5h7a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-5"/><path d="M8 22l-4-4 4-4"/><path d="M16 2l4 4-4 4"/></svg></button>
           </div>
-        </div>
-        <div class="filter-row">
-          <button class="filter-chip active" data-filter="all">All</button>
-          <button class="filter-chip" data-filter="expired">Expired</button>
-          <button class="filter-chip" data-filter="soon">Expiring</button>
-          <button class="filter-chip" data-filter="ok">Good</button>
-        </div>
-        <div class="history-list" id="historyList"></div>
-      </div>
-    </div>
-
-    <!-- PASTE PAGE -->
-    <div class="page" id="page-paste">
-      <div class="paste-container">
-        <textarea class="paste-textarea" id="pasteTextarea" placeholder="Paste GS1 barcodes here (one per line)...
-Example:
-(01)06297000001234(17)250630(10)ABC001
-(01)06297000002345(17)251231(10)XYZ789"></textarea>
-        <div class="paste-stats" id="pasteStats">
-          <div class="paste-stat"><div class="stat-num" id="statTotal">0</div><div class="stat-txt">Total</div></div>
-          <div class="paste-stat"><div class="stat-num green" id="statValid">0</div><div class="stat-txt">Valid</div></div>
-          <div class="paste-stat"><div class="stat-num red" id="statInvalid">0</div><div class="stat-txt">Invalid</div></div>
-          <div class="paste-stat"><div class="stat-num orange" id="statMerged">0</div><div class="stat-txt">Merged</div></div>
-        </div>
-        <div class="btn-row">
-          <button class="btn btn-primary" id="btnProcessPaste">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M5 12h14M12 5l7 7-7 7"/>
-            </svg>
-            Process
-          </button>
-          <button class="btn btn-secondary" id="btnClearPaste">Clear</button>
+          <div class="manual-entry-section"><div class="section-title">Manual Entry</div><div class="input-group"><input type="text" class="form-input" id="manualBarcode" placeholder="Enter barcode..."><button class="btn btn-coral" id="btnManualSubmit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button></div></div>
+          <div class="recent-section"><div class="recent-header"><div class="section-title">Recent Scans</div><span class="view-all-link" id="viewAllHistory">View All</span></div><div class="recent-list" id="recentScans"><div class="empty-state" id="emptyRecent"><p class="empty-state-text">No recent scans yet</p></div></div></div>
         </div>
       </div>
-    </div>
-
-    <!-- PLANNER PAGE -->
-    <div class="page active" id="page-planner">
-      <div class="planner-container">
-        <div class="planner-header">
-          <span class="planner-title">📦 Planner - Expiry & Stock</span>
-          <div class="planner-stats">
-            <span id="totalItems">0 items</span>
-            <span id="expiryWarn">0 ⚠️</span>
-          </div>
-        </div>
-        <div class="planner-grid" id="plannerGrid"></div>
-      </div>
-    </div>
-
-    <!-- SETTINGS PAGE -->
-    <div class="page" id="page-settings">
-      <div class="settings-container">
-        <div class="settings-card">
-          <div class="settings-card-title">⚙️ General Settings</div>
-          <div class="settings-row">
-            <label>Store Name</label>
-            <input id="setStore" value="PharmaTrack Store">
-          </div>
-          <div class="settings-row">
-            <label>Default Target</label>
-            <input id="setTarget" type="number" value="25000">
-          </div>
-        </div>
-        <div class="settings-card">
-          <div class="settings-card-title">📊 Data Management</div>
-          <div style="display:flex; gap:10px; flex-wrap:wrap;">
-            <button class="btn btn-secondary" style="flex:1; min-width:100px;" onclick="exportData()">📤 Export</button>
-            <button class="btn btn-secondary" style="flex:1; min-width:100px;" onclick="importData()">📥 Import</button>
-            <button class="btn btn-danger" style="flex:1; min-width:100px; background:var(--red-bg); color:var(--red); border:1px solid rgba(239,68,68,0.2);" onclick="clearAll()">🗑️ Clear All</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </main>
-
-  <!-- Bottom Navigation -->
-  <nav class="nav">
-    <button class="nav-item" data-page="scan">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M23 19a2 2 0 0 1-2 2h-3v-2h3V5h-3V3h3a2 2 0 0 1 2 2z"/>
-        <path d="M1 5a2 2 0 0 1 2-2h3v2H3v14h3v2H3a2 2 0 0 1-2-2z"/>
-        <rect x="7" y="7" width="10" height="10" rx="1"/>
-      </svg>
-      <span>Scan</span>
-    </button>
-    <button class="nav-item" data-page="history">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="12" cy="12" r="10"/>
-        <polyline points="12 6 12 12 16 14"/>
-      </svg>
-      <span>History</span>
-    </button>
-    <button class="nav-item" data-page="paste">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
-        <rect x="8" y="2" width="8" height="4" rx="1"/>
-      </svg>
-      <span>Paste</span>
-    </button>
-    <button class="nav-item active" data-page="planner">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <rect x="3" y="4" width="18" height="18" rx="2"/>
-        <line x1="16" y1="2" x2="16" y2="6"/>
-        <line x1="8" y1="2" x2="8" y2="6"/>
-        <line x1="3" y1="10" x2="21" y2="10"/>
-      </svg>
-      <span>Planner</span>
-    </button>
-    <button class="nav-item" data-page="settings">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="12" cy="12" r="3"/>
-        <path d="M12 1v6m0 10v6M1 12h6m10 0h6M4.22 4.22l4.24 4.24m7.08 7.08l4.24 4.24M4.22 19.78l4.24-4.24m7.08-7.08l4.24-4.24"/>
-      </svg>
-      <span>Settings</span>
-    </button>
-  </nav>
-
-  <!-- Toast -->
-  <div class="toast-container" id="toastContainer"></div>
-
-  <!-- POPUP MODAL -->
-  <div class="popup-overlay" id="popupOverlay">
-    <div class="popup-card">
-      <div class="popup-header">
-        <span class="popup-title" id="popupTitle">Edit Product</span>
-        <button class="popup-close" id="popupClose">✕</button>
-      </div>
-      <div class="popup-field">
-        <label>Product Name</label>
-        <input class="popup-input" id="editName" placeholder="Product name...">
-      </div>
-      <div class="popup-grid">
-        <div class="popup-field"><label>Expiry (YYMMDD)</label><input class="popup-input" id="editExpiry" placeholder="251231"></div>
-        <div class="popup-field"><label>Batch</label><input class="popup-input" id="editBatch" placeholder="BATCH001"></div>
-        <div class="popup-field"><label>Facing</label><input class="popup-input" id="editFacing" type="number" placeholder="2"></div>
-        <div class="popup-field"><label>Total Units</label><input class="popup-input" id="editUnits" type="number" placeholder="10"></div>
-      </div>
-      <div class="popup-field">
-        <label>Image</label>
-        <div style="display:flex; gap:8px;">
-          <button class="popup-btn secondary" style="flex:1;" id="imgCameraBtn">📷 Camera</button>
-          <button class="popup-btn secondary" style="flex:1;" id="imgGalleryBtn">🖼️ Gallery</button>
-          <button class="popup-btn secondary" style="flex:0 0 60px;" id="imgSearchBtn">🔍</button>
-        </div>
-        <div style="margin-top:6px; width:100%; height:60px; border-radius:10px; background:rgba(255,255,255,0.05); display:flex; align-items:center; justify-content:center; overflow:hidden; border:1px solid rgba(255,255,255,0.06);" id="imgPreviewContainer">
-          <span style="color:var(--gray-500); font-size:11px;">No image</span>
-        </div>
-      </div>
-      <div class="popup-footer">
-        <button class="popup-btn danger" id="popupDelete">Delete</button>
-        <button class="popup-btn primary" id="popupSave">✓ Save</button>
-      </div>
-    </div>
+      <!-- HISTORY PAGE -->
+      <div class="page" id="page-history"><div class="history-page"><h1 class="page-title">Scan History</h1><div class="search-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="text" id="historySearch" placeholder="Search products..."></div><div class="filter-tabs"><button class="filter-tab active" data-filter="all">All</button><button class="filter-tab" data-filter="expired">Expired</button><button class="filter-tab" data-filter="soon">Expiring Soon</button><button class="filter-tab" data-filter="ok">OK</button></div><div class="history-list" id="historyList"></div></div></div>
+      <!-- MANUAL PAGE -->
+      <div class="page" id="page-manual"><div class="manual-page"><h1 class="page-title">Manual Entry</h1><div class="card"><div class="card-header"><div class="card-title">Paste Multiple Barcodes</div></div><div class="card-body"><textarea class="textarea" id="pasteArea" placeholder="Paste barcodes here, one per line..."></textarea><div class="paste-actions"><button class="btn btn-secondary" id="btnClearPaste">Clear</button><button class="btn btn-primary" id="btnProcessPaste" style="flex:1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Process All</button></div><div class="stats-grid" id="pasteStats"><div class="stat-card"><div class="stat-value" id="statTotal">0</div><div class="stat-label">Total</div></div><div class="stat-card"><div class="stat-value" id="statValid">0</div><div class="stat-label">Valid</div></div><div class="stat-card"><div class="stat-value" id="statMatched">0</div><div class="stat-label">Matched</div></div><div class="stat-card"><div class="stat-value" id="statExpired">0</div><div class="stat-label">Expired</div></div></div></div></div></div></div>
+      <!-- SETTINGS PAGE -->
+      <div class="page" id="page-settings"><div class="master-page"><h1 class="page-title">Settings & Master Data</h1><div class="card"><div class="card-header"><div class="card-title">Upload Product Database</div></div><div class="card-body"><div class="upload-zone" id="uploadZone"><div class="upload-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div><p class="upload-text"><strong>Tap to upload</strong> or drag & drop</p><p class="upload-hint">CSV or Excel file with product data</p></div><input type="file" id="masterFileInput" class="hidden-input" accept=".csv,.xlsx,.xls"><div class="master-status" id="masterStatus" style="display:none;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><div><div class="master-status-title">Master Data Loaded</div><div class="master-status-details" id="masterDetails">0 products</div></div></div></div></div><div class="settings-section"><div class="section-title">Settings</div><div class="settings-item"><div class="settings-item-left"><div class="settings-icon teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div><div><div class="settings-label">API Lookup</div><div class="settings-hint">Find drug names from FDA database</div></div></div><label class="toggle"><input type="checkbox" id="toggleAPI" checked><span class="toggle-slider"></span></label></div><div class="settings-item" id="btnExportData"><div class="settings-item-left"><div class="settings-icon yellow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div><div><div class="settings-label">Export Data</div><div class="settings-hint">Download scan history as Excel</div></div></div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px;height:20px;color:var(--text-muted)"><polyline points="9 18 15 12 9 6"/></svg></div><div class="settings-item" id="btnClearHistory"><div class="settings-item-left"><div class="settings-icon coral"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></div><div><div class="settings-label">Clear History</div><div class="settings-hint">Delete all scan records</div></div></div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px;height:20px;color:var(--text-muted)"><polyline points="9 18 15 12 9 6"/></svg></div></div></div></div>
+    </main>
+    <nav class="bottom-nav">
+      <button class="nav-item active" data-page="scan"><div class="nav-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="7" y1="12" x2="17" y2="12"/></svg></div><span>Scan</span></button>
+      <button class="nav-item" data-page="history"><div class="nav-item-icon"><span class="nav-badge" id="historyBadge" style="display:none;">0</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><span>History</span></button>
+      <button class="nav-item" data-page="manual"><div class="nav-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div><span>Manual</span></button>
+      <button class="nav-item" data-page="settings"><div class="nav-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg></div><span>Settings</span></button>
+    </nav>
   </div>
 
-  <!-- Hidden inputs -->
-  <input type="file" class="hidden-input" id="imageFileInput" accept="image/*" capture="environment">
-  <input type="file" class="hidden-input" id="galleryFileInput" accept="image/*">
-  <input type="file" class="hidden-input" id="importFileInput" accept=".json">
-</div>
+  <div class="toast-container" id="toastContainer"></div>
 
-<script>
-(function() {
-  'use strict';
+  <div class="modal-backdrop" id="scanResultModal"><div class="modal"><div class="modal-header"><div class="modal-icon" id="resultIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><h2 class="modal-title" id="resultTitle">Scan Result</h2><p class="modal-subtitle" id="resultSubtitle">Product found</p></div><div class="modal-body"><div class="result-field"><div class="result-label">Product Name</div><div class="result-value large" id="resultName">-</div></div><div class="result-field"><div class="result-label">Barcode</div><div class="result-value mono" id="resultBarcode">-</div></div><div class="result-field"><div class="result-label">Expiry Date</div><div class="result-expiry" id="resultExpiry"><span id="resultExpiryDate">-</span></div></div><div class="result-field"><div class="result-label">Quantity</div><div class="qty-control"><button class="qty-btn" id="btnQtyMinus">−</button><input type="number" class="qty-input" id="resultQty" value="1" min="1"><button class="qty-btn" id="btnQtyPlus">+</button></div></div></div><div class="modal-footer"><button class="btn btn-secondary" id="btnCancelScan">Cancel</button><button class="btn btn-primary" id="btnSaveScan">Save</button></div></div></div>
 
-  // --- STATE ---
-  let products = [];
-  let history = [];
-  let editingId = null;
-  let pendingImageData = null;
-  let scanning = false;
-  let stream = null;
+  <div class="modal-backdrop" id="exportModal"><div class="modal"><div class="modal-header"><div class="modal-icon yellow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div><h2 class="modal-title">Export Data</h2></div><div class="modal-body"><div class="export-options"><div class="export-option" id="exportExcel"><div class="export-option-icon excel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></div><div class="export-option-text"><div class="export-option-title">Excel File (.csv)</div><div class="export-option-desc">Compatible with Excel</div></div></div></div></div><div class="modal-footer"><button class="btn btn-secondary" id="btnCloseExport">Close</button></div></div></div>
 
-  // Load data
-  function loadData() {
-    try {
-      const p = localStorage.getItem('pharmatrack_planner');
-      if (p) products = JSON.parse(p);
-      else initDemoProducts();
-      const h = localStorage.getItem('pharmatrack_history');
-      if (h) history = JSON.parse(h);
-    } catch (e) { initDemoProducts(); }
-  }
+  <div class="side-menu-backdrop" id="sideMenuBackdrop"></div>
+  <div class="side-menu" id="sideMenu"><div class="side-menu-header"><div class="side-menu-title">Menu</div></div><div class="side-menu-content"><div class="side-menu-section"><div class="side-menu-section-title">Quick Actions</div><div class="side-menu-item" data-action="export"><div class="side-menu-item-left"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span class="side-menu-item-label">Export Data</span></div></div><div class="side-menu-item" data-action="clear"><div class="side-menu-item-left"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg><span class="side-menu-item-label">Clear History</span></div></div></div><div class="side-menu-section"><div class="side-menu-section-title">About</div><div class="side-menu-item"><div class="side-menu-item-left"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg><span class="side-menu-item-label">Version 3.0.0</span></div></div></div></div><div class="side-menu-footer"><p class="version-text">PharmaTrack © 2025</p></div></div>
 
-  function saveData() {
-    try {
-      localStorage.setItem('pharmatrack_planner', JSON.stringify(products));
-      localStorage.setItem('pharmatrack_history', JSON.stringify(history));
-    } catch (e) {}
-  }
+  <script>
+    (function() {
+      const STORAGE_KEY = 'pharmatrack-history-v1';
+      const MASTER_KEY = 'pharmatrack-master-v1';
+      let state = { history: [], master: {}, scannerRunning: false, scanner: null, lastScan: null, activeCamera: 'environment' };
 
-  function initDemoProducts() {
-    products = [
-      { id: 'p1', name: 'Paracetamol 500mg', expiry: '260630', batch: 'B001', facing: 3, units: 12, image: '' },
-      { id: 'p2', name: 'Ibuprofen 400mg', expiry: '250915', batch: 'B002', facing: 2, units: 5, image: '' },
-      { id: 'p3', name: 'Amoxicillin 250mg', expiry: '241101', batch: 'B003', facing: 4, units: 2, image: '' },
-      { id: 'p4', name: 'Loratadine 10mg', expiry: '260101', batch: 'B004', facing: 2, units: 8, image: '' },
-      { id: 'p5', name: 'Omeprazole 20mg', expiry: '250701', batch: 'B005', facing: 3, units: 15, image: '' },
-    ];
-    saveData();
-  }
-
-  function generateId() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 5); }
-
-  // --- DOM REFS ---
-  const $ = id => document.getElementById(id);
-  const grid = $('plannerGrid');
-  const totalItems = $('totalItems');
-  const expiryWarn = $('expiryWarn');
-  const historyList = $('historyList');
-  const popupOverlay = $('popupOverlay');
-  const popupClose = $('popupClose');
-  const popupTitle = $('popupTitle');
-  const editName = $('editName');
-  const editExpiry = $('editExpiry');
-  const editBatch = $('editBatch');
-  const editFacing = $('editFacing');
-  const editUnits = $('editUnits');
-  const popupSave = $('popupSave');
-  const popupDelete = $('popupDelete');
-  const imgPreviewContainer = $('imgPreviewContainer');
-  const imageFileInput = $('imageFileInput');
-  const galleryFileInput = $('galleryFileInput');
-  const imgCameraBtn = $('imgCameraBtn');
-  const imgGalleryBtn = $('imgGalleryBtn');
-  const imgSearchBtn = $('imgSearchBtn');
-
-  // --- HELPERS ---
-  function getExpiryStatus(expiry) {
-    if (!expiry || expiry.length < 6) return 'normal';
-    const year = 2000 + parseInt(expiry.slice(0, 2));
-    const month = parseInt(expiry.slice(2, 4)) - 1;
-    const day = parseInt(expiry.slice(4, 6));
-    const exp = new Date(year, month, day);
-    const now = new Date();
-    const diffMonths = (exp - now) / (1000 * 60 * 60 * 24 * 30);
-    if (diffMonths < 0) return 'critical';
-    if (diffMonths < 4) return 'soon';
-    return 'normal';
-  }
-
-  function getBatteryLevel(units) {
-    const u = parseInt(units) || 0;
-    if (u <= 2) return { level: 'critical', pct: 10, label: '🔴 Empty' };
-    if (u <= 6) return { level: 'low', pct: 30, label: '🟠 Low' };
-    if (u <= 10) return { level: 'medium', pct: 60, label: '🟡 Half' };
-    return { level: 'full', pct: 100, label: '🟢 Full' };
-  }
-
-  function getImageUrl(product) {
-    if (product.image && product.image.startsWith('data:')) return product.image;
-    const name = product.name.toLowerCase();
-    const imgMap = {
-      'paracetamol': '💊', 'ibuprofen': '💊', 'amoxicillin': '💊',
-      'loratadine': '💊', 'omeprazole': '💊', 'aspirin': '💊',
-      'vitamin': '🧪', 'collagen': '🧴', 'omega': '🧴',
-    };
-    for (const [key, emoji] of Object.entries(imgMap)) {
-      if (name.includes(key)) return emoji;
-    }
-    return '💊';
-  }
-
-  function getProductImageHtml(product) {
-    const src = product.image && product.image.startsWith('data:') ? product.image : '';
-    if (src) {
-      return `<img src="${src}" alt="${product.name}" onerror="this.parentElement.innerHTML='<span class=\\'placeholder\\'>💊</span>'">`;
-    }
-    return `<span class="placeholder">${getImageUrl(product)}</span>`;
-  }
-
-  // --- RENDER PLANNER ---
-  function renderPlanner() {
-    let html = '';
-    let warnCount = 0;
-    products.forEach(p => {
-      const status = getExpiryStatus(p.expiry);
-      if (status === 'soon' || status === 'critical') warnCount++;
-      const battery = getBatteryLevel(p.units);
-      const expiryLabel = p.expiry ? `${p.expiry.slice(0,2)}/${p.expiry.slice(2,4)}/${p.expiry.slice(4,6)}` : '—';
-      const statusClass = status === 'critical' ? 'expiry-critical' : status === 'soon' ? 'expiry-soon' : 'expiry-normal';
-      const imgHtml = getProductImageHtml(p);
-      html += `
-        <div class="planner-card ${statusClass}" data-id="${p.id}" onclick="openEdit('${p.id}')">
-          <div class="card-img">
-            ${imgHtml}
-            <div class="camera-overlay" onclick="event.stopPropagation(); openEdit('${p.id}'); setTimeout(()=>document.getElementById('imgCameraBtn').click(), 300);">📷</div>
-          </div>
-          <div class="card-name">${p.name}</div>
-          <div class="card-details">
-            <span>📅 ${expiryLabel}</span>
-            <span>🧬 ${p.batch || '—'}</span>
-            <span class="card-expiry-badge">${status === 'critical' ? '⚠️ EXPIRED' : status === 'soon' ? '⏳ SOON' : '✓ OK'}</span>
-          </div>
-          <div class="card-bottom">
-            <div class="battery-indicator">
-              <span>${battery.label}</span>
-              <div class="battery-bar">
-                <div class="battery-fill ${battery.level}" style="width:${battery.pct}%"></div>
-              </div>
-              <span style="font-size:8px;color:var(--gray-500);">${p.units || 0}u</span>
-            </div>
-            <span style="font-size:9px;color:var(--gray-500);">F:${p.facing || 0}</span>
-          </div>
-        </div>
-      `;
-    });
-    grid.innerHTML = html;
-    totalItems.textContent = products.length + ' items';
-    expiryWarn.textContent = warnCount + ' ⚠️';
-  }
-
-  // --- RENDER HISTORY ---
-  function renderHistory() {
-    if (!historyList) return;
-    if (history.length === 0) {
-      historyList.innerHTML = `
-        <div class="empty-state">
-          <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-            <rect x="3" y="3" width="18" height="18" rx="2"/>
-            <path d="M7 7h.01M7 12h.01M7 17h.01M12 7h5M12 12h5M12 17h5"/>
-          </svg>
-          <div class="empty-title">No scans yet</div>
-          <div class="empty-desc">Start scanning to build history</div>
-        </div>
-      `;
-      return;
-    }
-    historyList.innerHTML = history.slice(0, 50).map(h => `
-      <div class="history-card status-${h.status || 'ok'}">
-        <div class="card-header">
-          <span class="product-name">${h.name || 'Unknown'}</span>
-          <span class="qty-badge">Qty ${h.qty || 1}</span>
-        </div>
-        <div class="card-grid">
-          <div class="card-field"><div class="field-label">GTIN</div><div class="history-value">${h.gtin || '—'}</div></div>
-          <div class="card-field"><div class="field-label">Expiry</div><div class="history-value">${h.expiry || '—'}</div></div>
-          <div class="card-field"><div class="field-label">Batch</div><div class="history-value">${h.batch || '—'}</div></div>
-        </div>
-      </div>
-    `).join('');
-  }
-
-  // --- POPUP ---
-  function openEdit(id) {
-    const p = products.find(x => x.id === id);
-    if (!p) return;
-    editingId = id;
-    popupTitle.textContent = '✏️ Edit Product';
-    editName.value = p.name || '';
-    editExpiry.value = p.expiry || '';
-    editBatch.value = p.batch || '';
-    editFacing.value = p.facing || 0;
-    editUnits.value = p.units || 0;
-    pendingImageData = p.image || null;
-    updateImagePreview();
-    popupOverlay.classList.add('active');
-  }
-
-  function closePopup() {
-    popupOverlay.classList.remove('active');
-    editingId = null;
-    pendingImageData = null;
-  }
-
-  function updateImagePreview() {
-    if (pendingImageData && pendingImageData.startsWith('data:')) {
-      imgPreviewContainer.innerHTML = `<img src="${pendingImageData}" style="width:100%;height:100%;object-fit:contain;">`;
-    } else {
-      imgPreviewContainer.innerHTML = `<span style="color:var(--gray-500); font-size:11px;">No image</span>`;
-    }
-  }
-
-  function saveProduct() {
-    const id = editingId;
-    const p = products.find(x => x.id === id);
-    if (!p) { toast('Product not found', 'error'); return; }
-    p.name = editName.value.trim() || 'Unnamed';
-    p.expiry = editExpiry.value.trim().replace(/\D/g, '');
-    p.batch = editBatch.value.trim();
-    p.facing = parseInt(editFacing.value) || 0;
-    p.units = parseInt(editUnits.value) || 0;
-    if (pendingImageData) p.image = pendingImageData;
-    saveData();
-    renderPlanner();
-    closePopup();
-    toast('Product updated!', 'success');
-  }
-
-  function deleteProduct() {
-    if (!editingId) return;
-    if (!confirm('Delete this product?')) return;
-    products = products.filter(p => p.id !== editingId);
-    saveData();
-    renderPlanner();
-    closePopup();
-    toast('Deleted', 'warning');
-  }
-
-  // --- IMAGE HANDLING ---
-  function handleImageFile(file) {
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      pendingImageData = e.target.result;
-      updateImagePreview();
-      toast('Image loaded', 'success');
-    };
-    reader.readAsDataURL(file);
-  }
-
-  function searchImageOnline() {
-    const name = editName.value.trim() || 'medicine';
-    toast('Searching for: ' + name, 'warning');
-    setTimeout(() => {
-      const randomId = Math.floor(Math.random() * 200);
-      pendingImageData = `https://picsum.photos/seed/${randomId}/200/200`;
-      updateImagePreview();
-      toast('Image found!', 'success');
-    }, 800);
-  }
-
-  // --- SCANNER ---
-  async function startScanner() {
-    if (scanning) return;
-    try {
-      stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment', width: { ideal: 640 }, height: { ideal: 480 } }
-      });
-      const video = $('video-preview');
-      video.srcObject = stream;
-      await video.play();
-      scanning = true;
-      const fab = $('scanFab');
-      fab.classList.add('scanning');
-      $('scannerHint').textContent = 'Scanning...';
-      let detected = false;
-      const detectLoop = () => {
-        if (!scanning) return;
-        if (Math.random() < 0.02) {
-          const fakeGtin = '0629700000' + String(Math.floor(Math.random() * 100000)).padStart(5, '0');
-          const entry = {
-            id: generateId(),
-            gtin: fakeGtin,
-            name: 'Scanned Product',
-            qty: 1,
-            expiry: '251231',
-            batch: 'B' + String(Math.floor(Math.random() * 999)),
-            status: 'ok'
-          };
-          history.unshift(entry);
-          saveData();
-          renderHistory();
-          toast('Barcode detected!', 'success');
-          stopScanner();
-          detected = true;
-          return;
-        }
-        if (scanning) requestAnimationFrame(detectLoop);
-      };
-      detectLoop();
-      setTimeout(() => {
-        if (scanning) { stopScanner(); toast('Scan timed out', 'warning'); }
-      }, 10000);
-    } catch (err) {
-      toast('Camera access denied', 'error');
-      $('scannerHint').textContent = 'Camera unavailable';
-    }
-  }
-
-  function stopScanner() {
-    scanning = false;
-    const fab = $('scanFab');
-    fab.classList.remove('scanning');
-    $('scannerHint').textContent = 'Tap scan to start';
-    if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
-    const video = $('video-preview');
-    video.srcObject = null;
-  }
-
-  function manualAdd() {
-    const raw = $('manualInput').value.trim();
-    if (!raw) { toast('Enter a barcode', 'warning'); return; }
-    const entry = {
-      id: generateId(),
-      gtin: raw,
-      name: 'Manual Entry',
-      qty: 1,
-      expiry: '260101',
-      batch: 'MANUAL',
-      status: 'ok'
-    };
-    history.unshift(entry);
-    saveData();
-    renderHistory();
-    $('manualInput').value = '';
-    toast('Entry added', 'success');
-  }
-
-  // --- PASTE ---
-  function processPaste() {
-    const text = $('pasteTextarea').value;
-    if (!text.trim()) { toast('Paste some barcodes first', 'warning'); return; }
-    const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
-    let valid = 0, invalid = 0;
-    lines.forEach(raw => {
-      try {
-        const entry = {
-          id: generateId(),
-          gtin: raw.substring(0, 14) || raw,
-          name: 'Pasted Product',
-          qty: 1,
-          expiry: '260101',
-          batch: 'PASTE',
-          status: 'ok'
-        };
-        history.unshift(entry);
-        valid++;
-      } catch (e) { invalid++; }
-    });
-    saveData();
-    renderHistory();
-    $('statTotal').textContent = lines.length;
-    $('statValid').textContent = valid;
-    $('statInvalid').textContent = invalid;
-    $('pasteStats').classList.add('visible');
-    toast(`Processed ${valid} barcodes`, 'success');
-  }
-
-  // --- TOAST ---
-  function toast(msg, type = 'info') {
-    const container = $('toastContainer');
-    const div = document.createElement('div');
-    div.className = `toast ${type}`;
-    div.innerHTML = `
-      <svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="12" cy="12" r="10"/>
-        <line x1="12" y1="8" x2="12" y2="12"/>
-        <line x1="12" y1="16" x2="12.01" y2="16"/>
-      </svg>
-      <span class="toast-text">${msg}</span>
-    `;
-    container.appendChild(div);
-    setTimeout(() => div.remove(), 2500);
-  }
-
-  // --- NAVIGATION ---
-  function navigateTo(pageId) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    const target = document.getElementById(`page-${pageId}`);
-    if (target) target.classList.add('active');
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    const nav = document.querySelector(`.nav-item[data-page="${pageId}"]`);
-    if (nav) nav.classList.add('active');
-    if (pageId !== 'scan') stopScanner();
-    if (pageId === 'history') renderHistory();
-    if (pageId === 'planner') renderPlanner();
-  }
-
-  // --- EXPORT/IMPORT ---
-  function exportData() {
-    const data = JSON.stringify({ products, history }, null, 2);
-    const blob = new Blob([data], { type: 'application/json' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = `pharmatrack_backup_${new Date().toISOString().slice(0,10)}.json`;
-    a.click();
-    toast('Backup exported', 'success');
-  }
-
-  function importData() {
-    $('importFileInput').click();
-  }
-
-  function clearAll() {
-    if (!confirm('Delete all data?')) return;
-    products = [];
-    history = [];
-    saveData();
-    renderPlanner();
-    renderHistory();
-    toast('All data cleared', 'warning');
-  }
-
-  // --- INIT ---
-  function init() {
-    loadData();
-    renderPlanner();
-    renderHistory();
-
-    // Navigation
-    document.querySelectorAll('.nav-item').forEach(item => {
-      item.addEventListener('click', () => {
-        navigateTo(item.dataset.page);
-      });
-    });
-
-    // Scan
-    $('scanFab').addEventListener('click', () => {
-      if (scanning) { stopScanner(); } else { navigateTo('scan'); startScanner(); }
-    });
-
-    // Manual add
-    $('btnManualAdd').addEventListener('click', manualAdd);
-    $('manualInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') manualAdd(); });
-
-    // Upload image
-    $('btnUploadImg').addEventListener('click', () => { $('imageFileInput').click(); });
-    $('imageFileInput').addEventListener('change', (e) => {
-      if (e.target.files.length) {
-        const file = e.target.files[0];
-        toast('Image received, decoding...', 'warning');
-        setTimeout(() => {
-          const entry = {
-            id: generateId(),
-            gtin: 'IMG' + String(Math.floor(Math.random() * 100000)),
-            name: 'Image Decoded',
-            qty: 1,
-            expiry: '260101',
-            batch: 'IMG',
-            status: 'ok'
-          };
-          history.unshift(entry);
-          saveData();
-          renderHistory();
-          toast('Image decoded!', 'success');
-        }, 1500);
+      const $ = id => document.getElementById(id);
+      function safeJSON(val, fallback) { try { return JSON.parse(val) ?? fallback; } catch { return fallback; } }
+      function loadState() {
+        state.history = safeJSON(localStorage.getItem(STORAGE_KEY), []);
+        state.master = safeJSON(localStorage.getItem(MASTER_KEY), {});
+        updateMasterStatus();
       }
-      e.target.value = '';
-    });
+      function persistHistory() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state.history)); renderHistory(); renderRecent(); updateBadge(); }
+      function persistMaster() { localStorage.setItem(MASTER_KEY, JSON.stringify(state.master)); updateMasterStatus(); }
+      function showToast(msg, type='success') {
+        const c = $('toastContainer'); const t = document.createElement('div'); t.className = `toast ${type}`;
+        t.innerHTML = `<div class="toast-content"><span>${msg}</span></div>`; c.appendChild(t); setTimeout(()=>t.remove(), 2500);
+      }
+      function switchPage(page) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        $('page-'+page)?.classList.add('active');
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.page === page));
+        if(page !== 'scan' && state.scannerRunning) stopScanner();
+      }
+      function formatExpiry(raw) { if(!raw || raw.length!==6) return '-'; const yy=+raw.slice(0,2), mm=+raw.slice(2,4)-1, dd=+raw.slice(4,6)||1; return new Date(2000+yy, Math.max(0,mm), dd).toLocaleDateString(); }
+      function parseGS1(input) {
+        const clean = String(input||'').replace(/\s+/g,''); if(!clean) return null;
+        const gtin = clean.match(/01(\d{14})/); const exp = clean.match(/17(\d{6})/); const lot = clean.match(/10([\w\-\.]{1,20})/);
+        const barcode = gtin ? gtin[1] : clean; const expiryRaw = exp ? exp[1] : ''; 
+        return { raw:clean, barcode, expiryRaw, expiryFormatted:formatExpiry(expiryRaw), lot: lot?lot[1]:'', name: state.master[barcode] || 'Unknown Product' };
+      }
+      function openScanModal(scan) { state.lastScan = scan; $('resultName').textContent=scan.name; $('resultBarcode').textContent=scan.barcode; $('resultExpiryDate').textContent=scan.expiryFormatted; $('resultSubtitle').textContent = scan.name==='Unknown Product' ? 'No master-data match' : 'Matched product'; $('scanResultModal').classList.add('active'); }
+      function closeScanModal() { $('scanResultModal').classList.remove('active'); state.lastScan=null; }
+      function saveCurrentScan() {
+        if(!state.lastScan) return; const qty = Math.max(1, Number($('resultQty').value||1));
+        state.history.unshift({...state.lastScan, qty, savedAt:new Date().toISOString()});
+        persistHistory(); closeScanModal(); showToast('Scan saved');
+      }
+      function renderRecent() {
+        const list=$('recentScans'), empty=$('emptyRecent');
+        if(!list) return; list.querySelectorAll('.recent-item').forEach(n=>n.remove());
+        if(!state.history.length){ empty.style.display=''; return; } empty.style.display='none';
+        state.history.slice(0,5).forEach(item=>{ const row=document.createElement('div'); row.className='recent-item'; row.innerHTML=`<div><div class="recent-item-title">${item.name}</div><div class="recent-item-sub">${item.barcode}</div></div><div class="recent-item-right">x${item.qty}</div>`; list.appendChild(row); });
+      }
+      function renderHistory() {
+        const list=$('historyList'); if(!list) return; list.innerHTML='';
+        const term=($('historySearch')?.value||'').trim().toLowerCase(); let filtered=state.history;
+        if(term) filtered=filtered.filter(i=>`${i.name} ${i.barcode} ${i.lot||''}`.toLowerCase().includes(term));
+        const activeTab=document.querySelector('.filter-tab.active'); const filter=activeTab?activeTab.dataset.filter:'all';
+        if(filter!=='all'){ const now=new Date(); filtered=filtered.filter(i=>{ if(!i.expiryRaw||i.expiryRaw.length!==6) return filter==='ok'; const exp=new Date(2000+ +i.expiryRaw.slice(0,2), +i.expiryRaw.slice(2,4)-1, +i.expiryRaw.slice(4,6)||1); const diff=(exp-now)/86400000; if(filter==='expired')return diff<0; if(filter==='soon')return diff>=0&&diff<30; return diff>=30; }); }
+        if(!filtered.length){ list.innerHTML='<div class="empty-state"><p class="empty-state-text">No scans found</p></div>'; return; }
+        filtered.forEach(item=>{ const card=document.createElement('div'); card.className='history-item'; card.innerHTML=`<div class="history-title">${item.name}</div><div class="history-meta">${item.barcode} • Qty ${item.qty}</div><div class="history-meta">Expiry: ${item.expiryFormatted} • ${new Date(item.savedAt).toLocaleString()}</div>`; list.appendChild(card); });
+      }
+      function updateBadge(){ const b=$('historyBadge'); if(b){ b.textContent=String(state.history.length); b.style.display=state.history.length?'inline-flex':'none'; } }
+      function updateMasterStatus(){ const s=$('masterStatus'), d=$('masterDetails'); if(s&&d){ const c=Object.keys(state.master).length; s.style.display=c?'flex':'none'; d.textContent=`${c} products loaded`; } }
+      async function startScanner(){
+        if(!window.Html5Qrcode){ showToast('Scanner library failed','error'); return; }
+        if(state.scannerRunning) return;
+        state.scanner = state.scanner || new Html5Qrcode('reader');
+        try{ await state.scanner.start({facingMode:state.activeCamera},{fps:8,qrbox:{width:220,height:220}}, decoded=>{ if(!decoded)return; const scan=parseGS1(decoded); if(!scan)return; stopScanner(); openScanModal(scan); });
+          state.scannerRunning=true; $('btnScannerText').textContent='Stop Scanner'; $('scannerContainer').classList.add('scanning'); $('scannerPlaceholder').style.display='none'; showToast('Scanner started');
+        }catch{ showToast('Camera access denied','error'); }
+      }
+      async function stopScanner(){ if(!state.scannerRunning||!state.scanner)return; try{ await state.scanner.stop(); }catch{} state.scannerRunning=false; $('btnScannerText').textContent='Start Scanner'; $('scannerContainer').classList.remove('scanning'); $('scannerPlaceholder').style.display=''; }
+      function toggleScanner(){ return state.scannerRunning?stopScanner():startScanner(); }
+      function submitManual(){ const v=$('manualBarcode').value.trim(); if(!v)return; const scan=parseGS1(v); if(scan){ openScanModal(scan); $('manualBarcode').value=''; } else showToast('Invalid barcode','error'); }
+      function processPaste(){ const text=$('pasteArea').value||''; const lines=text.split(/\r?\n/).map(l=>l.trim()).filter(Boolean); let valid=0,matched=0,expired=0; const now=new Date(); lines.forEach(line=>{ const p=parseGS1(line); if(!p)return; valid++; if(p.name!=='Unknown Product')matched++; if(p.expiryRaw.length===6){ const exp=new Date(2000+ +p.expiryRaw.slice(0,2), +p.expiryRaw.slice(2,4)-1, +p.expiryRaw.slice(4,6)||1); if(exp<now)expired++; } }); $('statTotal').textContent=String(lines.length); $('statValid').textContent=String(valid); $('statMatched').textContent=String(matched); $('statExpired').textContent=String(expired); $('pasteStats').classList.add('visible'); }
+      function parseMasterCSV(text){ const lines=text.split(/\r?\n/).map(l=>l.trim()).filter(Boolean); const map={}; lines.slice(1).forEach(line=>{ const cols=line.split(',').map(c=>c.trim()); if(cols.length>=2) map[cols[0]]=cols[1]; }); return map; }
+      function exportHistory(){ if(!state.history.length){ showToast('No data to export','error'); return; } const rows=[['Saved At','Name','Barcode','Lot','Expiry','Qty'],...state.history.map(i=>[i.savedAt,i.name,i.barcode,i.lot||'',i.expiryFormatted,i.qty])]; const csv=rows.map(r=>r.map(v=>`"${String(v).replaceAll('"','""')}"`).join(',')).join('\n'); const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'}); const link=document.createElement('a'); link.href=URL.createObjectURL(blob); link.download=`pharmatrack-${new Date().toISOString().slice(0,10)}.csv`; link.click(); URL.revokeObjectURL(link.href); $('exportModal').classList.remove('active'); showToast('Export complete'); }
+      function clearHistory(){ if(!confirm('Delete all scan history?'))return; state.history=[]; persistHistory(); showToast('History cleared'); }
+      function toggleSideMenu(open){ $('sideMenu').classList.toggle('active',open); $('sideMenuBackdrop').classList.toggle('active',open); }
 
-    // Paste
-    $('btnProcessPaste').addEventListener('click', processPaste);
-    $('btnClearPaste').addEventListener('click', () => {
-      $('pasteTextarea').value = '';
-      $('pasteStats').classList.remove('visible');
-      toast('Cleared', 'info');
-    });
+      function bindEvents(){
+        document.querySelectorAll('.nav-item').forEach(btn=>btn.addEventListener('click',()=>switchPage(btn.dataset.page)));
+        $('viewAllHistory')?.addEventListener('click',()=>switchPage('history'));
+        $('historySearch')?.addEventListener('input',renderHistory);
+        document.querySelectorAll('.filter-tab').forEach(tab=>tab.addEventListener('click',()=>{ document.querySelectorAll('.filter-tab').forEach(t=>t.classList.remove('active')); tab.classList.add('active'); renderHistory(); }));
+        $('btnStartScanner')?.addEventListener('click',toggleScanner);
+        $('btnSwitchCamera')?.addEventListener('click',async()=>{ state.activeCamera=state.activeCamera==='environment'?'user':'environment'; if(state.scannerRunning){ await stopScanner(); await startScanner(); } });
+        $('btnManualSubmit')?.addEventListener('click',submitManual);
+        $('manualBarcode')?.addEventListener('keydown',e=>{ if(e.key==='Enter')submitManual(); });
+        $('btnCancelScan')?.addEventListener('click',closeScanModal);
+        $('btnSaveScan')?.addEventListener('click',saveCurrentScan);
+        $('btnQtyMinus')?.addEventListener('click',()=>{ $('resultQty').value=String(Math.max(1,Number($('resultQty').value||1)-1)); });
+        $('btnQtyPlus')?.addEventListener('click',()=>{ $('resultQty').value=String(Math.max(1,Number($('resultQty').value||1)+1)); });
+        $('btnProcessPaste')?.addEventListener('click',processPaste);
+        $('btnClearPaste')?.addEventListener('click',()=>{ $('pasteArea').value=''; $('pasteStats').classList.remove('visible'); });
+        $('uploadZone')?.addEventListener('click',()=>$('masterFileInput')?.click());
+        $('masterFileInput')?.addEventListener('change',async e=>{ const f=e.target.files?.[0]; if(!f)return; const text=await f.text(); state.master=parseMasterCSV(text); persistMaster(); showToast('Master data loaded'); });
+        $('btnExportData')?.addEventListener('click',()=>$('exportModal').classList.add('active'));
+        $('btnCloseExport')?.addEventListener('click',()=>$('exportModal').classList.remove('active'));
+        $('exportExcel')?.addEventListener('click',exportHistory);
+        $('btnClearHistory')?.addEventListener('click',clearHistory);
+        $('btnMenu')?.addEventListener('click',()=>toggleSideMenu(true));
+        $('sideMenuBackdrop')?.addEventListener('click',()=>toggleSideMenu(false));
+        document.querySelectorAll('.side-menu-item[data-action]').forEach(item=>item.addEventListener('click',()=>{ toggleSideMenu(false); if(item.dataset.action==='export')$('exportModal').classList.add('active'); if(item.dataset.action==='clear')clearHistory(); }));
+        $('toggleAPI')?.addEventListener('change',e=>showToast(e.target.checked?'API Lookup enabled':'API Lookup disabled','info'));
+      }
 
-    // Search
-    $('searchInput').addEventListener('input', (e) => {
-      const term = e.target.value.toLowerCase();
-      if (!historyList) return;
-      const cards = historyList.querySelectorAll('.history-card');
-      cards.forEach(card => {
-        const text = card.textContent.toLowerCase();
-        card.style.display = text.includes(term) ? '' : 'none';
-      });
-    });
-
-    // Filters
-    document.querySelectorAll('.filter-chip').forEach(chip => {
-      chip.addEventListener('click', () => {
-        document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
-        chip.classList.add('active');
-        const filter = chip.dataset.filter;
-        if (!historyList) return;
-        const cards = historyList.querySelectorAll('.history-card');
-        cards.forEach(card => {
-          if (filter === 'all') { card.style.display = ''; return; }
-          const status = card.className.match(/status-(\w+)/);
-          const cardStatus = status ? status[1] : 'ok';
-          card.style.display = cardStatus === filter ? '' : 'none';
-        });
-      });
-    });
-
-    // Popup
-    popupClose.addEventListener('click', closePopup);
-    popupOverlay.addEventListener('click', (e) => { if (e.target === popupOverlay) closePopup(); });
-    popupSave.addEventListener('click', saveProduct);
-    popupDelete.addEventListener('click', deleteProduct);
-
-    imgCameraBtn.addEventListener('click', () => { imageFileInput.click(); });
-    imgGalleryBtn.addEventListener('click', () => { galleryFileInput.click(); });
-    imgSearchBtn.addEventListener('click', searchImageOnline);
-
-    galleryFileInput.addEventListener('change', (e) => {
-      if (e.target.files.length) handleImageFile(e.target.files[0]);
-      e.target.value = '';
-    });
-
-    $('importFileInput').addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        try {
-          const data = JSON.parse(ev.target.result);
-          if (data.products) products = data.products;
-          if (data.history) history = data.history;
-          saveData();
-          renderPlanner();
-          renderHistory();
-          toast('Import successful', 'success');
-        } catch (err) { toast('Invalid file', 'error'); }
-      };
-      reader.readAsText(file);
-      e.target.value = '';
-    });
-
-    // Settings handlers
-    document.getElementById('setStore').addEventListener('change', (e) => {
-      localStorage.setItem('pharmatrack_store', e.target.value);
-    });
-    document.getElementById('setTarget').addEventListener('change', (e) => {
-      localStorage.setItem('pharmatrack_target', e.target.value);
-    });
-
-    // Keyboard
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && popupOverlay.classList.contains('active')) closePopup();
-      if (e.key === 'Enter' && popupOverlay.classList.contains('active')) saveProduct();
-    });
-
-    // Global
-    window.openEdit = openEdit;
-    window.closePopup = closePopup;
-    window.saveProduct = saveProduct;
-    window.deleteProduct = deleteProduct;
-    window.navigateTo = navigateTo;
-    window.exportData = exportData;
-    window.importData = importData;
-    window.clearAll = clearAll;
-
-    toast('App ready', 'success');
-  }
-
-  init();
-})();
-</script>
+      function init(){ loadState(); bindEvents(); renderHistory(); renderRecent(); updateBadge(); }
+      document.readyState==='loading'?document.addEventListener('DOMContentLoaded',init):init();
+    })();
+  </script>
 </body>
 </html>
+```
