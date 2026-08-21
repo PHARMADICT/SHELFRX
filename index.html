@@ -1,22 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="theme-color" content="#F5F7FA">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="Pharmacy Tracker">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#F5F7FA" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Pharmacy Tracker" />
   <title>Pharmacy Tracker</title>
-  <link rel="manifest" href="manifest.json">
-  <link rel="apple-touch-icon" href="boots-apple-touch-180.png">
-  <link rel="icon" type="image/png" sizes="192x192" href="boots-icon-192.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="boots-icon-32.png">
-  <link rel="shortcut icon" href="favicon.ico">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="boots-apple-touch-180.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="boots-icon-192.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="boots-icon-32.png" />
+  <link rel="shortcut icon" href="favicon.ico" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
   <style>
     /* ========================================
        MODERN PHARMACY THEME (merged)
@@ -83,23 +84,33 @@
       -webkit-font-smoothing: antialiased;
     }
     input, button, select, textarea { font-family: inherit; font-size: inherit; }
+
     .bg-decoration { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
     .bg-blob { position: absolute; border-radius: 50%; filter: blur(60px); opacity: 0.4; }
     .bg-blob-1 { width: 200px; height: 200px; background: var(--coral); top: -50px; right: -50px; }
     .bg-blob-2 { width: 150px; height: 150px; background: var(--teal); bottom: 30%; left: -40px; }
     .bg-blob-3 { width: 180px; height: 180px; background: var(--yellow); bottom: -60px; right: 20%; }
 
-    .app { position: relative; display: flex; flex-direction: column; min-height: 100vh; padding-top: var(--safe-top); z-index: 1; }
+    .app {
+      position: relative; display: flex; flex-direction: column; min-height: 100vh;
+      padding-top: var(--safe-top); z-index: 1;
+    }
+
     .app-header {
-      position: sticky; top: 0; z-index: 100; height: var(--header-height); padding: 0 var(--space-md);
-      background: rgba(255,255,255,0.9); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      position: sticky; top: 0; z-index: 100; height: var(--header-height);
+      padding: 0 var(--space-md);
+      background: rgba(255,255,255,0.9);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid rgba(0,0,0,0.04);
     }
     .header-left { display: flex; align-items: center; gap: var(--space-sm); }
     .logo { display: flex; align-items: center; gap: var(--space-sm); }
     .logo-icon {
       width: 44px; height: 44px; background: #FFFFFF; border-radius: var(--radius-sm);
-      display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-md); overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: var(--shadow-md); overflow: hidden;
     }
     .logo-icon img { width: 38px; height: 38px; object-fit: contain; }
     .logo-text { display: flex; flex-direction: column; }
@@ -107,9 +118,11 @@
     .logo-branch { font-size: 0.625rem; font-weight: 500; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.05em; }
     .header-right { display: flex; align-items: center; gap: var(--space-sm); }
     .menu-btn {
-      width: 40px; height: 40px; border-radius: var(--radius-sm); background: var(--bg-card); border: none;
-      color: var(--text-medium); display: flex; align-items: center; justify-content: center; cursor: pointer;
-      box-shadow: var(--shadow-sm); transition: all var(--transition-fast);
+      width: 40px; height: 40px; border-radius: var(--radius-sm);
+      background: var(--bg-card); border: none; color: var(--text-medium);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; box-shadow: var(--shadow-sm);
+      transition: all var(--transition-fast);
     }
     .menu-btn:hover { background: var(--teal-light); color: var(--teal); }
     .menu-btn svg { width: 20px; height: 20px; }
@@ -119,9 +132,230 @@
     .page.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* SCANNER PAGE */
+    .page-title {
+      font-size: 1.5rem; font-weight: 700; color: var(--text-dark);
+      text-align: center; margin: var(--space-md) 0;
+    }
+
+    /* ===== SALES PAGE (Hourly Grid) ===== */
+    .sales-page { padding: var(--space-md); }
+    .sales-container {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+      padding: var(--space-md);
+    }
+
+    .sales-scroll {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      margin: 0 -8px;
+      padding: 0 8px;
+    }
+    .sales-table {
+      width: 100%;
+      min-width: 900px;
+      border-collapse: collapse;
+      font-size: 0.75rem;
+    }
+    .sales-table th {
+      background: var(--teal-light);
+      color: var(--text-dark);
+      font-weight: 600;
+      padding: 8px 4px;
+      text-align: center;
+      border-bottom: 2px solid var(--teal);
+      white-space: nowrap;
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+    .sales-table th:first-child {
+      position: sticky;
+      left: 0;
+      z-index: 10;
+      background: var(--teal-light);
+    }
+    .sales-table td {
+      padding: 6px 4px;
+      text-align: center;
+      border-bottom: 1px solid var(--bg-input);
+      vertical-align: middle;
+    }
+    .sales-table td:first-child {
+      position: sticky;
+      left: 0;
+      background: var(--bg-card);
+      z-index: 3;
+      font-weight: 600;
+      color: var(--text-medium);
+      border-right: 2px solid var(--teal-light);
+      min-width: 100px;
+    }
+    .sales-table .input-cell input {
+      width: 100%;
+      min-width: 50px;
+      padding: 4px 2px;
+      border: 1px solid var(--bg-input);
+      border-radius: var(--radius-sm);
+      background: var(--bg-input);
+      text-align: center;
+      font-weight: 500;
+      transition: all var(--transition-fast);
+    }
+    .sales-table .input-cell input:focus {
+      outline: none;
+      border-color: var(--teal);
+      background: white;
+      box-shadow: 0 0 0 3px var(--teal-light);
+    }
+    .sales-table .input-cell input[type="number"] {
+      -moz-appearance: textfield;
+    }
+    .sales-table .input-cell input::-webkit-outer-spin-button,
+    .sales-table .input-cell input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    .sales-table .auto-cell {
+      color: var(--teal-dark);
+      font-weight: 600;
+    }
+    .sales-table .total-row td {
+      background: var(--teal-light);
+      font-weight: 700;
+      border-top: 2px solid var(--teal);
+    }
+    .sales-table .total-row td:first-child {
+      background: var(--teal-light);
+    }
+
+    /* Summary cards */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: var(--space-sm);
+      margin-top: var(--space-md);
+    }
+    .summary-card {
+      background: var(--bg-input);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      text-align: center;
+    }
+    .summary-card .label {
+      font-size: 0.6875rem;
+      color: var(--text-light);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .summary-card .value {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text-dark);
+    }
+    .summary-card .value.teal { color: var(--teal); }
+    .summary-card .value.coral { color: var(--coral); }
+    .summary-card .value.gold { color: var(--yellow-dark); }
+
+    .target-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+      margin-top: var(--space-md);
+      align-items: center;
+      justify-content: space-between;
+    }
+    .target-input {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      background: var(--bg-card);
+      padding: var(--space-sm) var(--space-md);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+    }
+    .target-input label {
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: var(--text-medium);
+    }
+    .target-input input {
+      width: 100px;
+      padding: 4px 8px;
+      border: 1px solid var(--bg-input);
+      border-radius: var(--radius-sm);
+      text-align: center;
+      font-weight: 600;
+      background: var(--bg-input);
+    }
+    .target-input input:focus {
+      outline: none;
+      border-color: var(--teal);
+      background: white;
+    }
+
+    /* Anime / Popup for targets */
+    .target-popup {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 300;
+      padding: var(--space-md);
+      animation: popIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .target-popup.active { display: flex; }
+    .target-popup-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-xl);
+      padding: var(--space-xl);
+      max-width: 400px;
+      width: 100%;
+      box-shadow: var(--shadow-lg);
+      text-align: center;
+    }
+    .target-popup-card h2 {
+      font-size: 1.5rem;
+      margin-bottom: var(--space-md);
+      color: var(--text-dark);
+    }
+    .target-popup-card .big-number {
+      font-size: 3rem;
+      font-weight: 800;
+      color: var(--teal);
+      margin: var(--space-md) 0;
+    }
+    .target-popup-card .sub {
+      font-size: 1rem;
+      color: var(--text-light);
+    }
+    .target-popup-card .btn-close {
+      margin-top: var(--space-lg);
+      padding: var(--space-sm) var(--space-xl);
+      background: var(--teal);
+      color: white;
+      border: none;
+      border-radius: var(--radius-full);
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .sales-table { min-width: 700px; font-size: 0.7rem; }
+      .sales-table th { padding: 4px 2px; }
+      .sales-table td { padding: 4px 2px; }
+      .sales-table .input-cell input { min-width: 40px; font-size: 0.7rem; }
+      .summary-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    /* ===== Other pages (keep existing) ===== */
     .scanner-page { padding: var(--space-md); display: flex; flex-direction: column; align-items: center; }
-    .page-title { font-size: 1.5rem; font-weight: 700; color: var(--text-dark); text-align: center; margin-bottom: var(--space-md); }
     .scanner-card { width: 100%; max-width: 280px; background: var(--bg-card); border-radius: var(--radius-lg); padding: var(--space-md); box-shadow: var(--shadow-md); margin-bottom: var(--space-md); }
     .scanner-container {
       position: relative; width: 100%; aspect-ratio: 1; background: linear-gradient(135deg, var(--teal-light) 0%, var(--blue-light) 100%);
@@ -212,7 +446,6 @@
     .recent-item-sub { font-size: 0.6875rem; color: var(--text-light); }
     .recent-item-right { font-weight: 600; color: var(--teal); }
 
-    /* HISTORY PAGE */
     .history-page { padding: var(--space-md); }
     .search-box {
       display: flex; align-items: center; gap: var(--space-sm); padding: var(--space-sm) var(--space-md);
@@ -242,7 +475,6 @@
     .history-title { font-size: 0.9375rem; font-weight: 600; color: var(--text-dark); }
     .history-meta { font-size: 0.75rem; color: var(--text-light); }
 
-    /* MANUAL PAGE */
     .manual-page { padding: var(--space-md); }
     .card { background: var(--bg-card); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); overflow: hidden; }
     .card-header { padding: var(--space-md); border-bottom: 1px solid var(--bg-input); }
@@ -265,7 +497,6 @@
     .stat-value { font-size: 1.5rem; font-weight: 700; color: var(--teal); }
     .stat-label { font-size: 0.6875rem; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.05em; }
 
-    /* MASTER PAGE (Settings) */
     .master-page { padding: var(--space-md); }
     .upload-zone {
       padding: var(--space-xl); border: 2px dashed var(--teal); border-radius: var(--radius-lg);
@@ -326,7 +557,6 @@
     .toggle input:checked + .toggle-slider { background: var(--teal); }
     .toggle input:checked + .toggle-slider::before { transform: translateX(20px); }
 
-    /* BOTTOM NAV */
     .bottom-nav {
       position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
       height: var(--nav-height); padding: 0 var(--space-sm); padding-bottom: var(--safe-bottom);
@@ -352,7 +582,7 @@
       display: flex; align-items: center; justify-content: center;
     }
 
-    /* MODALS */
+    /* Modal & Toast (keep) */
     .modal-backdrop {
       position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);
       z-index: 200; display: none; align-items: center; justify-content: center; padding: var(--space-md);
@@ -440,7 +670,6 @@
     .export-option-title { font-size: 0.9375rem; font-weight: 600; color: var(--text-dark); }
     .export-option-desc { font-size: 0.75rem; color: var(--text-light); }
 
-    /* SIDE MENU */
     .side-menu-backdrop {
       position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 150;
       opacity: 0; visibility: hidden; transition: all var(--transition-default);
@@ -469,7 +698,6 @@
     .side-menu-footer { padding: var(--space-md); border-top: 1px solid var(--bg-input); text-align: center; }
     .version-text { font-size: 0.6875rem; color: var(--text-muted); }
 
-    /* TOAST */
     .toast-container {
       position: fixed; top: calc(var(--header-height) + var(--space-md)); left: 50%;
       transform: translateX(-50%); z-index: 300;
@@ -544,7 +772,7 @@
     <!-- Main Content -->
     <main class="main-content">
       <!-- SCAN PAGE -->
-      <div class="page active" id="page-scan">
+      <div class="page" id="page-scan">
         <div class="scanner-page">
           <h1 class="page-title">Scan Barcode</h1>
           <div class="scanner-card">
@@ -674,7 +902,67 @@
         </div>
       </div>
 
-      <!-- SETTINGS (Master + Settings) -->
+      <!-- ===== NEW SALES PAGE ===== -->
+      <div class="page" id="page-sales">
+        <div class="sales-page">
+          <h1 class="page-title">📊 Hourly Sales Entry</h1>
+          <div class="sales-container">
+            <div class="sales-scroll">
+              <table class="sales-table" id="salesTable">
+                <thead>
+                  <tr>
+                    <th>TIME</th>
+                    <th>TOTAL SALE (AED)</th>
+                    <th>in KWD</th>
+                    <th>TRN</th>
+                    <th>ATV</th>
+                    <th>No7 (AED)</th>
+                    <th>No7 KWD</th>
+                    <th>No7 %</th>
+                    <th>Conversion %</th>
+                    <th>IPC</th>
+                    <th>AURA</th>
+                    <th>AURA %</th>
+                    <th>UNITS SOLD</th>
+                    <th>FOOTFALL</th>
+                    <th>STAFF</th>
+                  </tr>
+                </thead>
+                <tbody id="salesBody">
+                  <!-- rows generated by JS -->
+                </tbody>
+                <tfoot id="salesFoot">
+                  <!-- totals row -->
+                </tfoot>
+              </table>
+            </div>
+
+            <!-- Summary & Targets -->
+            <div class="target-row">
+              <div class="target-input">
+                <label>Monthly Target (AED)</label>
+                <input type="number" id="monthlyTarget" value="250000">
+              </div>
+              <div class="target-input">
+                <label>No7 Target %</label>
+                <input type="number" id="no7TargetPct" value="10" step="0.1">
+              </div>
+              <button class="btn btn-primary" id="btnTargetInsight">🎯 Target Insight</button>
+            </div>
+
+            <div class="summary-grid" id="summaryGrid">
+              <div class="summary-card"><div class="label">Today's Total Sale</div><div class="value teal" id="todayTotalSale">0</div></div>
+              <div class="summary-card"><div class="label">Today's No7</div><div class="value coral" id="todayNo7">0</div></div>
+              <div class="summary-card"><div class="label">Month to Date</div><div class="value gold" id="monthToDate">0</div></div>
+              <div class="summary-card"><div class="label">Week to Date</div><div class="value" id="weekToDate">0</div></div>
+              <div class="summary-card"><div class="label">Monthly Target</div><div class="value" id="monthlyTargetDisplay">250,000</div></div>
+              <div class="summary-card"><div class="label">Achieved %</div><div class="value teal" id="achievedPct">0%</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SETTINGS PAGE (Master + Settings) -->
       <div class="page" id="page-settings">
         <div class="master-page">
           <h1 class="page-title">Settings & Master Data</h1>
@@ -769,41 +1057,24 @@
 
     <!-- Bottom Navigation -->
     <nav class="bottom-nav">
-      <button class="nav-item active" data-page="scan">
-        <div class="nav-item-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/>
-            <line x1="7" y1="12" x2="17" y2="12"/>
-          </svg>
-        </div>
+      <button class="nav-item" data-page="scan">
+        <div class="nav-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="7" y1="12" x2="17" y2="12"/></svg></div>
         <span>Scan</span>
       </button>
       <button class="nav-item" data-page="history">
-        <div class="nav-item-icon">
-          <span class="nav-badge" id="historyBadge" style="display:none;">0</span>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10"/>
-            <polyline points="12 6 12 12 16 14"/>
-          </svg>
-        </div>
+        <div class="nav-item-icon"><span class="nav-badge" id="historyBadge" style="display:none;">0</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
         <span>History</span>
       </button>
       <button class="nav-item" data-page="manual">
-        <div class="nav-item-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
-            <rect x="8" y="2" width="8" height="4" rx="1"/>
-          </svg>
-        </div>
+        <div class="nav-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div>
         <span>Manual</span>
       </button>
+      <button class="nav-item active" data-page="sales">
+        <div class="nav-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+        <span>Sales</span>
+      </button>
       <button class="nav-item" data-page="settings">
-        <div class="nav-item-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="3"/>
-            <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
-          </svg>
-        </div>
+        <div class="nav-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg></div>
         <span>Settings</span>
       </button>
     </nav>
@@ -812,100 +1083,55 @@
   <!-- Toast Container -->
   <div class="toast-container" id="toastContainer"></div>
 
-  <!-- PIN Modal -->
+  <!-- Target Insight Popup -->
+  <div class="target-popup" id="targetPopup">
+    <div class="target-popup-card">
+      <h2>🎯 Target Insight</h2>
+      <div class="sub">Days left in month</div>
+      <div class="big-number" id="daysLeft">0</div>
+      <div class="sub">Remaining target to achieve</div>
+      <div class="big-number" id="remainingTarget">0</div>
+      <div class="sub">Daily average needed</div>
+      <div class="big-number" id="dailyNeeded">0</div>
+      <button class="btn-close" id="btnClosePopup">Close</button>
+    </div>
+  </div>
+
+  <!-- Other modals (PIN, scan result, export) kept for completeness but simplified -->
   <div class="modal-backdrop" id="pinModal">
     <div class="modal">
-      <div class="modal-header">
-        <div class="modal-icon teal">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-          </svg>
-        </div>
-        <h2 class="modal-title">Enter PIN</h2>
-        <p class="modal-subtitle">Enter your 4-digit PIN to continue</p>
-      </div>
+      <div class="modal-header"><div class="modal-icon teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div><h2 class="modal-title">Enter PIN</h2><p class="modal-subtitle">Enter your 4-digit PIN</p></div>
       <div class="modal-body">
         <input type="tel" id="pinHiddenInput" class="pin-hidden-input" maxlength="4" inputmode="numeric" pattern="[0-9]*" autocomplete="off">
-        <div class="pin-display" id="pinDisplay">
-          <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
-        </div>
+        <div class="pin-display" id="pinDisplay"><div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div></div>
         <div class="pin-pad">
-          <button class="pin-key" data-key="1">1</button>
-          <button class="pin-key" data-key="2">2</button>
-          <button class="pin-key" data-key="3">3</button>
-          <button class="pin-key" data-key="4">4</button>
-          <button class="pin-key" data-key="5">5</button>
-          <button class="pin-key" data-key="6">6</button>
-          <button class="pin-key" data-key="7">7</button>
-          <button class="pin-key" data-key="8">8</button>
-          <button class="pin-key" data-key="9">9</button>
-          <button class="pin-key cancel" data-key="cancel">✕</button>
-          <button class="pin-key" data-key="0">0</button>
-          <button class="pin-key enter" data-key="enter">✓</button>
+          <button class="pin-key" data-key="1">1</button><button class="pin-key" data-key="2">2</button><button class="pin-key" data-key="3">3</button>
+          <button class="pin-key" data-key="4">4</button><button class="pin-key" data-key="5">5</button><button class="pin-key" data-key="6">6</button>
+          <button class="pin-key" data-key="7">7</button><button class="pin-key" data-key="8">8</button><button class="pin-key" data-key="9">9</button>
+          <button class="pin-key cancel" data-key="cancel">✕</button><button class="pin-key" data-key="0">0</button><button class="pin-key enter" data-key="enter">✓</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Scan Result Modal -->
   <div class="modal-backdrop" id="scanResultModal">
     <div class="modal">
-      <div class="modal-header">
-        <div class="modal-icon" id="resultIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
-        <h2 class="modal-title" id="resultTitle">Scan Result</h2>
-        <p class="modal-subtitle" id="resultSubtitle">Product found</p>
-      </div>
+      <div class="modal-header"><div class="modal-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><h2 class="modal-title" id="resultTitle">Scan Result</h2><p class="modal-subtitle" id="resultSubtitle">Product found</p></div>
       <div class="modal-body">
         <div class="result-field"><div class="result-label">Product Name</div><div class="result-value large" id="resultName">-</div></div>
         <div class="result-field"><div class="result-label">Barcode</div><div class="result-value mono" id="resultBarcode">-</div></div>
-        <div class="result-field">
-          <div class="result-label">Expiry Date</div>
-          <div class="result-expiry" id="resultExpiry">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-              <line x1="16" y1="2" x2="16" y2="6"/>
-              <line x1="8" y1="2" x2="8" y2="6"/>
-              <line x1="3" y1="10" x2="21" y2="10"/>
-            </svg>
-            <span id="resultExpiryDate">-</span>
-          </div>
-        </div>
-        <div class="result-field">
-          <div class="result-label">Quantity</div>
-          <div class="qty-control">
-            <button class="qty-btn" id="btnQtyMinus">−</button>
-            <input type="number" class="qty-input" id="resultQty" value="1" min="1">
-            <button class="qty-btn" id="btnQtyPlus">+</button>
-          </div>
-        </div>
+        <div class="result-field"><div class="result-label">Expiry Date</div><div class="result-expiry" id="resultExpiry"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span id="resultExpiryDate">-</span></div></div>
+        <div class="result-field"><div class="result-label">Quantity</div><div class="qty-control"><button class="qty-btn" id="btnQtyMinus">−</button><input type="number" class="qty-input" id="resultQty" value="1" min="1"><button class="qty-btn" id="btnQtyPlus">+</button></div></div>
       </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" id="btnCancelScan">Cancel</button>
-        <button class="btn btn-primary" id="btnSaveScan">Save</button>
-      </div>
+      <div class="modal-footer"><button class="btn btn-secondary" id="btnCancelScan">Cancel</button><button class="btn btn-primary" id="btnSaveScan">Save</button></div>
     </div>
   </div>
 
-  <!-- Export Modal -->
   <div class="modal-backdrop" id="exportModal">
     <div class="modal">
-      <div class="modal-header">
-        <div class="modal-icon yellow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div>
-        <h2 class="modal-title">Export Data</h2>
-        <p class="modal-subtitle">Download your scan history</p>
-      </div>
-      <div class="modal-body">
-        <div class="export-options">
-          <div class="export-option" id="exportExcel">
-            <div class="export-option-icon excel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></div>
-            <div class="export-option-text"><div class="export-option-title">Excel File (.xlsx)</div><div class="export-option-desc">Compatible with Microsoft Excel</div></div>
-          </div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" id="btnCloseExport">Close</button>
-      </div>
+      <div class="modal-header"><div class="modal-icon yellow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div><h2 class="modal-title">Export Data</h2><p class="modal-subtitle">Download your scan history</p></div>
+      <div class="modal-body"><div class="export-options"><div class="export-option" id="exportExcel"><div class="export-option-icon excel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></div><div class="export-option-text"><div class="export-option-title">Excel File (.xlsx)</div><div class="export-option-desc">Compatible with Microsoft Excel</div></div></div></div></div>
+      <div class="modal-footer"><button class="btn btn-secondary" id="btnCloseExport">Close</button></div>
     </div>
   </div>
 
@@ -914,19 +1140,11 @@
   <div class="side-menu" id="sideMenu">
     <div class="side-menu-header"><div class="side-menu-title">Menu</div></div>
     <div class="side-menu-content">
-      <div class="side-menu-section">
-        <div class="side-menu-section-title">Quick Actions</div>
-        <div class="side-menu-item" data-action="export">
-          <div class="side-menu-item-left"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span class="side-menu-item-label">Export Data</span></div>
-        </div>
-        <div class="side-menu-item" data-action="clear">
-          <div class="side-menu-item-left"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg><span class="side-menu-item-label">Clear History</span></div>
-        </div>
+      <div class="side-menu-section"><div class="side-menu-section-title">Quick Actions</div>
+        <div class="side-menu-item" data-action="export"><div class="side-menu-item-left"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span class="side-menu-item-label">Export Data</span></div></div>
+        <div class="side-menu-item" data-action="clear"><div class="side-menu-item-left"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg><span class="side-menu-item-label">Clear History</span></div></div>
       </div>
-      <div class="side-menu-section">
-        <div class="side-menu-section-title">About</div>
-        <div class="side-menu-item"><div class="side-menu-item-left"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg><span class="side-menu-item-label">Version 3.0.0</span></div></div>
-      </div>
+      <div class="side-menu-section"><div class="side-menu-section-title">About</div><div class="side-menu-item"><div class="side-menu-item-left"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg><span class="side-menu-item-label">Version 3.0.0</span></div></div></div>
     </div>
     <div class="side-menu-footer"><p class="version-text">Pharmacy Tracker © 2025</p></div>
   </div>
@@ -936,6 +1154,7 @@
       // --- State ---
       const STORAGE_KEY = 'pharmacy-tracker-history-v1';
       const MASTER_KEY = 'pharmacy-tracker-master-v1';
+      const SALES_KEY = 'pharmacy-tracker-sales-v1'; // stores hourly data per day
 
       const state = {
         history: [],
@@ -943,8 +1162,26 @@
         scannerRunning: false,
         scanner: null,
         lastScan: null,
-        activeCamera: 'environment'
+        activeCamera: 'environment',
+        salesData: {} // keyed by date string YYYY-MM-DD, each has hourly rows
       };
+
+      // Exchange rate AED to KWD (approx)
+      const KWD_RATE = 11.9;
+
+      // Hour slots
+      const HOUR_SLOTS = [
+        { id: 'slot1', label: '12 am - 6 am' },
+        { id: 'slot2', label: '6 am - 8 am' },
+        { id: 'slot3', label: '8 am - 10 am' },
+        { id: 'slot4', label: '10 am - 12 pm' },
+        { id: 'slot5', label: '12 pm - 2 pm' },
+        { id: 'slot6', label: '2 pm - 4 pm' },
+        { id: 'slot7', label: '4 pm - 6 pm' },
+        { id: 'slot8', label: '6 pm - 8 pm' },
+        { id: 'slot9', label: '8 pm - 10 pm' },
+        { id: 'slot10', label: '10 pm - 12 am' }
+      ];
 
       // --- DOM Helpers ---
       const $ = (id) => document.getElementById(id);
@@ -962,6 +1199,8 @@
       function loadState() {
         state.history = safeJSON(localStorage.getItem(STORAGE_KEY), []);
         state.master = safeJSON(localStorage.getItem(MASTER_KEY), {});
+        const savedSales = safeJSON(localStorage.getItem(SALES_KEY), {});
+        state.salesData = savedSales;
         updateMasterStatus();
       }
 
@@ -975,6 +1214,10 @@
       function persistMaster() {
         localStorage.setItem(MASTER_KEY, JSON.stringify(state.master));
         updateMasterStatus();
+      }
+
+      function persistSales() {
+        localStorage.setItem(SALES_KEY, JSON.stringify(state.salesData));
       }
 
       // --- UI Helpers ---
@@ -995,165 +1238,229 @@
         els.navItems().forEach((btn) => {
           btn.classList.toggle('active', btn.dataset.page === pageName);
         });
-        // Stop scanner when leaving scan page
         if (pageName !== 'scan' && state.scannerRunning) {
           stopScanner();
         }
+        if (pageName === 'sales') {
+          renderSalesGrid();
+        }
       }
 
-      function formatExpiry(raw) {
-        if (!raw || raw.length !== 6) return '-';
-        const yy = Number(raw.slice(0, 2));
-        const mm = Number(raw.slice(2, 4));
-        const dd = Number(raw.slice(4, 6));
-        const date = new Date(2000 + yy, Math.max(0, mm - 1), dd || 1);
-        return Number.isNaN(date.getTime()) ? raw : date.toLocaleDateString();
+      // --- Sales Grid Rendering ---
+      function getTodayKey() {
+        return new Date().toISOString().slice(0, 10);
       }
 
-      function parseGS1(input) {
-        const cleaned = String(input || '').replace(/\s+/g, '');
-        if (!cleaned) return null;
-
-        const gtinMatch = cleaned.match(/01(\d{14})/);
-        const expMatch = cleaned.match(/17(\d{6})/);
-        const lotMatch = cleaned.match(/10([\w\-\.]{1,20})/);
-
-        const barcode = gtinMatch ? gtinMatch[1] : cleaned;
-        const expiryRaw = expMatch ? expMatch[1] : '';
-        const lot = lotMatch ? lotMatch[1] : '';
-
+      function getDefaultRow() {
         return {
-          raw: cleaned,
-          barcode,
-          expiryRaw,
-          expiryFormatted: formatExpiry(expiryRaw),
-          lot,
-          name: state.master[barcode] || 'Unknown Product'
+          totalSale: 0,
+          trn: 0,
+          no7: 0,
+          aura: 0,
+          unitsSold: 0,
+          footfall: 0,
+          staff: ''
         };
       }
 
-      // --- Scan Modal ---
-      function openScanModal(scan) {
-        state.lastScan = scan;
-        $('resultName').textContent = scan.name;
-        $('resultBarcode').textContent = scan.barcode;
-        $('resultExpiryDate').textContent = scan.expiryFormatted;
-        $('resultSubtitle').textContent = scan.name === 'Unknown Product' ? 'No master-data match' : 'Matched product';
-        $('scanResultModal').classList.add('active');
-      }
-
-      function closeScanModal() {
-        $('scanResultModal').classList.remove('active');
-        state.lastScan = null;
-      }
-
-      function saveCurrentScan() {
-        if (!state.lastScan) return;
-        const qty = Math.max(1, Number($('resultQty').value || 1));
-        state.history.unshift({
-          ...state.lastScan,
-          qty,
-          savedAt: new Date().toISOString()
-        });
-        persistHistory();
-        closeScanModal();
-        showToast('Scan saved');
-      }
-
-      // --- Render Functions ---
-      function renderRecent() {
-        const list = $('recentScans');
-        const empty = $('emptyRecent');
-        if (!list || !empty) return;
-
-        // Clear dynamic items
-        Array.from(list.querySelectorAll('.recent-item')).forEach((n) => n.remove());
-
-        if (!state.history.length) {
-          empty.style.display = '';
-          return;
-        }
-
-        empty.style.display = 'none';
-        state.history.slice(0, 5).forEach((item) => {
-          const row = document.createElement('div');
-          row.className = 'recent-item';
-          row.innerHTML = `
-            <div>
-              <div class="recent-item-title">${item.name}</div>
-              <div class="recent-item-sub">${item.barcode}</div>
-            </div>
-            <div class="recent-item-right">x${item.qty}</div>
-          `;
-          list.appendChild(row);
-        });
-      }
-
-      function renderHistory() {
-        const list = $('historyList');
-        if (!list) return;
-        list.innerHTML = '';
-
-        const term = ($('historySearch')?.value || '').trim().toLowerCase();
-        let filtered = state.history;
-        if (term) {
-          filtered = filtered.filter((item) => {
-            const hay = `${item.name} ${item.barcode} ${item.lot || ''}`.toLowerCase();
-            return hay.includes(term);
+      function getSalesForToday() {
+        const key = getTodayKey();
+        if (!state.salesData[key]) {
+          state.salesData[key] = {};
+          HOUR_SLOTS.forEach(slot => {
+            state.salesData[key][slot.id] = { ...getDefaultRow() };
           });
+          persistSales();
         }
+        return state.salesData[key];
+      }
 
-        // Apply filter tabs
-        const activeTab = document.querySelector('.filter-tab.active');
-        const filter = activeTab ? activeTab.dataset.filter : 'all';
-        if (filter !== 'all') {
-          const now = new Date();
-          filtered = filtered.filter((item) => {
-            if (!item.expiryRaw || item.expiryRaw.length !== 6) return filter === 'ok';
-            const exp = new Date(2000 + Number(item.expiryRaw.slice(0,2)), Number(item.expiryRaw.slice(2,4))-1, Number(item.expiryRaw.slice(4,6)) || 1);
-            const diff = (exp - now) / (1000*60*60*24);
-            if (filter === 'expired') return diff < 0;
-            if (filter === 'soon') return diff >= 0 && diff < 30;
-            if (filter === 'ok') return diff >= 30;
-            return true;
-          });
-        }
+      function renderSalesGrid() {
+        const tbody = $('salesBody');
+        const tfoot = $('salesFoot');
+        if (!tbody) return;
 
-        if (!filtered.length) {
-          list.innerHTML = '<div class="empty-state"><p class="empty-state-text">No scans found</p></div>';
-          return;
-        }
+        const todayData = getSalesForToday();
+        let html = '';
+        let totals = {
+          totalSale: 0,
+          trn: 0,
+          no7: 0,
+          aura: 0,
+          unitsSold: 0,
+          footfall: 0
+        };
 
-        filtered.forEach((item) => {
-          const card = document.createElement('div');
-          card.className = 'history-item';
-          const date = new Date(item.savedAt).toLocaleString();
-          card.innerHTML = `
-            <div class="history-title">${item.name}</div>
-            <div class="history-meta">${item.barcode} • Qty ${item.qty}</div>
-            <div class="history-meta">Expiry: ${item.expiryFormatted} • ${date}</div>
-          `;
-          list.appendChild(card);
+        HOUR_SLOTS.forEach((slot, idx) => {
+          const row = todayData[slot.id] || getDefaultRow();
+          const sale = Number(row.totalSale) || 0;
+          const trn = Number(row.trn) || 0;
+          const no7 = Number(row.no7) || 0;
+          const aura = Number(row.aura) || 0;
+          const units = Number(row.unitsSold) || 0;
+          const foot = Number(row.footfall) || 0;
+          const staff = row.staff || '';
+
+          const atv = trn > 0 ? (sale / trn) : 0;
+          const no7Pct = sale > 0 ? (no7 / sale) * 100 : 0;
+          const conv = foot > 0 ? (trn / foot) * 100 : 0;
+          const ipc = trn > 0 ? (units / trn) : 0;
+          const auraPct = trn > 0 ? (aura / trn) * 100 : 0;
+
+          // Update totals
+          totals.totalSale += sale;
+          totals.trn += trn;
+          totals.no7 += no7;
+          totals.aura += aura;
+          totals.unitsSold += units;
+          totals.footfall += foot;
+
+          html += `<tr>
+            <td>${slot.label}</td>
+            <td class="input-cell"><input type="number" class="sale-input" data-slot="${slot.id}" value="${sale || ''}" placeholder="0"></td>
+            <td class="auto-cell">${(sale / KWD_RATE).toFixed(2)}</td>
+            <td class="input-cell"><input type="number" class="trn-input" data-slot="${slot.id}" value="${trn || ''}" placeholder="0"></td>
+            <td class="auto-cell">${atv > 0 ? atv.toFixed(0) : '-'}</td>
+            <td class="input-cell"><input type="number" class="no7-input" data-slot="${slot.id}" value="${no7 || ''}" placeholder="0"></td>
+            <td class="auto-cell">${(no7 / KWD_RATE).toFixed(2)}</td>
+            <td class="auto-cell">${no7Pct > 0 ? no7Pct.toFixed(1) + '%' : '-'}</td>
+            <td class="auto-cell">${conv > 0 ? conv.toFixed(1) + '%' : '-'}</td>
+            <td class="auto-cell">${ipc > 0 ? ipc.toFixed(2) : '-'}</td>
+            <td class="input-cell"><input type="number" class="aura-input" data-slot="${slot.id}" value="${aura || ''}" placeholder="0"></td>
+            <td class="auto-cell">${auraPct > 0 ? auraPct.toFixed(1) + '%' : '-'}</td>
+            <td class="input-cell"><input type="number" class="units-input" data-slot="${slot.id}" value="${units || ''}" placeholder="0"></td>
+            <td class="input-cell"><input type="number" class="foot-input" data-slot="${slot.id}" value="${foot || ''}" placeholder="0"></td>
+            <td class="input-cell"><input type="text" class="staff-input" data-slot="${slot.id}" value="${staff}" placeholder="Name"></td>
+          </tr>`;
         });
+
+        tbody.innerHTML = html;
+
+        // Totals row
+        const totalAtv = totals.trn > 0 ? (totals.totalSale / totals.trn) : 0;
+        const totalNo7Pct = totals.totalSale > 0 ? (totals.no7 / totals.totalSale) * 100 : 0;
+        const totalConv = totals.footfall > 0 ? (totals.trn / totals.footfall) * 100 : 0;
+        const totalIpc = totals.trn > 0 ? (totals.unitsSold / totals.trn) : 0;
+        const totalAuraPct = totals.trn > 0 ? (totals.aura / totals.trn) * 100 : 0;
+
+        tfoot.innerHTML = `<tr class="total-row">
+          <td><strong>TOTAL</strong></td>
+          <td><strong>${totals.totalSale}</strong></td>
+          <td class="auto-cell">${(totals.totalSale / KWD_RATE).toFixed(2)}</td>
+          <td><strong>${totals.trn}</strong></td>
+          <td class="auto-cell">${totalAtv > 0 ? totalAtv.toFixed(0) : '-'}</td>
+          <td><strong>${totals.no7}</strong></td>
+          <td class="auto-cell">${(totals.no7 / KWD_RATE).toFixed(2)}</td>
+          <td class="auto-cell">${totalNo7Pct > 0 ? totalNo7Pct.toFixed(1) + '%' : '-'}</td>
+          <td class="auto-cell">${totalConv > 0 ? totalConv.toFixed(1) + '%' : '-'}</td>
+          <td class="auto-cell">${totalIpc > 0 ? totalIpc.toFixed(2) : '-'}</td>
+          <td><strong>${totals.aura}</strong></td>
+          <td class="auto-cell">${totalAuraPct > 0 ? totalAuraPct.toFixed(1) + '%' : '-'}</td>
+          <td><strong>${totals.unitsSold}</strong></td>
+          <td><strong>${totals.footfall}</strong></td>
+          <td></td>
+        </tr>`;
+
+        // Attach event listeners to inputs to auto-save and recalc
+        tbody.querySelectorAll('.sale-input, .trn-input, .no7-input, .aura-input, .units-input, .foot-input, .staff-input').forEach(input => {
+          input.addEventListener('input', function() {
+            const slotId = this.dataset.slot;
+            const key = getTodayKey();
+            const row = state.salesData[key][slotId];
+            if (!row) return;
+            const fieldMap = {
+              'sale-input': 'totalSale',
+              'trn-input': 'trn',
+              'no7-input': 'no7',
+              'aura-input': 'aura',
+              'units-input': 'unitsSold',
+              'foot-input': 'footfall',
+              'staff-input': 'staff'
+            };
+            const field = fieldMap[this.className.split(' ').find(c => c.endsWith('-input'))];
+            if (field) {
+              if (field === 'staff') {
+                row[field] = this.value;
+              } else {
+                row[field] = Number(this.value) || 0;
+              }
+              persistSales();
+              renderSalesGrid(); // re-render to update auto-calc fields
+            }
+          });
+        });
+
+        // Update summary cards
+        updateSummary(totals);
       }
 
-      function updateHistoryBadge() {
-        const badge = $('historyBadge');
-        if (!badge) return;
-        badge.textContent = String(state.history.length);
-        badge.style.display = state.history.length ? 'inline-flex' : 'none';
+      function updateSummary(totals) {
+        const todayTotal = totals.totalSale || 0;
+        const todayNo7 = totals.no7 || 0;
+        $('todayTotalSale').textContent = todayTotal.toFixed(0);
+        $('todayNo7').textContent = todayNo7.toFixed(0);
+
+        // Month to date: sum sales for current month from all days
+        const now = new Date();
+        const currentMonth = now.getMonth();
+        const currentYear = now.getFullYear();
+        let monthTotal = 0;
+        for (const dateKey in state.salesData) {
+          const d = new Date(dateKey);
+          if (d.getMonth() === currentMonth && d.getFullYear() === currentYear) {
+            const dayData = state.salesData[dateKey];
+            for (const slotId in dayData) {
+              monthTotal += Number(dayData[slotId].totalSale) || 0;
+            }
+          }
+        }
+        $('monthToDate').textContent = monthTotal.toFixed(0);
+
+        // Week to date: from Monday to today
+        const dayOfWeek = now.getDay(); // 0=Sun
+        const mondayOffset = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+        const monday = new Date(now);
+        monday.setDate(now.getDate() - mondayOffset);
+        let weekTotal = 0;
+        for (const dateKey in state.salesData) {
+          const d = new Date(dateKey);
+          if (d >= monday && d <= now) {
+            const dayData = state.salesData[dateKey];
+            for (const slotId in dayData) {
+              weekTotal += Number(dayData[slotId].totalSale) || 0;
+            }
+          }
+        }
+        $('weekToDate').textContent = weekTotal.toFixed(0);
+
+        // Monthly target from input
+        const monthlyTarget = Number($('monthlyTarget').value) || 250000;
+        $('monthlyTargetDisplay').textContent = monthlyTarget.toLocaleString();
+        const pct = monthlyTarget > 0 ? (monthTotal / monthlyTarget) * 100 : 0;
+        $('achievedPct').textContent = pct.toFixed(1) + '%';
       }
 
-      function updateMasterStatus() {
-        const status = $('masterStatus');
-        const details = $('masterDetails');
-        if (!status || !details) return;
-        const count = Object.keys(state.master).length;
-        status.style.display = count ? 'flex' : 'none';
-        details.textContent = `${count} products loaded`;
+      // --- Target Insight Popup ---
+      function showTargetInsight() {
+        const now = new Date();
+        const currentMonth = now.getMonth();
+        const currentYear = now.getFullYear();
+        const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0);
+        const daysLeft = lastDayOfMonth.getDate() - now.getDate();
+        $('daysLeft').textContent = daysLeft;
+
+        // Remaining target: monthly target - month to date
+        const monthlyTarget = Number($('monthlyTarget').value) || 250000;
+        const monthTotal = Number($('monthToDate').textContent) || 0;
+        const remaining = Math.max(0, monthlyTarget - monthTotal);
+        $('remainingTarget').textContent = remaining.toFixed(0);
+        const daily = daysLeft > 0 ? remaining / daysLeft : 0;
+        $('dailyNeeded').textContent = daily.toFixed(0);
+
+        $('targetPopup').classList.add('active');
       }
 
-      // --- Scanner ---
+      // --- Scanner Functions (kept from original) ---
       async function startScanner() {
         if (!window.Html5Qrcode) {
           showToast('Scanner library failed to load', 'error');
@@ -1199,48 +1506,148 @@
         return state.scannerRunning ? stopScanner() : startScanner();
       }
 
-      // --- Manual Submission ---
-      function submitManual() {
-        const input = $('manualBarcode');
-        const value = input?.value.trim();
-        if (!value) return;
-        const scan = parseGS1(value);
-        if (scan) {
-          openScanModal(scan);
-          input.value = '';
-        } else {
-          showToast('Invalid barcode format', 'error');
-        }
+      // --- Parse functions (kept) ---
+      function parseGS1(input) {
+        const cleaned = String(input || '').replace(/\s+/g, '');
+        if (!cleaned) return null;
+        const gtinMatch = cleaned.match(/01(\d{14})/);
+        const expMatch = cleaned.match(/17(\d{6})/);
+        const lotMatch = cleaned.match(/10([\w\-\.]{1,20})/);
+        const barcode = gtinMatch ? gtinMatch[1] : cleaned;
+        const expiryRaw = expMatch ? expMatch[1] : '';
+        const lot = lotMatch ? lotMatch[1] : '';
+        return {
+          raw: cleaned,
+          barcode,
+          expiryRaw,
+          expiryFormatted: formatExpiry(expiryRaw),
+          lot,
+          name: state.master[barcode] || 'Unknown Product'
+        };
       }
 
-      // --- Paste Processing ---
-      function processPaste() {
-        const text = $('pasteArea')?.value || '';
-        const lines = text.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
-        let valid = 0;
-        let matched = 0;
-        let expired = 0;
-        const now = new Date();
+      function formatExpiry(raw) {
+        if (!raw || raw.length !== 6) return '-';
+        const yy = Number(raw.slice(0, 2));
+        const mm = Number(raw.slice(2, 4));
+        const dd = Number(raw.slice(4, 6));
+        const date = new Date(2000 + yy, Math.max(0, mm - 1), dd || 1);
+        return Number.isNaN(date.getTime()) ? raw : date.toLocaleDateString();
+      }
 
-        lines.forEach((line) => {
-          const parsed = parseGS1(line);
-          if (!parsed) return;
-          valid += 1;
-          if (parsed.name !== 'Unknown Product') matched += 1;
-          if (parsed.expiryRaw.length === 6) {
-            const exp = new Date(2000 + Number(parsed.expiryRaw.slice(0, 2)), Number(parsed.expiryRaw.slice(2, 4)) - 1, Number(parsed.expiryRaw.slice(4, 6)) || 1);
-            if (exp < now) expired += 1;
-          }
+      // --- Scan Modal (kept) ---
+      function openScanModal(scan) {
+        state.lastScan = scan;
+        $('resultName').textContent = scan.name;
+        $('resultBarcode').textContent = scan.barcode;
+        $('resultExpiryDate').textContent = scan.expiryFormatted;
+        $('resultSubtitle').textContent = scan.name === 'Unknown Product' ? 'No master-data match' : 'Matched product';
+        $('scanResultModal').classList.add('active');
+      }
+
+      function closeScanModal() {
+        $('scanResultModal').classList.remove('active');
+        state.lastScan = null;
+      }
+
+      function saveCurrentScan() {
+        if (!state.lastScan) return;
+        const qty = Math.max(1, Number($('resultQty').value || 1));
+        state.history.unshift({
+          ...state.lastScan,
+          qty,
+          savedAt: new Date().toISOString()
         });
-
-        $('statTotal').textContent = String(lines.length);
-        $('statValid').textContent = String(valid);
-        $('statMatched').textContent = String(matched);
-        $('statExpired').textContent = String(expired);
-        $('pasteStats').classList.add('visible');
+        persistHistory();
+        closeScanModal();
+        showToast('Scan saved');
       }
 
-      // --- Master CSV Parser ---
+      // --- Render Recent & History (kept) ---
+      function renderRecent() {
+        const list = $('recentScans');
+        const empty = $('emptyRecent');
+        if (!list || !empty) return;
+        Array.from(list.querySelectorAll('.recent-item')).forEach((n) => n.remove());
+        if (!state.history.length) {
+          empty.style.display = '';
+          return;
+        }
+        empty.style.display = 'none';
+        state.history.slice(0, 5).forEach((item) => {
+          const row = document.createElement('div');
+          row.className = 'recent-item';
+          row.innerHTML = `
+            <div>
+              <div class="recent-item-title">${item.name}</div>
+              <div class="recent-item-sub">${item.barcode}</div>
+            </div>
+            <div class="recent-item-right">x${item.qty}</div>
+          `;
+          list.appendChild(row);
+        });
+      }
+
+      function renderHistory() {
+        const list = $('historyList');
+        if (!list) return;
+        list.innerHTML = '';
+        const term = ($('historySearch')?.value || '').trim().toLowerCase();
+        let filtered = state.history;
+        if (term) {
+          filtered = filtered.filter((item) => {
+            const hay = `${item.name} ${item.barcode} ${item.lot || ''}`.toLowerCase();
+            return hay.includes(term);
+          });
+        }
+        const activeTab = document.querySelector('.filter-tab.active');
+        const filter = activeTab ? activeTab.dataset.filter : 'all';
+        if (filter !== 'all') {
+          const now = new Date();
+          filtered = filtered.filter((item) => {
+            if (!item.expiryRaw || item.expiryRaw.length !== 6) return filter === 'ok';
+            const exp = new Date(2000 + Number(item.expiryRaw.slice(0,2)), Number(item.expiryRaw.slice(2,4))-1, Number(item.expiryRaw.slice(4,6)) || 1);
+            const diff = (exp - now) / (1000*60*60*24);
+            if (filter === 'expired') return diff < 0;
+            if (filter === 'soon') return diff >= 0 && diff < 30;
+            if (filter === 'ok') return diff >= 30;
+            return true;
+          });
+        }
+        if (!filtered.length) {
+          list.innerHTML = '<div class="empty-state"><p class="empty-state-text">No scans found</p></div>';
+          return;
+        }
+        filtered.forEach((item) => {
+          const card = document.createElement('div');
+          card.className = 'history-item';
+          const date = new Date(item.savedAt).toLocaleString();
+          card.innerHTML = `
+            <div class="history-title">${item.name}</div>
+            <div class="history-meta">${item.barcode} • Qty ${item.qty}</div>
+            <div class="history-meta">Expiry: ${item.expiryFormatted} • ${date}</div>
+          `;
+          list.appendChild(card);
+        });
+      }
+
+      function updateHistoryBadge() {
+        const badge = $('historyBadge');
+        if (!badge) return;
+        badge.textContent = String(state.history.length);
+        badge.style.display = state.history.length ? 'inline-flex' : 'none';
+      }
+
+      function updateMasterStatus() {
+        const status = $('masterStatus');
+        const details = $('masterDetails');
+        if (!status || !details) return;
+        const count = Object.keys(state.master).length;
+        status.style.display = count ? 'flex' : 'none';
+        details.textContent = `${count} products loaded`;
+      }
+
+      // --- Master Upload ---
       function parseMasterCSV(text) {
         const lines = text.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
         const map = {};
@@ -1252,7 +1659,7 @@
         return map;
       }
 
-      // --- Export ---
+      // --- Export & Clear ---
       function exportHistory() {
         if (!state.history.length) {
           showToast('No data to export', 'error');
@@ -1286,29 +1693,14 @@
         $('sideMenuBackdrop')?.classList.toggle('active', open);
       }
 
-      // --- Event Binding ---
+      // --- Bind Events ---
       function bindEvents() {
         // Navigation
         els.navItems().forEach((btn) => {
           btn.addEventListener('click', () => switchPage(btn.dataset.page));
         });
 
-        // View all history
-        $('viewAllHistory')?.addEventListener('click', () => switchPage('history'));
-
-        // Search input
-        $('historySearch')?.addEventListener('input', renderHistory);
-
-        // Filter tabs
-        document.querySelectorAll('.filter-tab').forEach((tab) => {
-          tab.addEventListener('click', () => {
-            document.querySelectorAll('.filter-tab').forEach((t) => t.classList.remove('active'));
-            tab.classList.add('active');
-            renderHistory();
-          });
-        });
-
-        // Scanner controls
+        // Scanner
         $('btnStartScanner')?.addEventListener('click', toggleScanner);
         $('btnSwitchCamera')?.addEventListener('click', async () => {
           state.activeCamera = state.activeCamera === 'environment' ? 'user' : 'environment';
@@ -1319,9 +1711,20 @@
         });
 
         // Manual submit
-        $('btnManualSubmit')?.addEventListener('click', submitManual);
+        $('btnManualSubmit')?.addEventListener('click', () => {
+          const input = $('manualBarcode');
+          const value = input?.value.trim();
+          if (!value) return;
+          const scan = parseGS1(value);
+          if (scan) {
+            openScanModal(scan);
+            input.value = '';
+          } else {
+            showToast('Invalid barcode format', 'error');
+          }
+        });
         $('manualBarcode')?.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter') submitManual();
+          if (e.key === 'Enter') $('btnManualSubmit').click();
         });
 
         // Scan result modal
@@ -1334,8 +1737,39 @@
           $('resultQty').value = String(Math.max(1, Number($('resultQty').value || 1) + 1));
         });
 
+        // History search & filter
+        $('historySearch')?.addEventListener('input', renderHistory);
+        document.querySelectorAll('.filter-tab').forEach((tab) => {
+          tab.addEventListener('click', () => {
+            document.querySelectorAll('.filter-tab').forEach((t) => t.classList.remove('active'));
+            tab.classList.add('active');
+            renderHistory();
+          });
+        });
+        $('viewAllHistory')?.addEventListener('click', () => switchPage('history'));
+
         // Paste
-        $('btnProcessPaste')?.addEventListener('click', processPaste);
+        $('btnProcessPaste')?.addEventListener('click', () => {
+          const text = $('pasteArea')?.value || '';
+          const lines = text.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+          let valid = 0, matched = 0, expired = 0;
+          const now = new Date();
+          lines.forEach((line) => {
+            const parsed = parseGS1(line);
+            if (!parsed) return;
+            valid += 1;
+            if (parsed.name !== 'Unknown Product') matched += 1;
+            if (parsed.expiryRaw.length === 6) {
+              const exp = new Date(2000 + Number(parsed.expiryRaw.slice(0, 2)), Number(parsed.expiryRaw.slice(2, 4)) - 1, Number(parsed.expiryRaw.slice(4, 6)) || 1);
+              if (exp < now) expired += 1;
+            }
+          });
+          $('statTotal').textContent = String(lines.length);
+          $('statValid').textContent = String(valid);
+          $('statMatched').textContent = String(matched);
+          $('statExpired').textContent = String(expired);
+          $('pasteStats').classList.add('visible');
+        });
         $('btnClearPaste')?.addEventListener('click', () => {
           $('pasteArea').value = '';
           $('pasteStats').classList.remove('visible');
@@ -1352,13 +1786,23 @@
           showToast('Master data loaded');
         });
 
-        // Export
+        // Export & Clear
         $('btnExportData')?.addEventListener('click', () => $('exportModal').classList.add('active'));
         $('btnCloseExport')?.addEventListener('click', () => $('exportModal').classList.remove('active'));
         $('exportExcel')?.addEventListener('click', exportHistory);
-
-        // Clear history
         $('btnClearHistory')?.addEventListener('click', clearHistory);
+
+        // Sales: Target insight
+        $('btnTargetInsight')?.addEventListener('click', showTargetInsight);
+        $('btnClosePopup')?.addEventListener('click', () => $('targetPopup').classList.remove('active'));
+        $('targetPopup')?.addEventListener('click', (e) => {
+          if (e.target === e.currentTarget) $('targetPopup').classList.remove('active');
+        });
+
+        // Monthly target change -> update summary
+        $('monthlyTarget')?.addEventListener('input', () => {
+          renderSalesGrid(); // re-render to update summary
+        });
 
         // Menu
         $('btnMenu')?.addEventListener('click', () => toggleSideMenu(true));
@@ -1369,11 +1813,6 @@
             if (item.dataset.action === 'export') $('exportModal').classList.add('active');
             if (item.dataset.action === 'clear') clearHistory();
           });
-        });
-
-        // API toggle (just UI)
-        $('toggleAPI')?.addEventListener('change', (e) => {
-          showToast(e.target.checked ? 'API Lookup enabled' : 'API Lookup disabled', 'info');
         });
 
         // PIN modal (demo)
@@ -1416,21 +1855,13 @@
           if (pinEntry.length < 4) {
             pinEntry += key;
             updatePinDots();
-            if (pinEntry.length === 4) {
-              // Auto-enter
-              handlePinKey('enter');
-            }
+            if (pinEntry.length === 4) handlePinKey('enter');
           }
         }
 
         document.querySelectorAll('.pin-key').forEach((btn) => {
-          btn.addEventListener('click', () => {
-            const key = btn.dataset.key;
-            handlePinKey(key);
-          });
+          btn.addEventListener('click', () => handlePinKey(btn.dataset.key));
         });
-
-        // Keyboard support for PIN
         pinHidden.addEventListener('input', (e) => {
           const val = e.target.value.replace(/\D/g, '');
           if (val.length > 4) return;
@@ -1438,16 +1869,9 @@
           updatePinDots();
           if (pinEntry.length === 4) handlePinKey('enter');
         });
-
-        // Open PIN modal from settings (demo)
-        document.querySelector('.settings-item .toggle')?.closest('.settings-item')?.addEventListener('click', (e) => {
-          if (e.target.closest('.toggle')) return;
-          $('pinModal').classList.add('active');
-          pinHidden.focus();
-        });
       }
 
-      // --- Service Worker (optional) ---
+      // --- Service Worker ---
       function registerSW() {
         if (!('serviceWorker' in navigator)) return;
         navigator.serviceWorker.register('/sw.js').catch(() => {});
@@ -1460,10 +1884,10 @@
         renderHistory();
         renderRecent();
         updateHistoryBadge();
+        renderSalesGrid();
         registerSW();
-
-        // Expose for debugging
-        window.__app = { state, switchPage, showToast };
+        // Default to sales page
+        switchPage('sales');
       }
 
       // Start
