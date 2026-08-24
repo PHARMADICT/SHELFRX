@@ -1,191 +1,1165 @@
-<!doctype html>
+I understand the frustration. You've built a comprehensive pharmacy tracking app with scanner, history, manual entry, master data, and the new hourly sales grid with targets. The issue is that the code got truncated and lost some important parts — specifically the shelf/RX arrangement, facing, and total quantity per shelf that you mentioned originally.
+
+Let me provide you with a complete, working, single HTML file that includes everything:
+
+1. Scanner with HTML5-QRCode
+2. History with filters
+3. Manual/Paste entry
+4. Master data upload
+5. Settings
+6. Sales grid (hourly entry with targets, No7, AURA, conversion, IPC)
+7. PLANNER PAGE — the shelf arrangement with facing & total quantity per shelf (the part that was lost)
+8. Bottom navigation with 6 tabs: Scan, History, Manual, Planner, Sales, Settings
+
+The Planner page will show products arranged by shelf position, with facing (number of facings on shelf) and total units per shelf, exactly as described in your original document.
+
+```html
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0a0e1a">
-<title>PharmaTrack Pro — Pharmacy Operations</title>
-<style>
-:root{--bg:#080c16;--panel:#101726;--panel2:#0d1321;--text:#ecf2ff;--muted:#91a0c5;--accent:#6c8fff;--purple:#a78bfa;--green:#34d399;--amber:#fb923c;--red:#f87171;--cyan:#38bdf8;--pink:#f472b6;--border:rgba(255,255,255,.09);--border2:rgba(108,143,255,.22);--glass:rgba(255,255,255,.055);--shadow:0 22px 70px rgba(0,0,0,.34);--r:18px;--r2:12px}
-*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:radial-gradient(circle at 18% 4%,rgba(108,143,255,.13),transparent 34%),radial-gradient(circle at 85% 75%,rgba(167,139,250,.1),transparent 30%),var(--bg);color:var(--text);font:14px/1.45 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}.app{display:grid;grid-template-columns:250px 1fr;min-height:100vh}.sidebar{position:sticky;top:0;height:100vh;padding:18px;border-right:1px solid var(--border);background:rgba(8,12,22,.78);backdrop-filter:blur(18px);display:flex;flex-direction:column;z-index:10}.brand{display:flex;align-items:center;gap:10px;padding:8px 6px 20px}.mark{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,var(--accent),var(--purple));display:grid;place-items:center;box-shadow:0 0 28px rgba(108,143,255,.32);font-weight:900}.brand b{font-size:18px}.brand span{color:#b2c1ff}.branch{margin:4px 0 16px;padding:12px;border:1px solid var(--border);border-radius:14px;background:var(--glass)}.branch small{display:block;color:var(--muted);margin-bottom:3px}.branch strong{display:block}.nav{display:grid;gap:7px}.nav button{border:1px solid transparent;background:transparent;color:var(--muted);padding:11px 12px;border-radius:12px;text-align:left;display:flex;gap:10px;align-items:center}.nav button:hover,.nav button.active{background:rgba(108,143,255,.11);border-color:var(--border2);color:var(--text)}.nav .ico{width:22px;text-align:center}.sidebar-foot{margin-top:auto;display:grid;gap:8px}.status{padding:10px 12px;border:1px solid var(--border);border-radius:12px;background:var(--glass);font-size:12px;color:var(--muted)}.main{min-width:0}.topbar{position:sticky;top:0;z-index:9;height:72px;padding:12px 24px;display:flex;align-items:center;gap:14px;justify-content:space-between;border-bottom:1px solid var(--border);background:rgba(8,12,22,.7);backdrop-filter:blur(18px)}.topbar-left{display:flex;align-items:center;gap:12px}.mobile-menu{display:none}.crumb{color:var(--muted)}.top-actions{display:flex;gap:8px;align-items:center}.content{padding:22px 24px 44px;max-width:1500px;margin:auto}.page{display:none}.page.active{display:block}.page-head{display:flex;justify-content:space-between;align-items:flex-start;gap:15px;margin-bottom:18px}.page-head h1{font-size:28px;line-height:1.05;margin:0 0 5px}.page-head p{margin:0;color:var(--muted)}.actions{display:flex;flex-wrap:wrap;gap:8px}.btn{min-height:40px;padding:0 14px;border-radius:12px;border:1px solid var(--border);background:var(--glass);color:var(--text);font-weight:700}.btn:hover{border-color:var(--border2);background:rgba(108,143,255,.09)}.btn.primary{border-color:transparent;background:linear-gradient(135deg,#6c8fff,#7c6ef7);box-shadow:0 0 24px rgba(108,143,255,.22)}.btn.green{background:rgba(52,211,153,.12);border-color:rgba(52,211,153,.24);color:#9df1cf}.btn.warn{background:rgba(251,146,60,.12);border-color:rgba(251,146,60,.24);color:#ffc38f}.btn.danger{background:rgba(248,113,113,.12);border-color:rgba(248,113,113,.25);color:#ffabab}.grid{display:grid;gap:14px}.kpis{grid-template-columns:repeat(6,minmax(0,1fr));margin-bottom:14px}.card{background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.035));border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);backdrop-filter:blur(14px)}.kpi{padding:16px}.kpi .label{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.08em}.kpi .val{font-size:25px;font-weight:850;margin-top:7px}.kpi .sub{font-size:11px;color:var(--green);margin-top:4px}.layout2{grid-template-columns:1.4fr .9fr}.layout3{grid-template-columns:repeat(3,1fr)}.panel{padding:16px}.panel-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.panel-title h3{margin:0;font-size:15px}.panel-title span{color:var(--muted);font-size:12px}.table-wrap{overflow:auto;border:1px solid var(--border);border-radius:14px}.table{width:100%;border-collapse:collapse;min-width:760px}.table th,.table td{padding:9px 10px;border-bottom:1px solid var(--border);text-align:left}.table th{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);background:rgba(255,255,255,.025)}.table tr:last-child td{border-bottom:0}.table input{width:100%;min-width:70px;padding:8px 9px;background:#0a1020;border:1px solid var(--border);border-radius:8px;color:var(--text)}.mini-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.mini{padding:11px;border:1px solid var(--border);border-radius:12px;background:var(--glass)}.mini b{display:block;font-size:18px}.mini span{color:var(--muted);font-size:11px}.badge{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:4px 8px;font-size:11px;font-weight:800;border:1px solid var(--border)}.badge.ok{color:#9df1cf;background:rgba(52,211,153,.09);border-color:rgba(52,211,153,.22)}.badge.warn{color:#ffc38f;background:rgba(251,146,60,.09);border-color:rgba(251,146,60,.22)}.badge.red{color:#ffabab;background:rgba(248,113,113,.09);border-color:rgba(248,113,113,.22)}.progress{height:8px;background:rgba(255,255,255,.06);border-radius:99px;overflow:hidden}.progress>span{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--accent),var(--purple));}.hero{padding:22px;border-radius:22px;margin-bottom:14px;background:linear-gradient(135deg,rgba(108,143,255,.15),rgba(167,139,250,.08));border:1px solid var(--border2)}.hero h2{font-size:34px;margin:0 0 6px}.hero p{margin:0;color:var(--muted);max-width:70ch}.chart{height:190px;display:flex;align-items:flex-end;gap:8px;padding:16px 10px 8px}.bar{flex:1;min-width:12px;position:relative;border-radius:7px 7px 3px 3px;background:linear-gradient(180deg,var(--accent),rgba(108,143,255,.28));box-shadow:0 0 16px rgba(108,143,255,.08)}.bar small{position:absolute;left:50%;transform:translateX(-50%);bottom:-24px;color:var(--muted);font-size:10px;white-space:nowrap}.chart-wrap{padding-bottom:26px}.alert-list{display:grid;gap:8px}.alert{display:flex;justify-content:space-between;gap:10px;padding:11px;border:1px solid var(--border);border-radius:12px;background:rgba(255,255,255,.025)}.alert b{font-size:13px}.alert small{display:block;color:var(--muted)}.shelf{display:grid;gap:14px}.shelf-row{display:grid;grid-template-columns:120px 1fr;gap:10px;align-items:stretch}.shelf-label{padding:12px;border:1px solid var(--border);border-radius:12px;background:var(--glass);font-weight:800}.shelf-cells{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}.slot{min-height:90px;border:1px dashed rgba(145,160,197,.25);border-radius:12px;padding:9px;background:rgba(255,255,255,.02)}.slot.filled{border-style:solid;background:rgba(108,143,255,.08)}.slot .sku{font-size:10px;color:var(--muted)}.slot b{display:block;margin:3px 0;font-size:12px}.slot small{color:var(--muted)}.form-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.field{display:grid;gap:5px}.field label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}.field input,.field select,.field textarea{width:100%;padding:10px 11px;background:#091020;border:1px solid var(--border);border-radius:10px;color:var(--text);outline:none}.field textarea{min-height:100px;resize:vertical}.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent)}.span2{grid-column:span 2}.span4{grid-column:span 4}.scan-box{display:grid;grid-template-columns:1.1fr .9fr;gap:14px}.scanner{min-height:300px;border:1px dashed var(--border2);border-radius:16px;display:grid;place-items:center;background:radial-gradient(circle,rgba(108,143,255,.08),transparent 65%);position:relative;overflow:hidden}.scanner video{width:100%;height:100%;object-fit:cover}.scan-center{text-align:center;color:var(--muted)}.scan-center strong{display:block;color:var(--text);margin-bottom:4px}.tag-row{display:flex;gap:7px;flex-wrap:wrap}.modal{position:fixed;inset:0;display:none;place-items:center;background:rgba(0,0,0,.62);backdrop-filter:blur(8px);z-index:50;padding:20px}.modal.open{display:grid}.modal-card{width:min(720px,100%);max-height:90vh;overflow:auto;padding:18px;border-radius:18px;background:#0d1423;border:1px solid var(--border2);box-shadow:var(--shadow)}.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.modal-head h3{margin:0}.toast{position:fixed;right:18px;bottom:18px;z-index:80;background:#111a2d;border:1px solid var(--border2);padding:11px 14px;border-radius:12px;box-shadow:var(--shadow);display:none}.toast.show{display:block}.muted{color:var(--muted)}.right{text-align:right}.mobile-only{display:none}@media(max-width:1150px){.kpis{grid-template-columns:repeat(3,1fr)}.layout2,.scan-box{grid-template-columns:1fr}.form-grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:850px){.app{grid-template-columns:1fr}.sidebar{position:fixed;left:-280px;width:250px;transition:left .2s}.sidebar.open{left:0}.mobile-menu{display:inline-flex}.content{padding:16px}.topbar{padding:10px 14px}.kpis{grid-template-columns:repeat(2,1fr)}.layout3{grid-template-columns:1fr}.shelf-row{grid-template-columns:1fr}.shelf-cells{grid-template-columns:repeat(3,1fr)}.page-head{flex-direction:column}.form-grid{grid-template-columns:1fr}.span2,.span4{grid-column:span 1}.mobile-only{display:block}}@media(max-width:520px){.kpis{grid-template-columns:1fr 1fr}.top-actions .btn.label{display:none}.mini-grid{grid-template-columns:1fr 1fr}.shelf-cells{grid-template-columns:1fr 1fr}}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#4ECDC4">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>PharmaTrack Complete</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <style>
+        :root {
+            --bg-main: #F5F7FA;
+            --bg-card: #FFFFFF;
+            --bg-input: #F0F3F8;
+            --coral: #FF6B6B;
+            --coral-light: #FFE5E5;
+            --coral-dark: #E85555;
+            --teal: #4ECDC4;
+            --teal-light: #E0F7F5;
+            --teal-dark: #3DB9B1;
+            --yellow: #FFD93D;
+            --yellow-light: #FFF8E0;
+            --yellow-dark: #E5C235;
+            --blue: #6C9BCF;
+            --blue-light: #E8F1FA;
+            --blue-dark: #5A89BD;
+            --purple: #9B7EDE;
+            --purple-light: #F0EBFA;
+            --text-dark: #2D3748;
+            --text-medium: #4A5568;
+            --text-light: #718096;
+            --text-muted: #A0AEC0;
+            --success: #48BB78;
+            --success-bg: #E6F7ED;
+            --warning: #F6AD55;
+            --warning-bg: #FFF5E6;
+            --danger: #FC8181;
+            --danger-bg: #FFF0F0;
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
+            --radius-sm: 12px;
+            --radius-md: 16px;
+            --radius-lg: 24px;
+            --radius-xl: 32px;
+            --radius-full: 9999px;
+            --header-height: 60px;
+            --nav-height: 70px;
+            --safe-top: env(safe-area-inset-top, 0px);
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+            --transition-fast: 0.15s ease;
+            --transition-default: 0.25s ease;
+            --font-main: 'Poppins', sans-serif;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: var(--font-main);
+            background: var(--bg-main);
+            color: var(--text-dark);
+            line-height: 1.5;
+            min-height: 100vh;
+            -webkit-tap-highlight-color: transparent;
+            overflow-x: hidden;
+        }
+        .app-container {
+            max-width: 480px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background: var(--bg-main);
+            position: relative;
+            padding-bottom: calc(var(--nav-height) + var(--safe-bottom));
+        }
+        .app-header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(20px);
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #E2E8F0;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--teal), var(--teal-dark));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            font-weight: 700;
+        }
+        .logo-text h1 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+        .logo-text p {
+            font-size: 11px;
+            color: var(--text-light);
+            font-weight: 500;
+        }
+        .main-content {
+            padding: 16px;
+        }
+        .page {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        .page.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .page-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 16px;
+            text-align: center;
+        }
+        .card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 16px;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 16px;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 16px;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+        .btn:active { transform: scale(0.96); }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--teal), var(--teal-dark));
+            color: white;
+            box-shadow: 0 4px 16px rgba(78,205,196,0.35);
+            flex: 1;
+        }
+        .btn-secondary {
+            background: var(--bg-card);
+            color: var(--text-medium);
+            border: 1px solid #E2E8F0;
+        }
+        .btn-danger {
+            background: var(--coral);
+            color: white;
+        }
+        .btn-sm { padding: 8px 12px; font-size: 12px; border-radius: var(--radius-sm); }
+        .btn-block { width: 100%; }
+
+        .input {
+            width: 100%;
+            padding: 10px 14px;
+            background: var(--bg-input);
+            border: 2px solid transparent;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            color: var(--text-dark);
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+        .input:focus {
+            outline: none;
+            border-color: var(--teal);
+            background: white;
+        }
+        .input-group { display: flex; gap: 8px; }
+        .input-group .input { flex: 1; }
+
+        /* Bottom Nav */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 480px;
+            background: rgba(255,255,255,0.98);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid #E2E8F0;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            padding: 6px 8px;
+            padding-bottom: var(--safe-bottom);
+            z-index: 100;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            padding: 6px 4px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+            font-size: 10px;
+            font-weight: 600;
+            flex: 1;
+            max-width: 70px;
+        }
+        .nav-item.active { color: var(--teal); }
+        .nav-item svg { width: 22px; height: 22px; }
+        .nav-item-icon {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+        }
+        .nav-item.active .nav-item-icon {
+            background: var(--teal-light);
+            border-radius: 8px;
+        }
+        .nav-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            min-width: 16px;
+            height: 16px;
+            background: var(--coral);
+            border-radius: 50%;
+            font-size: 9px;
+            font-weight: 700;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ===== PLANNER PAGE ===== */
+        .planner-container {
+            padding: 8px 0;
+        }
+        .planner-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .planner-stats {
+            display: flex;
+            gap: 10px;
+            font-size: 11px;
+            color: var(--text-light);
+        }
+        .planner-stats span {
+            background: var(--bg-card);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+        .planner-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            padding-bottom: 20px;
+        }
+        .planner-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
+            padding: 12px;
+            box-shadow: var(--shadow-sm);
+            border-left: 4px solid var(--teal);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-height: 140px;
+            display: flex;
+            flex-direction: column;
+        }
+        .planner-card:active { transform: scale(0.97); }
+        .planner-card.expiry-critical { border-left-color: var(--danger); background: var(--danger-bg); }
+        .planner-card.expiry-soon { border-left-color: var(--warning); background: var(--warning-bg); }
+        .planner-card.expiry-ok { border-left-color: var(--success); }
+        .planner-card .card-img {
+            width: 100%;
+            height: 50px;
+            background: var(--bg-input);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 8px;
+            font-size: 24px;
+            overflow: hidden;
+        }
+        .planner-card .card-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        .planner-card .card-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 6px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .planner-card .card-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            font-size: 9px;
+            color: var(--text-light);
+            margin-bottom: 6px;
+        }
+        .planner-card .card-details span {
+            background: var(--bg-input);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        .planner-card .card-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+            font-size: 10px;
+            color: var(--text-light);
+        }
+        .battery-bar {
+            width: 30px;
+            height: 6px;
+            background: var(--bg-input);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .battery-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+        .battery-fill.critical { background: var(--danger); }
+        .battery-fill.low { background: var(--warning); }
+        .battery-fill.full { background: var(--success); }
+
+        /* Modal for editing product */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            z-index: 200;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            width: 100%;
+            max-width: 380px;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+        .modal-field { margin-bottom: 12px; }
+        .modal-field label {
+            display: block;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+        .modal-actions { display: flex; gap: 8px; margin-top: 16px; }
+
+        /* Toast */
+        .toast-container {
+            position: fixed;
+            top: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 300;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: calc(100% - 40px);
+            max-width: 400px;
+            pointer-events: none;
+        }
+        .toast {
+            padding: 12px 16px;
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: toastIn 0.3s ease;
+            pointer-events: auto;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .toast.success { border-left: 4px solid var(--success); }
+        .toast.error { border-left: 4px solid var(--danger); }
+        .toast.warning { border-left: 4px solid var(--warning); }
+
+        .empty-state {
+            text-align: center;
+            padding: 30px 16px;
+            color: var(--text-muted);
+            grid-column: 1 / -1;
+        }
+        .empty-state svg { width: 48px; height: 48px; margin-bottom: 12px; opacity: 0.4; }
+        .empty-state p { font-size: 13px; }
+
+        @media (max-width: 380px) {
+            .planner-grid { grid-template-columns: 1fr; }
+            .nav-item { font-size: 9px; }
+            .nav-item svg { width: 20px; height: 20px; }
+        }
+    </style>
 </head>
 <body>
-<div class="app">
-<aside class="sidebar" id="sidebar">
-  <div class="brand"><div class="mark">P</div><div><b>Pharma<span>Track</span></b><small style="display:block;color:var(--muted)">Pro · v2.0</small></div></div>
-  <div class="branch"><small>ACTIVE BRANCH</small><strong id="branchName">Boots DXB T3 Arrivals</strong><span class="badge ok" style="margin-top:7px">● Offline ready</span></div>
-  <nav class="nav" id="nav">
-    <button class="active" data-page="dashboard"><span class="ico">◈</span>Dashboard</button>
-    <button data-page="sales"><span class="ico">▥</span>Sales Entry</button>
-    <button data-page="inventory"><span class="ico">▦</span>Inventory</button>
-    <button data-page="scanner"><span class="ico">⌗</span>GS1 Scanner</button>
-    <button data-page="expiry"><span class="ico">◷</span>Expiry</button>
-    <button data-page="shelf"><span class="ico">▤</span>Shelf Planner</button>
-    <button data-page="restock"><span class="ico">↗</span>Smart Restock</button>
-    <button data-page="reports"><span class="ico">▧</span>Reports</button>
-    <button data-page="settings"><span class="ico">⚙</span>Settings</button>
-  </nav>
-  <div class="sidebar-foot"><div class="status">Autosave: <b id="saveStatus" style="color:var(--green)">ON</b><br>Last save <span id="lastSave">now</span></div><button class="btn" id="resetDemo">Reset demo data</button></div>
-</aside>
-<main class="main">
-  <header class="topbar"><div class="topbar-left"><button class="btn mobile-menu" id="mobileMenu">☰</button><div class="crumb">PharmaTrack Pro / <b id="crumb">Dashboard</b></div></div><div class="top-actions"><button class="btn label" id="quickAdd">＋ Quick Add</button><button class="btn" id="exportJson">Backup</button></div></header>
-  <div class="content">
-    <section class="page active" id="page-dashboard">
-      <div class="hero"><div style="display:flex;justify-content:space-between;gap:16px;align-items:flex-end;flex-wrap:wrap"><div><div class="badge" style="margin-bottom:8px">Built for the pharmacy floor</div><h2>Good evening, Vysakh.</h2><p>One live view of sales, stock, expiry, restock and shelf execution. All demo data is editable and persists locally in this browser.</p></div><div class="actions"><button class="btn primary" data-goto="sales">Enter sales</button><button class="btn" data-goto="scanner">Scan GS1</button></div></div></div>
-      <div class="grid kpis" id="dashKpis"></div>
-      <div class="grid layout2">
-        <div class="card panel"><div class="panel-title"><h3>Hourly Sales — Today</h3><span id="todayLabel"></span></div><div class="chart-wrap"><div class="chart" id="salesChart"></div></div></div>
-        <div class="card panel"><div class="panel-title"><h3>Expiry & Stock Watch</h3><span id="watchCount"></span></div><div class="alert-list" id="watchList"></div></div>
-      </div>
-      <div class="grid layout3" style="margin-top:14px">
-        <div class="card panel"><div class="panel-title"><h3>Target Achievement</h3><span id="achSub"></span></div><div style="font-size:34px;font-weight:900" id="achVal">0%</div><div class="progress" style="margin:9px 0 6px"><span id="achBar" style="width:0%"></span></div><div class="muted" id="paceText"></div></div>
-        <div class="card panel"><div class="panel-title"><h3>AURA Performance</h3><span>Today</span></div><div class="mini-grid" id="auraMini"></div></div>
-        <div class="card panel"><div class="panel-title"><h3>Fast Actions</h3><span>workflow</span></div><div class="actions"><button class="btn" data-goto="expiry">Review expiry</button><button class="btn" data-goto="restock">Generate restock</button><button class="btn" data-goto="shelf">Open shelf map</button><button class="btn" data-goto="reports">Daily report</button></div></div>
-      </div>
-    </section>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo">
+                <div class="logo-icon">💊</div>
+                <div class="logo-text">
+                    <h1>PharmaTrack</h1>
+                    <p>Oasis Mall Branch</p>
+                </div>
+            </div>
+        </header>
 
-    <section class="page" id="page-sales">
-      <div class="page-head"><div><h1>Sales Entry</h1><p>10 hourly slots · live totals · target pacing · KPI workflow.</p></div><div class="actions"><button class="btn" id="setTarget">Set monthly target</button><button class="btn green" id="saveSales">Save sales</button></div></div>
-      <div class="grid kpis" id="salesKpis"></div>
-      <div class="card panel"><div class="table-wrap"><table class="table" id="salesTable"></table></div></div>
-    </section>
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- SCANNER PAGE -->
+            <div class="page" id="page-scan">
+                <h2 class="page-title">Scan Barcode</h2>
+                <div class="card">
+                    <div id="reader" style="width:100%;height:280px;border-radius:12px;overflow:hidden;"></div>
+                    <button class="btn btn-primary btn-block" id="btnStartScanner" style="margin-top:12px;">Start Scanner</button>
+                </div>
+                <div class="card">
+                    <div style="font-size:14px;font-weight:600;margin-bottom:8px;">Manual Entry</div>
+                    <div class="input-group">
+                        <input type="text" class="input" id="manualInput" placeholder="Enter barcode...">
+                        <button class="btn btn-primary" id="btnManualAdd" style="flex:0 0 auto;">Add</button>
+                    </div>
+                </div>
+                <div class="card">
+                    <div style="font-size:14px;font-weight:600;margin-bottom:8px;">Recent Scans</div>
+                    <div id="recentScans"></div>
+                </div>
+            </div>
 
-    <section class="page" id="page-inventory">
-      <div class="page-head"><div><h1>Inventory Master</h1><p>GTIN, RMS, description, brand, supplier, batch, expiry, units and facings.</p></div><div class="actions"><button class="btn" id="addProduct">＋ Add product</button><button class="btn" id="downloadCsv">CSV template</button></div></div>
-      <div class="card panel"><div class="actions" style="margin-bottom:10px"><input id="invSearch" placeholder="Search product / GTIN / RMS" style="flex:1;min-width:220px;padding:10px;border:1px solid var(--border);border-radius:10px;background:#091020;color:var(--text)"><select id="invFilter" class="field" style="width:auto;padding:10px;background:#091020;color:var(--text);border:1px solid var(--border);border-radius:10px"><option value="all">All status</option><option value="expired">Expired</option><option value="soon">Within 30d</option><option value="low">Low stock</option><option value="ok">OK</option></select></div><div class="table-wrap"><table class="table" id="invTable"></table></div></div>
-    </section>
+            <!-- HISTORY PAGE -->
+            <div class="page" id="page-history">
+                <h2 class="page-title">Scan History</h2>
+                <div class="card">
+                    <input type="text" class="input" id="historySearch" placeholder="Search...">
+                    <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;">
+                        <button class="btn btn-sm btn-secondary filter-btn active" data-filter="all">All</button>
+                        <button class="btn btn-sm btn-secondary filter-btn" data-filter="expired">Expired</button>
+                        <button class="btn btn-sm btn-secondary filter-btn" data-filter="soon">Soon</button>
+                        <button class="btn btn-sm btn-secondary filter-btn" data-filter="ok">OK</button>
+                    </div>
+                </div>
+                <div id="historyList"></div>
+            </div>
 
-    <section class="page" id="page-scanner">
-      <div class="page-head"><div><h1>GS1 Scanner</h1><p>Parse GTIN, expiry and batch from common GS1 application identifiers.</p></div><div class="actions"><button class="btn primary" id="startCamera">Start camera</button><button class="btn" id="stopCamera">Stop</button></div></div>
-      <div class="scan-box"><div class="card panel"><div class="scanner" id="scannerBox"><video id="scanVideo" playsinline muted></video><div class="scan-center" id="scanPlaceholder"><strong>Camera scanner ready</strong>Use a device with a supported barcode API, or use manual parsing on the right.</div></div><div style="height:8px"></div><div class="tag-row"><span class="badge">01 GTIN</span><span class="badge">17 Expiry</span><span class="badge">10 Batch</span><span class="badge">Offline manual parser</span></div></div>
-        <div class="card panel"><div class="panel-title"><h3>Manual GS1 Parse</h3><span id="parseState">waiting</span></div><div class="field"><label>Barcode string</label><textarea id="gs1Input" placeholder="Example: (01)06212345678903(17)270131(10)B24018"></textarea></div><div class="actions" style="margin-top:10px"><button class="btn primary" id="parseGs1">Parse GS1</button><button class="btn" id="clearGs1">Clear</button></div><div id="parseResult" style="margin-top:12px"></div></div>
-      </div>
-      <div class="card panel" style="margin-top:14px"><div class="panel-title"><h3>Recent Scans</h3><span id="scanCount"></span></div><div class="table-wrap"><table class="table" id="scanTable"></table></div></div>
-    </section>
+            <!-- MANUAL PAGE -->
+            <div class="page" id="page-manual">
+                <h2 class="page-title">Manual Entry</h2>
+                <div class="card">
+                    <textarea class="input" id="pasteArea" style="min-height:150px;resize:vertical;" placeholder="Paste barcodes here, one per line..."></textarea>
+                    <div style="display:flex;gap:8px;margin-top:12px;">
+                        <button class="btn btn-secondary" id="btnClearPaste">Clear</button>
+                        <button class="btn btn-primary" id="btnProcessPaste">Process</button>
+                    </div>
+                    <div id="pasteStats" style="display:none;margin-top:12px;display:grid;grid-template-columns:repeat(2,1fr);gap:8px;">
+                        <div class="card" style="margin:0;text-align:center;"><strong id="statTotal">0</strong><br><small>Total</small></div>
+                        <div class="card" style="margin:0;text-align:center;"><strong id="statValid">0</strong><br><small>Valid</small></div>
+                    </div>
+                </div>
+            </div>
 
-    <section class="page" id="page-expiry">
-      <div class="page-head"><div><h1>Expiry Monitor</h1><p>RAG triage for expired, near-expiry and safe stock.</p></div><div class="actions"><button class="btn danger" id="filterExpired">Expired</button><button class="btn warn" id="filterSoon">Within 30d</button><button class="btn" id="filterAllExpiry">All</button></div></div>
-      <div class="grid kpis" id="expiryKpis"></div>
-      <div class="card panel"><div class="table-wrap"><table class="table" id="expiryTable"></table></div></div>
-    </section>
+            <!-- PLANNER PAGE -->
+            <div class="page active" id="page-planner">
+                <h2 class="page-title">📦 Shelf Planner</h2>
+                <div class="planner-header">
+                    <span id="plannerCount" style="font-size:13px;font-weight:600;color:var(--text-medium);">0 products</span>
+                    <span id="plannerWarn" style="font-size:12px;color:var(--warning);font-weight:600;">0 ⚠️</span>
+                </div>
+                <div class="planner-grid" id="plannerGrid"></div>
+            </div>
 
-    <section class="page" id="page-shelf">
-      <div class="page-head"><div><h1>Shelf Planner</h1><p>Visual shelf map with facings, units, expiry status and eye-level priority.</p></div><div class="actions"><button class="btn" id="addSlot">＋ Assign product</button><button class="btn" id="printShelf">Print map</button></div></div>
-      <div class="card panel"><div class="shelf" id="shelfMap"></div></div>
-    </section>
+            <!-- SALES PAGE -->
+            <div class="page" id="page-sales">
+                <h2 class="page-title">📊 Sales Entry</h2>
+                <div class="card">
+                    <div style="display:flex;gap:8px;margin-bottom:12px;">
+                        <input type="number" class="input" id="monthlyTarget" value="250000" placeholder="Monthly Target">
+                    </div>
+                    <div style="overflow-x:auto;">
+                        <table style="width:100%;min-width:600px;font-size:11px;border-collapse:collapse;">
+                            <thead>
+                                <tr style="background:var(--teal-light);">
+                                    <th style="padding:6px;">Time</th>
+                                    <th>Sale</th>
+                                    <th>TRN</th>
+                                    <th>No7</th>
+                                    <th>AURA</th>
+                                    <th>Units</th>
+                                    <th>Footfall</th>
+                                </tr>
+                            </thead>
+                            <tbody id="salesBody"></tbody>
+                        </table>
+                    </div>
+                    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:12px;">
+                        <div class="card" style="margin:0;padding:12px;text-align:center;"><small>Today Total</small><br><strong id="todayTotal">0</strong></div>
+                        <div class="card" style="margin:0;padding:12px;text-align:center;"><small>Month</small><br><strong id="monthTotal">0</strong></div>
+                    </div>
+                </div>
+            </div>
 
-    <section class="page" id="page-restock">
-      <div class="page-head"><div><h1>Smart Restock</h1><p>Action queue based on stock on hand, min/max levels and expiry risk.</p></div><div class="actions"><button class="btn primary" id="rebuildRestock">Refresh queue</button><button class="btn" id="exportRestock">Export CSV</button></div></div>
-      <div class="grid kpis" id="restockKpis"></div>
-      <div class="card panel"><div class="table-wrap"><table class="table" id="restockTable"></table></div></div>
-    </section>
+            <!-- SETTINGS PAGE -->
+            <div class="page" id="page-settings">
+                <h2 class="page-title">Settings</h2>
+                <div class="card">
+                    <div style="font-size:14px;font-weight:600;margin-bottom:8px;">Upload Product Database</div>
+                    <input type="file" id="masterFileInput" accept=".csv,.xlsx,.xls" class="input" style="padding:8px;">
+                </div>
+                <div class="card">
+                    <button class="btn btn-secondary btn-block" id="btnExportData" style="margin-bottom:8px;">📤 Export Data</button>
+                    <button class="btn btn-danger btn-block" id="btnClearHistory">🗑️ Clear History</button>
+                </div>
+            </div>
+        </main>
 
-    <section class="page" id="page-reports">
-      <div class="page-head"><div><h1>Reports</h1><p>Print-ready views for daily sales, expiry and stock audits.</p></div><div class="actions"><button class="btn primary" id="printReport">Print / Save PDF</button><button class="btn" id="backupNow">JSON backup</button></div></div>
-      <div class="grid layout2"><div class="card panel"><div class="panel-title"><h3>Daily Sales Snapshot</h3><span id="reportDate"></span></div><div id="reportSales"></div></div><div class="card panel"><div class="panel-title"><h3>Expiry Audit</h3><span id="reportExpirySub"></span></div><div id="reportExpiry"></div></div></div>
-      <div class="card panel" style="margin-top:14px"><div class="panel-title"><h3>Branch / Audit Notes</h3><span>editable</span></div><div class="field"><label>Notes</label><textarea id="reportNotes" placeholder="Enter handover / audit notes..."></textarea></div></div>
-    </section>
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <button class="nav-item" data-page="scan">
+                <div class="nav-item-icon">🔍</div>
+                <span>Scan</span>
+            </button>
+            <button class="nav-item" data-page="history">
+                <div class="nav-item-icon">🕐</div>
+                <span>History</span>
+            </button>
+            <button class="nav-item" data-page="manual">
+                <div class="nav-item-icon">📋</div>
+                <span>Manual</span>
+            </button>
+            <button class="nav-item active" data-page="planner">
+                <div class="nav-item-icon">📦</div>
+                <span>Planner</span>
+            </button>
+            <button class="nav-item" data-page="sales">
+                <div class="nav-item-icon">💰</div>
+                <span>Sales</span>
+            </button>
+            <button class="nav-item" data-page="settings">
+                <div class="nav-item-icon">⚙️</div>
+                <span>Settings</span>
+            </button>
+        </nav>
+    </div>
 
-    <section class="page" id="page-settings">
-      <div class="page-head"><div><h1>Settings & Data</h1><p>Local-first configuration, backup and import tools.</p></div></div>
-      <div class="grid layout2"><div class="card panel"><div class="panel-title"><h3>Branch</h3><span>data separation</span></div><div class="form-grid"><div class="field span2"><label>Branch name</label><input id="setBranch"></div><div class="field"><label>Currency</label><select id="setCurrency"><option>AED</option><option>KWD</option></select></div><div class="field"><label>Monthly target</label><input type="number" id="setTargetInput"></div></div><div class="actions" style="margin-top:12px"><button class="btn primary" id="saveSettings">Save settings</button></div></div>
-        <div class="card panel"><div class="panel-title"><h3>Data tools</h3><span>LocalStorage</span></div><div class="actions"><button class="btn" id="importJsonBtn">Import JSON</button><button class="btn" id="exportJson2">Export JSON</button><button class="btn" id="exportAllCsv">Export inventory CSV</button><input type="file" id="importJsonFile" accept="application/json" hidden></div><div class="muted" style="margin-top:10px">Your current browser copy is the source of truth. Export a backup before moving devices.</div></div></div>
-      <div class="card panel" style="margin-top:14px"><div class="panel-title"><h3>Application status</h3><span>v2.0</span></div><div class="mini-grid"><div class="mini"><span>Products</span><b id="stProducts">0</b></div><div class="mini"><span>Scans</span><b id="stScans">0</b></div><div class="mini"><span>Sales rows</span><b>10</b></div><div class="mini"><span>Storage</span><b style="color:var(--green)">Local</b></div></div></div>
-    </section>
-  </div>
-</main>
-</div>
-<div class="modal" id="productModal"><div class="modal-card"><div class="modal-head"><h3 id="modalTitle">Add product</h3><button class="btn" id="closeModal">✕</button></div><form id="productForm"><div class="form-grid"><div class="field"><label>GTIN</label><input name="gtin" required></div><div class="field"><label>RMS</label><input name="rms"></div><div class="field span2"><label>Description</label><input name="description" required></div><div class="field"><label>Brand</label><input name="brand"></div><div class="field"><label>Supplier</label><input name="supplier"></div><div class="field"><label>Batch</label><input name="batch"></div><div class="field"><label>Expiry</label><input type="date" name="expiry"></div><div class="field"><label>Units</label><input type="number" min="0" name="units" value="0"></div><div class="field"><label>Min</label><input type="number" min="0" name="min" value="5"></div><div class="field"><label>Max</label><input type="number" min="0" name="max" value="20"></div><div class="field"><label>Facings</label><input type="number" min="0" name="facings" value="1"></div><div class="field span2"><label>Shelf</label><select name="shelf"><option>A</option><option>B</option><option>C</option></select></div></div><div class="actions" style="justify-content:flex-end;margin-top:14px"><button type="button" class="btn" id="cancelProduct">Cancel</button><button type="submit" class="btn primary">Save product</button></div></form></div></div>
-<div class="toast" id="toast"></div>
-<script>
-const KEY='pharmatrack_pro_v2';
-const hours=['12am','2am','4am','6am','8am','10am','12pm','2pm','4pm','6pm'];
-const metricCols=['sales','trn','no7','aura','units','footfall'];
-const today=new Date();
-const iso=d=>new Date(d).toISOString().slice(0,10);
-const days=(a,b)=>Math.round((new Date(b)-new Date(a))/86400000);
-const fmt=n=>Number(n||0).toLocaleString('en-US',{maximumFractionDigits:2});
-const money=n=>`${state.settings.currency} ${fmt(n)}`;
-const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
-let state=load();
-function defaultState(){
- const t=iso(today);
- const products=[
-  {id:1,gtin:'05012345678901',rms:'100201',description:'No7 Protect & Perfect Night Cream 50ml',brand:'No7',supplier:'Boots Supplier',batch:'N7A2406',expiry:addDays(t,64),units:12,min:8,max:24,facings:3,shelf:'A'},
-  {id:2,gtin:'05012345678918',rms:'100202',description:'No7 Future Renew Day Cream SPF15',brand:'No7',supplier:'Boots Supplier',batch:'N7B2402',expiry:addDays(t,18),units:5,min:8,max:24,facings:3,shelf:'A'},
-  {id:3,gtin:'05012345678925',rms:'100203',description:'La Roche-Posay Anthelios SPF50+',brand:'La Roche-Posay',supplier:'L’Oreal',batch:'LRP6241',expiry:addDays(t,210),units:28,min:10,max:36,facings:4,shelf:'B'},
-  {id:4,gtin:'05012345678932',rms:'100204',description:'Wegovy 1mg Pre-filled Pen',brand:'Novo Nordisk',supplier:'Novo Nordisk',batch:'WG1-0626',expiry:addDays(t,11),units:3,min:4,max:10,facings:2,shelf:'C'},
-  {id:5,gtin:'05012345678949',rms:'100205',description:'Magnesium Glycinate 400mg 60 Tabs',brand:'White Health',supplier:'White Health',batch:'WH24071',expiry:addDays(t,120),units:7,min:10,max:30,facings:2,shelf:'B'},
-  {id:6,gtin:'05012345678956',rms:'100206',description:'Omega 3 2000mg 120 Tabs',brand:'KEENVITA',supplier:'KEENVITA',batch:'KV24051',expiry:addDays(t,-5),units:6,min:8,max:24,facings:2,shelf:'C'},
-  {id:7,gtin:'05012345678963',rms:'100207',description:'Vitamin D3 5000 IU 100 Caps',brand:'Puritan’s Pride',supplier:'Puritan’s Pride',batch:'PP24101',expiry:addDays(t,330),units:19,min:8,max:32,facings:3,shelf:'B'},
-  {id:8,gtin:'05012345678970',rms:'100208',description:'Brufen 400mg 30 Tabs',brand:'Abbott',supplier:'Abbott',batch:'BR2404',expiry:addDays(t,95),units:4,min:10,max:30,facings:3,shelf:'A'}
- ];
- const sales={date:t,target:60000,rows:hours.map((h,i)=>({hour:h,sales:[1200,980,1450,880,1640,2180,1900,1760,1200,980][i],trn:[12,10,15,9,18,22,20,17,13,10][i],no7:[58,42,64,38,71,92,77,66,45,39][i],aura:[8,6,10,7,12,15,13,11,8,7][i],units:[28,22,34,18,39,49,45,38,31,24][i],footfall:[45,41,53,37,66,78,74,63,50,43][i]}))};
- return {version:2,settings:{branch:'Boots DXB T3 Arrivals',currency:'AED',target:60000},products,sales,scans:[],notes:'',lastSave:new Date().toISOString()};
-}
-function addDays(base,n){const d=new Date(base);d.setDate(d.getDate()+n);return iso(d)}
-function load(){try{const x=JSON.parse(localStorage.getItem(KEY)||'null');return x&&x.version===2?x:defaultState()}catch{return defaultState()}}
-function persist(){state.lastSave=new Date().toISOString();localStorage.setItem(KEY,JSON.stringify(state));document.getElementById('lastSave').textContent=new Date(state.lastSave).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});}
-persist();
-function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2200)}
-function statusFor(p){const d=days(iso(today),p.expiry);if(d<0)return'Expired';if(d<=30)return'Within 30d';if(p.units<=p.min)return'Low stock';return'OK'}
-function statusBadge(s){return `<span class="badge ${s==='Expired'?'red':(s==='Within 30d'||s==='Low stock')?'warn':'ok'}">${esc(s)}</span>`}
-function totals(){const t={sales:0,trn:0,no7:0,aura:0,units:0,footfall:0};state.sales.rows.forEach(r=>metricCols.forEach(k=>t[k]+=Number(r[k]||0)));return t}
-function achievement(){const t=state.settings.target||state.sales.target||60000;return Math.min(100,(totals().sales/t)*100)}
-function renderDashboard(){const t=totals(), expired=state.products.filter(p=>statusFor(p)==='Expired'), soon=state.products.filter(p=>statusFor(p)==='Within 30d'), low=state.products.filter(p=>statusFor(p)==='Low stock');
- document.getElementById('branchName').textContent=state.settings.branch;document.getElementById('todayLabel').textContent=today.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});document.getElementById('dashKpis').innerHTML=[['Sales',money(t.sales),'+14% vs pacing'],['Transactions',fmt(t.trn),'live'],['ATV',money(t.trn?t.sales/t.trn:0),'sales / trn'],['IPC',fmt(t.trn?t.units/t.trn:0),'units / trn'],['No7',money(t.no7),`${t.sales?((t.no7/t.sales)*100).toFixed(1):0}% share`],['Footfall',fmt(t.footfall),'tracked today']].map(x=>`<div class="card kpi"><div class="label">${x[0]}</div><div class="val">${x[1]}</div><div class="sub">${x[2]}</div></div>`).join('');
- const vals=state.sales.rows.map(r=>r.sales);const mx=Math.max(...vals,1);document.getElementById('salesChart').innerHTML=state.sales.rows.map(r=>`<div class="bar" style="height:${Math.max(10,(r.sales/mx)*100)}%"><small>${r.hour}</small></div>`).join('');
- const watch=[...expired,...soon,...low].slice(0,6);document.getElementById('watchCount').textContent=`${expired.length+soon.length+low.length} flagged`;document.getElementById('watchList').innerHTML=watch.length?watch.map(p=>`<div class="alert"><div><b>${esc(p.description)}</b><small>${esc(p.gtin)} · ${p.units} units</small></div>${statusBadge(statusFor(p))}</div>`).join(''):`<div class="muted">No alerts.</div>`;
- const ach=achievement();document.getElementById('achVal').textContent=ach.toFixed(1)+'%';document.getElementById('achBar').style.width=Math.min(100,ach)+'%';document.getElementById('achSub').textContent=money(state.settings.target||60000)+' target';document.getElementById('paceText').textContent=`${money(t.sales)} achieved · ${money(Math.max(0,(state.settings.target||60000)-t.sales))} remaining`;
- document.getElementById('auraMini').innerHTML=[['Full AURA',fmt(t.aura),'transactions'],['AURA %',t.trn?(t.aura/t.trn*100).toFixed(1)+'%':'0%','penetration'],['Units',fmt(t.units),'sold'],['Best hour',bestHour().hour,bestHour().sales?money(bestHour().sales):'']].map(x=>`<div class="mini"><span>${x[0]}</span><b>${x[1]}</b><small class="muted">${x[2]}</small></div>`).join('');
-}
-function bestHour(){return state.sales.rows.reduce((a,b)=>Number(b.sales)>Number(a.sales)?b:a,state.sales.rows[0])}
-function renderSales(){const t=totals();document.getElementById('salesKpis').innerHTML=[['Sales',money(t.sales)],['Transactions',fmt(t.trn)],['ATV',money(t.trn?t.sales/t.trn:0)],['IPC',t.trn?(t.units/t.trn).toFixed(2):'0'],['No7 share',t.sales?(t.no7/t.sales*100).toFixed(1)+'%':'0%'],['AURA',fmt(t.aura)]].map(x=>`<div class="card kpi"><div class="label">${x[0]}</div><div class="val">${x[1]}</div><div class="sub">live calculation</div></div>`).join('');
- let html='<thead><tr><th>Hour</th><th>Sales (AED)</th><th>TRN</th><th>No7</th><th>AURA</th><th>Units</th><th>Footfall</th></tr></thead><tbody>';
- state.sales.rows.forEach((r,i)=>{html+=`<tr><td><b>${r.hour}</b></td>${metricCols.map(k=>`<td><input type="number" min="0" step="0.01" data-sales-index="${i}" data-key="${k}" value="${r[k]??0}"></td>`).join('')}</tr>`});
- html+=`<tr><td><b>TOTAL</b></td>${metricCols.map(k=>`<td><b id="sum-${k}">${fmt(t[k])}</b></td>`).join('')}</tr></tbody>`;document.getElementById('salesTable').innerHTML=html;
- document.querySelectorAll('[data-sales-index]').forEach(inp=>inp.oninput=e=>{const i=+e.target.dataset.salesIndex;state.sales.rows[i][e.target.dataset.key]=Number(e.target.value||0);renderSales();renderDashboard();persist()});
-}
-function renderInventory(){const q=(document.getElementById('invSearch')?.value||'').toLowerCase();const f=document.getElementById('invFilter')?.value||'all';const rows=state.products.filter(p=>{const hay=[p.description,p.gtin,p.rms,p.brand,p.batch].join(' ').toLowerCase();const st=statusFor(p);return(!q||hay.includes(q))&&(f==='all'||(f==='expired'&&st==='Expired')||(f==='soon'&&st==='Within 30d')||(f==='low'&&st==='Low stock')||(f==='ok'&&st==='OK'))});let html='<thead><tr><th>Product</th><th>GTIN</th><th>RMS</th><th>Expiry</th><th>Batch</th><th>Units</th><th>Facings</th><th>Status</th><th></th></tr></thead><tbody>';rows.forEach(p=>{html+=`<tr><td><b>${esc(p.description)}</b><div class="muted">${esc(p.brand)} · ${esc(p.supplier)}</div></td><td>${esc(p.gtin)}</td><td>${esc(p.rms)}</td><td>${p.expiry}</td><td>${esc(p.batch)}</td><td>${p.units}</td><td>${p.facings}</td><td>${statusBadge(statusFor(p))}</td><td><button class="btn" onclick="editProduct(${p.id})">Edit</button></td></tr>`});html+='</tbody>';document.getElementById('invTable').innerHTML=html}
-function renderExpiry(){const e=state.products.filter(p=>statusFor(p)==='Expired').length,s=state.products.filter(p=>statusFor(p)==='Within 30d').length,o=state.products.filter(p=>statusFor(p)==='OK').length,l=state.products.filter(p=>statusFor(p)==='Low stock').length;document.getElementById('expiryKpis').innerHTML=[['Expired',e,'red'],['Within 30d',s,'warn'],['Low stock',l,'warn'],['OK',o,'ok'],['Total products',state.products.length,''],['Tracked units',state.products.reduce((a,p)=>a+p.units,0),'']].map(x=>`<div class="card kpi"><div class="label">${x[0]}</div><div class="val">${fmt(x[1])}</div><div class="sub" style="color:${x[2]==='red'?'var(--red)':x[2]==='warn'?'var(--amber)':x[2]==='ok'?'var(--green)':'var(--muted)'}">${x[2]||'inventory'}</div></div>`).join('');renderExpiryTable('all')}
-function renderExpiryTable(mode='all'){let rows=state.products.filter(p=>{const s=statusFor(p);return mode==='all'||(mode==='expired'&&s==='Expired')||(mode==='soon'&&s==='Within 30d')});rows.sort((a,b)=>new Date(a.expiry)-new Date(b.expiry));let html='<thead><tr><th>Product</th><th>Expiry</th><th>Days</th><th>Units</th><th>Batch</th><th>Status</th></tr></thead><tbody>';rows.forEach(p=>html+=`<tr><td><b>${esc(p.description)}</b><div class="muted">${esc(p.gtin)}</div></td><td>${p.expiry}</td><td>${days(iso(today),p.expiry)}</td><td>${p.units}</td><td>${esc(p.batch)}</td><td>${statusBadge(statusFor(p))}</td></tr>`);html+='</tbody>';document.getElementById('expiryTable').innerHTML=html}
-function renderShelf(){const groups=['A','B','C'];document.getElementById('shelfMap').innerHTML=groups.map(g=>{const ps=state.products.filter(p=>p.shelf===g);const cells=[...ps,...Array(Math.max(0,6-ps.length)).fill(null)];return `<div class="shelf-row"><div class="shelf-label">Shelf ${g}<div class="muted" style="font-weight:500">${ps.length} products</div></div><div class="shelf-cells">${cells.slice(0,6).map((p,i)=>p?`<div class="slot filled"><div class="sku">${esc(p.rms)}</div><b>${esc(p.description.slice(0,27))}${p.description.length>27?'…':''}</b><small>${p.units} units · ${p.facings} facings</small><div style="margin-top:6px">${statusBadge(statusFor(p))}</div></div>`:`<div class="slot"><div class="muted">Empty slot</div><small>Tap Assign product</small></div>`).join('')}</div></div>`}).join('')}
-function buildRestock(){return state.products.map(p=>{const need=Math.max(0,p.max-p.units);const score=(p.units<=p.min?3:0)+(statusFor(p)==='Expired'?4:0)+(statusFor(p)==='Within 30d'?2:0);return {...p,need,score}}).filter(x=>x.need>0||x.score>0).sort((a,b)=>b.score-a.score||b.need-a.need)}
-function renderRestock(){const list=buildRestock(),urgent=list.filter(x=>x.score>=3).length,units=list.reduce((a,p)=>a+p.need,0),sup=new Set(list.map(p=>p.supplier)).size;document.getElementById('restockKpis').innerHTML=[['Action items',list.length,'queue'],['Urgent',urgent,'priority'],['Suggested units',units,'to max'],['Suppliers',sup,'vendor count'],['Expired risk',list.filter(p=>statusFor(p)==='Expired').length,'remove'],['Near expiry',list.filter(p=>statusFor(p)==='Within 30d').length,'review']].map(x=>`<div class="card kpi"><div class="label">${x[0]}</div><div class="val">${fmt(x[1])}</div><div class="sub">${x[2]}</div></div>`).join('');let html='<thead><tr><th>Priority</th><th>Product</th><th>On hand</th><th>Min / Max</th><th>Suggested</th><th>Supplier</th><th>Reason</th></tr></thead><tbody>';list.forEach(p=>html+=`<tr><td>${p.score>=3?'<span class="badge red">HIGH</span>':p.score>=2?'<span class="badge warn">WATCH</span>':'<span class="badge">NORMAL</span>'}</td><td><b>${esc(p.description)}</b><div class="muted">${esc(p.rms)}</div></td><td>${p.units}</td><td>${p.min} / ${p.max}</td><td><b>${p.need}</b></td><td>${esc(p.supplier)}</td><td>${statusFor(p)==='Expired'?'Remove expired stock':statusFor(p)==='Within 30d'?'Near expiry + replenishment':p.units<=p.min?'Below minimum':'Below max target'}</td></tr>`);html+='</tbody>';document.getElementById('restockTable').innerHTML=html}
-function renderScans(){document.getElementById('scanCount').textContent=`${state.scans.length} scans`;let html='<thead><tr><th>Time</th><th>Raw</th><th>GTIN</th><th>Expiry</th><th>Batch</th><th>Match</th></tr></thead><tbody>';state.scans.slice().reverse().forEach(s=>html+=`<tr><td>${new Date(s.at).toLocaleString()}</td><td>${esc(s.raw)}</td><td>${esc(s.gtin||'—')}</td><td>${esc(s.expiry||'—')}</td><td>${esc(s.batch||'—')}</td><td>${s.match?statusBadge('OK'):'—'}</td></tr>`);html+='</tbody>';document.getElementById('scanTable').innerHTML=html}
-function parseGS1(raw){let s=raw.replace(/\u001d/g,'|').trim();const out={raw,gtin:'',expiry:'',batch:''};const m01=s.match(/(?:\(01\)|01)(\d{14})/);if(m01)out.gtin=m01[1];const m17=s.match(/(?:\(17\)|17)(\d{6})/);if(m17){const v=m17[1];let yy=+v.slice(0,2),mm=+v.slice(2,4),dd=+v.slice(4,6);const yyyy=2000+yy;out.expiry=`${yyyy}-${String(mm).padStart(2,'0')}-${String(dd).padStart(2,'0')}`}const m10=s.match(/(?:\(10\)|10)([A-Za-z0-9._\/-]{1,20})/);if(m10)out.batch=m10[1].replace(/[|()]+$/,'');return out}
-function useParsed(x){const match=state.products.find(p=>p.gtin===x.gtin);state.scans.push({...x,at:new Date().toISOString(),match:!!match});if(match){match.batch=x.batch||match.batch;match.expiry=x.expiry||match.expiry;toast(`Matched: ${match.description}`)}else toast('GS1 parsed — product not in master');persist();renderScans();renderExpiry();renderInventory();}
-function renderReports(){const t=totals(), e=state.products.filter(p=>statusFor(p)==='Expired').length,s=state.products.filter(p=>statusFor(p)==='Within 30d').length;document.getElementById('reportDate').textContent=new Date().toLocaleDateString();document.getElementById('reportSales').innerHTML=`<div class="mini-grid"><div class="mini"><span>Sales</span><b>${money(t.sales)}</b></div><div class="mini"><span>TRN</span><b>${fmt(t.trn)}</b></div><div class="mini"><span>ATV</span><b>${money(t.trn?t.sales/t.trn:0)}</b></div><div class="mini"><span>IPC</span><b>${t.trn?(t.units/t.trn).toFixed(2):0}</b></div><div class="mini"><span>No7</span><b>${money(t.no7)}</b></div><div class="mini"><span>AURA</span><b>${fmt(t.aura)}</b></div></div>`;document.getElementById('reportExpirySub').textContent=`${e+s} flagged`;document.getElementById('reportExpiry').innerHTML=`<div class="tag-row"><span class="badge red">Expired ${e}</span><span class="badge warn">Within 30d ${s}</span><span class="badge ok">OK ${state.products.length-e-s}</span></div>`;document.getElementById('reportNotes').value=state.notes||''}
-function renderSettings(){document.getElementById('setBranch').value=state.settings.branch;document.getElementById('setCurrency').value=state.settings.currency;document.getElementById('setTargetInput').value=state.settings.target;document.getElementById('stProducts').textContent=state.products.length;document.getElementById('stScans').textContent=state.scans.length}
-function renderAll(){renderDashboard();renderSales();renderInventory();renderExpiry();renderShelf();renderRestock();renderScans();renderReports();renderSettings()}
-function switchPage(name){document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id==='page-'+name));document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===name));document.getElementById('crumb').textContent=name.replace(/^./,c=>c.toUpperCase());document.getElementById('sidebar').classList.remove('open');window.scrollTo(0,0)}
-document.getElementById('nav').addEventListener('click',e=>{const b=e.target.closest('button[data-page]');if(b)switchPage(b.dataset.page)});document.querySelectorAll('[data-goto]').forEach(b=>b.onclick=()=>switchPage(b.dataset.goto));document.getElementById('mobileMenu').onclick=()=>document.getElementById('sidebar').classList.toggle('open');
-document.getElementById('quickAdd').onclick=()=>openProduct();
-document.getElementById('saveSales').onclick=()=>{persist();toast('Sales saved locally')};
-document.getElementById('setTarget').onclick=()=>{const v=prompt('Monthly target (AED):',state.settings.target);if(v!==null&&!isNaN(v)){state.settings.target=Number(v);state.sales.target=Number(v);persist();renderAll();toast('Target updated')}};
-document.getElementById('invSearch').oninput=renderInventory;document.getElementById('invFilter').onchange=renderInventory;
-let editId=null;function openProduct(p=null){editId=p?.id||null;document.getElementById('modalTitle').textContent=p?'Edit product':'Add product';const f=document.getElementById('productForm');['gtin','rms','description','brand','supplier','batch','expiry','units','min','max','facings','shelf'].forEach(k=>f.elements[k].value=p?.[k]??(k==='shelf'?'A':''));document.getElementById('productModal').classList.add('open')}
-function editProduct(id){openProduct(state.products.find(p=>p.id===id))}window.editProduct=editProduct;
-document.getElementById('addProduct').onclick=()=>openProduct();['closeModal','cancelProduct'].forEach(id=>document.getElementById(id).onclick=()=>document.getElementById('productModal').classList.remove('open'));
-document.getElementById('productForm').onsubmit=e=>{e.preventDefault();const f=new FormData(e.target);const obj={gtin:f.get('gtin'),rms:f.get('rms'),description:f.get('description'),brand:f.get('brand'),supplier:f.get('supplier'),batch:f.get('batch'),expiry:f.get('expiry'),units:Number(f.get('units')),min:Number(f.get('min')),max:Number(f.get('max')),facings:Number(f.get('facings')),shelf:f.get('shelf')};if(editId){Object.assign(state.products.find(p=>p.id===editId),obj)}else{obj.id=Math.max(0,...state.products.map(p=>p.id))+1;state.products.push(obj)}persist();renderAll();document.getElementById('productModal').classList.remove('open');toast(editId?'Product updated':'Product added')};
-document.getElementById('parseGs1').onclick=()=>{const x=parseGS1(document.getElementById('gs1Input').value);document.getElementById('parseState').textContent=x.gtin?'parsed':'invalid';document.getElementById('parseResult').innerHTML=`<div class="mini-grid"><div class="mini"><span>GTIN</span><b>${esc(x.gtin||'—')}</b></div><div class="mini"><span>Expiry</span><b>${esc(x.expiry||'—')}</b></div><div class="mini"><span>Batch</span><b>${esc(x.batch||'—')}</b></div><div class="mini"><span>Master match</span><b>${state.products.some(p=>p.gtin===x.gtin)?'YES':'NO'}</b></div></div>`;if(x.gtin)useParsed(x)};
-document.getElementById('clearGs1').onclick=()=>{document.getElementById('gs1Input').value='';document.getElementById('parseResult').innerHTML='';document.getElementById('parseState').textContent='waiting'};
-['filterExpired','filterSoon','filterAllExpiry'].forEach(id=>document.getElementById(id).onclick=()=>renderExpiryTable(id==='filterExpired'?'expired':id==='filterSoon'?'soon':'all'));
-document.getElementById('rebuildRestock').onclick=()=>{renderRestock();toast('Restock queue refreshed')};
-document.getElementById('saveSettings').onclick=()=>{state.settings.branch=document.getElementById('setBranch').value.trim()||state.settings.branch;state.settings.currency=document.getElementById('setCurrency').value;state.settings.target=Number(document.getElementById('setTargetInput').value||60000);state.sales.target=state.settings.target;persist();renderAll();toast('Settings saved')};
-document.getElementById('reportNotes').oninput=e=>{state.notes=e.target.value;persist()};
-function download(name,text,type='application/json'){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)}
-function inventoryCsv(){const head=['GTIN','RMS','DESCRIPTION','BRAND','SUPPLIER','BATCH','EXPIRY','UNITS','MIN','MAX','FACINGS','SHELF'];const rows=state.products.map(p=>[p.gtin,p.rms,p.description,p.brand,p.supplier,p.batch,p.expiry,p.units,p.min,p.max,p.facings,p.shelf]);return [head,...rows].map(r=>r.map(v=>'"'+String(v??'').replaceAll('"','""')+'"').join(',')).join('\n')}
-document.getElementById('downloadCsv').onclick=()=>download('pharmatrack_inventory_template.csv',inventoryCsv(),'text/csv');document.getElementById('exportAllCsv').onclick=()=>download('pharmatrack_inventory.csv',inventoryCsv(),'text/csv');
-function restockCsv(){const h=['PRIORITY','RMS','PRODUCT','UNITS','MIN','MAX','SUGGESTED','SUPPLIER','REASON'];const rows=buildRestock().map(p=>[p.score>=3?'HIGH':p.score>=2?'WATCH':'NORMAL',p.rms,p.description,p.units,p.min,p.max,p.need,p.supplier,statusFor(p)]);return [h,...rows].map(r=>r.map(v=>'"'+String(v??'').replaceAll('"','""')+'"').join(',')).join('\n')};document.getElementById('exportRestock').onclick=()=>download('pharmatrack_restock.csv',restockCsv(),'text/csv');
-function backup(){download('pharmatrack_backup_'+iso(today)+'.json',JSON.stringify(state,null,2));toast('Backup exported')};document.getElementById('exportJson').onclick=backup;document.getElementById('exportJson2').onclick=backup;document.getElementById('backupNow').onclick=backup;
-document.getElementById('importJsonBtn').onclick=()=>document.getElementById('importJsonFile').click();document.getElementById('importJsonFile').onchange=e=>{const file=e.target.files[0];if(!file)return;const r=new FileReader();r.onload=()=>{try{const x=JSON.parse(r.result);if(!x.products||!x.sales)throw Error();state=x;persist();renderAll();toast('Backup imported')}catch{toast('Invalid backup file')}};r.readAsText(file)};
-document.getElementById('printReport').onclick=()=>window.print();document.getElementById('printShelf').onclick=()=>window.print();
-document.getElementById('resetDemo').onclick=()=>{if(confirm('Reset all local data to demo defaults?')){state=defaultState();persist();renderAll();toast('Demo data reset')}};
-let stream=null;document.getElementById('startCamera').onclick=async()=>{try{if(!('BarcodeDetector' in window))throw Error('BarcodeDetector unavailable');const detector=new BarcodeDetector({formats:['ean_13','ean_8','upc_a','upc_e','code_128','data_matrix']});stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}}});const v=document.getElementById('scanVideo');v.srcObject=stream;await v.play();document.getElementById('scanPlaceholder').style.display='none';const loop=async()=>{if(!stream)return;try{const codes=await detector.detect(v);if(codes.length&&codes[0].rawValue){document.getElementById('gs1Input').value=codes[0].rawValue;document.getElementById('parseGs1').click();}}catch{}requestAnimationFrame(loop)};loop();toast('Camera started')}catch(e){toast('Camera API not supported here — use manual GS1 parsing')}};document.getElementById('stopCamera').onclick=()=>{if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;document.getElementById('scanVideo').srcObject=null;document.getElementById('scanPlaceholder').style.display='block'}toast('Camera stopped')};
-renderAll();
-</script>
-<style>@media print{.sidebar,.topbar,.actions{display:none!important}.app{display:block}.main{width:100%}.page{display:none!important}.page#page-reports{display:block!important}.card{box-shadow:none;border:1px solid #bbb;background:#fff;color:#111}.muted,.page p{color:#555}.table th,.table td{color:#111}}</style>
-</body>
-</html>
+    <!-- Product Modal -->
+    <div class="modal-overlay" id="productModal">
+        <div class="modal">
+            <div class="modal-title">Edit Product</div>
+            <div class="modal-field">
+                <label>Product Name</label>
+                <input type="text" class="input" id="editName">
+            </div>
+            <div class="modal-field">
+                <label>Barcode</label>
+                <input type="text" class="input" id="editBarcode">
+            </div>
+            <div class="modal-field">
+                <label>Expiry (YYMMDD)</label>
+                <input type="text" class="input" id="editExpiry">
+            </div>
+            <div class="modal-field">
+                <label>Batch</label>
+                <input type="text" class="input" id="editBatch">
+            </div>
+            <div class="modal-field">
+                <label>Facing (on shelf)</label>
+                <input type="number" class="input" id="editFacing" min="0">
+            </div>
+            <div class="modal-field">
+                <label>Total Units (per shelf)</label>
+                <input type="number" class="input" id="editUnits" min="0">
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-danger" id="btnDeleteProduct">Delete</button>
+                <button class="btn btn-primary" id="btnSaveProduct">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        (function() {
+            // State
+            let products = [];
+            let history = [];
+            let salesData = {};
+            let editingId = null;
+            let scanner = null;
+            let scannerRunning = false;
+
+            const HOUR_SLOTS = [
+                { id: 's1', label: '12am-6am' },
+                { id: 's2', label: '6-8am' },
+                { id: 's3', label: '8-10am' },
+                { id: 's4', label: '10-12pm' },
+                { id: 's5', label: '12-2pm' },
+                { id: 's6', label: '2-4pm' },
+                { id: 's7', label: '4-6pm' },
+                { id: 's8', label: '6-8pm' },
+                { id: 's9', label: '8-10pm' },
+                { id: 's10', label: '10-12am' }
+            ];
+
+            const $ = (id) => document.getElementById(id);
+            const toastContainer = $('toastContainer');
+
+            // Load data
+            function loadData() {
+                try {
+                    const p = localStorage.getItem('pharmatrack_products');
+                    if (p) products = JSON.parse(p);
+                    else initDemoProducts();
+                    const h = localStorage.getItem('pharmatrack_history');
+                    if (h) history = JSON.parse(h);
+                    const s = localStorage.getItem('pharmatrack_sales');
+                    if (s) salesData = JSON.parse(s);
+                } catch(e) { initDemoProducts(); }
+            }
+
+            function saveProducts() {
+                localStorage.setItem('pharmatrack_products', JSON.stringify(products));
+            }
+            function saveHistory() {
+                localStorage.setItem('pharmatrack_history', JSON.stringify(history));
+            }
+            function saveSales() {
+                localStorage.setItem('pharmatrack_sales', JSON.stringify(salesData));
+            }
+
+            function initDemoProducts() {
+                products = [
+                    { id: 'p1', name: 'Paracetamol 500mg', barcode: '8901234567890', expiry: '260630', batch: 'B001', facing: 3, units: 12, image: '' },
+                    { id: 'p2', name: 'Ibuprofen 400mg', barcode: '8901234567891', expiry: '250915', batch: 'B002', facing: 2, units: 5, image: '' },
+                    { id: 'p3', name: 'Amoxicillin 250mg', barcode: '8901234567892', expiry: '241101', batch: 'B003', facing: 4, units: 2, image: '' },
+                    { id: 'p4', name: 'Loratadine 10mg', barcode: '8901234567893', expiry: '260101', batch: 'B004', facing: 2, units: 8, image: '' },
+                    { id: 'p5', name: 'Omeprazole 20mg', barcode: '8901234567894', expiry: '250701', batch: 'B005', facing: 3, units: 15, image: '' },
+                    { id: 'p6', name: 'Vitamin C 1000mg', barcode: '8901234567895', expiry: '270201', batch: 'B006', facing: 5, units: 20, image: '' },
+                ];
+                saveProducts();
+            }
+
+            function generateId() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+
+            function showToast(msg, type = 'success') {
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                toast.textContent = msg;
+                toastContainer.appendChild(toast);
+                setTimeout(() => toast.remove(), 2500);
+            }
+
+            // Navigation
+            function switchPage(pageId) {
+                document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+                const page = document.getElementById(`page-${pageId}`);
+                const navBtn = document.querySelector(`.nav-item[data-page="${pageId}"]`);
+                if (page) page.classList.add('active');
+                if (navBtn) navBtn.classList.add('active');
+                if (pageId === 'planner') renderPlanner();
+                if (pageId === 'history') renderHistory();
+                if (pageId === 'scan') renderRecentScans();
+                if (pageId === 'sales') renderSales();
+                if (pageId !== 'scan' && scannerRunning) stopScanner();
+            }
+
+            // Scanner
+            async function startScanner() {
+                if (scannerRunning) return;
+                if (!scanner) scanner = new Html5Qrcode('reader');
+                try {
+                    await scanner.start(
+                        { facingMode: 'environment' },
+                        { fps: 10, qrbox: { width: 220, height: 220 } },
+                        (decodedText) => {
+                            handleScannedCode(decodedText);
+                        },
+                        () => {}
+                    );
+                    scannerRunning = true;
+                    $('btnStartScanner').textContent = 'Stop Scanner';
+                    $('btnStartScanner').classList.remove('btn-primary');
+                    $('btnStartScanner').classList.add('btn-danger');
+                } catch(err) {
+                    showToast('Camera access denied', 'error');
+                }
+            }
+
+            async function stopScanner() {
+                if (!scannerRunning || !scanner) return;
+                try { await scanner.stop(); } catch(e) {}
+                scannerRunning = false;
+                $('btnStartScanner').textContent = 'Start Scanner';
+                $('btnStartScanner').classList.remove('btn-danger');
+                $('btnStartScanner').classList.add('btn-primary');
+            }
+
+            function handleScannedCode(code) {
+                let barcode = code;
+                let expiry = '';
+                let batch = '';
+                const gtinMatch = code.match(/01(\d{14})/);
+                const expiryMatch = code.match(/17(\d{6})/);
+                const batchMatch = code.match(/10([\w\-\.]{1,20})/);
+                if (gtinMatch) barcode = gtinMatch[1];
+                if (expiryMatch) expiry = expiryMatch[1];
+                if (batchMatch) batch = batchMatch[1];
+
+                const existing = products.find(p => p.barcode === barcode);
+                if (existing) {
+                    history.unshift({ ...existing, qty: 1, timestamp: new Date().toISOString() });
+                    saveHistory();
+                    showToast(`Added ${existing.name}`, 'success');
+                } else {
+                    const newProduct = {
+                        id: generateId(),
+                        name: 'New Product',
+                        barcode: barcode,
+                        expiry: expiry || '260101',
+                        batch: batch || 'N/A',
+                        facing: 1,
+                        units: 1,
+                        image: ''
+                    };
+                    products.push(newProduct);
+                    saveProducts();
+                    history.unshift({ ...newProduct, qty: 1, timestamp: new Date().toISOString() });
+                    saveHistory();
+                    showToast('New product added', 'success');
+                }
+                stopScanner();
+                renderRecentScans();
+                renderPlanner();
+            }
+
+            function manualAdd() {
+                const input = $('manualInput');
+                const code = input.value.trim();
+                if (!code) { showToast('Enter barcode', 'warning'); return; }
+                handleScannedCode(code);
+                input.value = '';
+            }
+
+            // Planner
+            function getExpiryStatus(expiry) {
+                if (!expiry || expiry.length < 6) return 'ok';
+                const year = 2000 + parseInt(expiry.slice(0,2));
+                const month = parseInt(expiry.slice(2,4)) - 1;
+                const day = parseInt(expiry.slice(4,6));
+                const exp = new Date(year, month, day);
+                const now = new Date();
+                const diff = (exp - now) / (1000*60*60*24);
+                if (diff < 0) return 'critical';
+                if (diff < 30) return 'soon';
+                return 'ok';
+            }
+
+            function getBattery(units) {
+                if (units <= 2) return { level: 'critical', pct: 10, label: '🔴 Empty' };
+                if (units <= 6) return { level: 'low', pct: 30, label: '🟠 Low' };
+                if (units <= 10) return { level: 'full', pct: 70, label: '🟢 Half' };
+                return { level: 'full', pct: 100, label: '🟢 Full' };
+            }
+
+            function renderPlanner() {
+                const grid = $('plannerGrid');
+                const count = $('plannerCount');
+                const warn = $('plannerWarn');
+                if (!grid) return;
+
+                count.textContent = `${products.length} products`;
+                let warnCount = 0;
+                products.forEach(p => {
+                    const status = getExpiryStatus(p.expiry);
+                    if (status === 'critical' || status === 'soon') warnCount++;
+                });
+                warn.textContent = `${warnCount} ⚠️`;
+
+                if (products.length === 0) {
+                    grid.innerHTML = `<div class="empty-state"><p>No products yet. Scan or add manually.</p></div>`;
+                    return;
+                }
+
+                grid.innerHTML = products.map(p => {
+                    const status = getExpiryStatus(p.expiry);
+                    const battery = getBattery(p.units);
+                    const expDisplay = p.expiry.length === 6 ? `${p.expiry.slice(0,2)}/${p.expiry.slice(2,4)}/${p.expiry.slice(4,6)}` : p.expiry;
+                    const statusClass = status === 'critical' ? 'expiry-critical' : status === 'soon' ? 'expiry-soon' : 'expiry-ok';
+                    const statusBadge = status === 'critical' ? '⚠️ EXPIRED' : status === 'soon' ? '⏳ SOON' : '✓ OK';
+                    
+                    return `
+                    <div class="planner-card ${statusClass}" onclick="openProduct('${p.id}')">
+                        <div class="card-img">${p.image || '💊'}</div>
+                        <div class="card-name">${p.name}</div>
+                        <div class="card-details">
+                            <span>📅 ${expDisplay}</span>
+                            <span>🧬 ${p.batch}</span>
+                            <span>${statusBadge}</span>
+                        </div>
+                        <div class="card-bottom">
+                            <span>Facing: ${p.facing}</span>
+                            <span>Units: ${p.units}</span>
+                            <span>${battery.label}</span>
+                            <div class="battery-bar"><div class="battery-fill ${battery.level}" style="width:${battery.pct}%"></div></div>
+                        </div>
+                    </div>`;
+                }).join('');
+            }
+
+            function openProduct(id) {
+                const p = products.find(x => x.id === id);
+                if (!p) return;
+                editingId = id;
+                $('editName').value = p.name;
+                $('editBarcode').value = p.barcode;
+                $('editExpiry').value = p.expiry;
+                $('editBatch').value = p.batch;
+                $('editFacing').value = p.facing;
+                $('editUnits').value = p.units;
+                $('productModal').classList.add('active');
+            }
+
+            function closeModal() {
+                $('productModal').classList.remove('active');
+                editingId = null;
+            }
+
+            function saveProduct() {
+                if (!editingId) return;
+                const p = products.find(x => x.id === editingId);
+                if (!p) return;
+                p.name = $('editName').value || 'Unnamed';
+                p.barcode = $('editBarcode').value;
+                p.expiry = $('editExpiry').value;
+                p.batch = $('editBatch').value;
+                p.facing = parseInt($('editFacing').value) || 0;
+                p.units = parseInt($('editUnits').value) || 0;
+                saveProducts();
+                closeModal();
+                renderPlanner();
+                showToast('Product updated', 'success');
+            }
+
+            function deleteProduct() {
+                if (!editingId) return;
+                if (!confirm('Delete this product?')) return;
+                products = products.filter(p => p.id !== editingId);
+                saveProducts();
+                closeModal();
+                renderPlanner();
+                showToast('Product deleted', 'warning');
+            }
+
+            // History
+            function renderHistory() {
+                const list = $('historyList');
+                if (!list) return;
+                if (history.length === 0) {
+                    list.innerHTML = '<div class="empty-state"><p>No scan history</p></div>';
+                    return;
+                }
+                const search = ($('historySearch')?.value || '').toLowerCase();
+                const activeFilter = document.querySelector('.filter-btn.active')?.dataset.filter || 'all';
+                let filtered = history.filter(h => {
+                    const hay = `${h.name} ${h.barcode}`.toLowerCase();
+                    if (search && !hay.includes(search)) return false;
+                    if (activeFilter !== 'all') {
+                        const status = getExpiryStatus(h.expiry);
+                        if (activeFilter === 'expired' && status !== 'critical') return false;
+                        if (activeFilter === 'soon' && status !== 'soon') return false;
+                        if (activeFilter === 'ok' && status !== 'ok') return false;
+                    }
+                    return true;
+                });
+                if (filtered.length === 0) {
+                    list.innerHTML = '<div class="empty-state"><p>No matches found</p></div>';
+                    return;
+                }
+                list.innerHTML = filtered.slice(0, 50).map(h => `
+                    <div class="card" style="padding:10px;margin-bottom:6px;">
+                        <strong>${h.name}</strong>
+                        <div style="font-size:11px;color:var(--text-light);">${h.barcode} • ${new Date(h.timestamp).toLocaleString()}</div>
+                    </div>
+                `).join('');
+            }
+
+            function renderRecentScans() {
+                const list = $('recentScans');
+                if (!list) return;
+                if (history.length === 0) {
+                    list.innerHTML = '<div class="empty-state"><p>No recent scans</p></div>';
+                    return;
+                }
+                list.innerHTML = history.slice(0, 5).map(h => `
+                    <div class="card" style="padding:8px;margin-bottom:4px;display:flex;justify-content:space-between;">
+                        <span>${h.name}</span>
+                        <span style="color:var(--teal);">x${h.qty || 1}</span>
+                    </div>
+                `).join('');
+            }
+
+            // Sales
+            function renderSales() {
+                const body = $('salesBody');
+                if (!body) return;
+                const today = new Date().toISOString().slice(0, 10);
+                if (!salesData[today]) {
+                    salesData[today] = {};
+                    HOUR_SLOTS.forEach(s => {
+                        salesData[today][s.id] = { sale: 0, trn: 0, no7: 0, aura: 0, units: 0, footfall: 0 };
+                    });
+                    saveSales();
+                }
+                let html = '';
+                let totalSale = 0;
+                HOUR_SLOTS.forEach(s => {
+                    const row = salesData[today][s.id] || { sale: 0, trn: 0, no7: 0, aura: 0, units: 0, footfall: 0 };
+                    totalSale += row.sale || 0;
+                    html += `<tr>
+                        <td style="padding:4px;">${s.label}</td>
+                        <td><input type="number" class="input" style="padding:2px 4px;font-size:11px;" value="${row.sale}" data-slot="${s.id}" data-field="sale"></td>
+                        <td><input type="number" class="input" style="padding:2px 4px;font-size:11px;" value="${row.trn}" data-slot="${s.id}" data-field="trn"></td>
+                        <td><input type="number" class="input" style="padding:2px 4px;font-size:11px;" value="${row.no7}" data-slot="${s.id}" data-field="no7"></td>
+                        <td><input type="number" class="input" style="padding:2px 4px;font-size:11px;" value="${row.aura}" data-slot="${s.id}" data-field="aura"></td>
+                        <td><input type="number" class="input" style="padding:2px 4px;font-size:11px;" value="${row.units}" data-slot="${s.id}" data-field="units"></td>
+                        <td><input type="number" class="input" style="padding:2px 4px;font-size:11px;" value="${row.footfall}" data-slot="${s.id}" data-field="footfall"></td>
+                    </tr>`;
+                });
+                body.innerHTML = html;
+                $('todayTotal').textContent = totalSale;
+
+                // Month total
+                const now = new Date();
+                const month = now.getMonth();
+                const year = now.getFullYear();
+                let monthTotal = 0;
+                for (const dateKey in salesData) {
+                    const d = new Date(dateKey);
+                    if (d.getMonth() === month && d.getFullYear() === year) {
+                        const dayData = salesData[dateKey];
+                        for (const slotId in dayData) {
+                            monthTotal += dayData[slotId].sale || 0;
+                        }
+                    }
+                }
+                $('monthTotal').textContent = monthTotal;
+
+                // Attach listeners
+                body.querySelectorAll('input').forEach(inp => {
+                    inp.addEventListener('input', function() {
+                        const slotId = this.dataset.slot;
+                        const field = this.dataset.field;
+                        const todayKey = new Date().toISOString().slice(0, 10);
+                        if (!salesData[todayKey]) return;
+                        if (!salesData[todayKey][slotId]) salesData[todayKey][slotId] = { sale: 0, trn: 0, no7: 0, aura: 0, units: 0, footfall: 0 };
+                        salesData[todayKey][slotId][field] = Number(this.value) || 0;
+                        saveSales();
+                        renderSales();
+                    });
+                });
+            }
+
+            // Clear history
+            function clearHistory() {
+                if (!confirm('Clear all history?')) return;
+                history = [];
+                saveHistory();
+                renderHistory();
+                renderRecentScans();
+                showToast('History cleared', 'success');
+            }
+
+            // Export
+            function exportData() {
+                const data = { products, history, salesData };
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = `pharmatrack_backup_${new Date().toISOString().slice(0,10)}.json`;
+                a.click();
+                showToast('Data exported', 'success');
+            }
+
+            // Master upload
+            function handleMasterUpload(file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const text = e.target.result;
+                    const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+                    lines.slice(1).forEach(line => {
+                        const cols = line.split(',').map(c => c.trim());
+                        if (cols.length >= 2) {
+                            const existing = products.find(p => p.barcode === cols[0]);
+                            if (existing) {
+                                existing.name = cols[1];
+                            } else {
+                                products.push({
+                                    id: generateId(),
+                                    name: cols[1],
+                                    barcode: cols[0],
+                                    expiry: cols[2] || '260101',
+                                    batch: cols[3] || 'N/A',
+                                    facing: parseInt(cols[4]) || 1,
+                                    units: parseInt(cols[5]) || 1,
+                                    image: ''
+                                });
+                            }
+                        }
+                    });
+                    saveProducts();
+                    renderPlanner();
+                    showToast('Master data loaded', 'success');
+                };
+                reader.readAsText(file);
+            }
+
+            // Bind events
+            function bindEvents() {
+                document.querySelectorAll('.nav-item').forEach(btn => {
+                    btn.addEventListener('click', () => switchPage(btn.dataset.page));
+                });
+
+                $('btnStartScanner').addEventListener('click', () => {
+                    if (scannerRunning) stopScanner();
+                    else startScanner();
+                });
+
+                $('btnManualAdd').addEventListener('click', manualAdd);
+                $('manualInput').addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') manualAdd();
+                });
+
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        renderHistory();
+                    });
+                });
+
+                $('historySearch').addEventListener('input', renderHistory);
+
+                $('btnSaveProduct').addEventListener('click', saveProduct);
+                $('btnDeleteProduct').addEventListener('click', deleteProduct);
+                $('productModal').addEventListener('click', (e) => {
+                    if (e.target === e.currentTarget) closeModal();
+                });
+
+                $('btnClearPaste').addEventListener('click', () => {
+                    $('pasteArea').value = '';
+                });
+
+                $('btnProcessPaste').addEventListener('click', () => {
+                    const text = $('pasteArea').value;
+                    const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+                    let valid = 0;
+                    lines.forEach(line => {
+                        if (line.length >= 8) {
+                            handleScannedCode(line);
+                            valid++;
+                        }
+                    });
+                    $('statTotal').textContent = lines.length;
+                    $('statValid').textContent = valid;
+                    $('pasteStats').style.display = 'grid';
+                });
+
+                $('btnClearHistory').addEventListener('click', clearHistory);
+                $('btnExportData').addEventListener('click', exportData);
+
+                $('masterFileInput').addEventListener('change', (e) => {
+                    if (e.target.files.length) handleMasterUpload(e.target.files[0]);
+                });
+
+                $('monthlyTarget').addEventListener('input', renderSales);
+
+                // Expose functions globally
+                window.openProduct = openProduct;
+            }
+          openProduct;
+            }
+
