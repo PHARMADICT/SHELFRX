@@ -1,191 +1,305 @@
-<!doctype html>
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0a0e1a">
-<title>PharmaTrack Pro — Pharmacy Operations</title>
-<style>
-:root{--bg:#080c16;--panel:#101726;--panel2:#0d1321;--text:#ecf2ff;--muted:#91a0c5;--accent:#6c8fff;--purple:#a78bfa;--green:#34d399;--amber:#fb923c;--red:#f87171;--cyan:#38bdf8;--pink:#f472b6;--border:rgba(255,255,255,.09);--border2:rgba(108,143,255,.22);--glass:rgba(255,255,255,.055);--shadow:0 22px 70px rgba(0,0,0,.34);--r:18px;--r2:12px}
-*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:radial-gradient(circle at 18% 4%,rgba(108,143,255,.13),transparent 34%),radial-gradient(circle at 85% 75%,rgba(167,139,250,.1),transparent 30%),var(--bg);color:var(--text);font:14px/1.45 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}.app{display:grid;grid-template-columns:250px 1fr;min-height:100vh}.sidebar{position:sticky;top:0;height:100vh;padding:18px;border-right:1px solid var(--border);background:rgba(8,12,22,.78);backdrop-filter:blur(18px);display:flex;flex-direction:column;z-index:10}.brand{display:flex;align-items:center;gap:10px;padding:8px 6px 20px}.mark{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,var(--accent),var(--purple));display:grid;place-items:center;box-shadow:0 0 28px rgba(108,143,255,.32);font-weight:900}.brand b{font-size:18px}.brand span{color:#b2c1ff}.branch{margin:4px 0 16px;padding:12px;border:1px solid var(--border);border-radius:14px;background:var(--glass)}.branch small{display:block;color:var(--muted);margin-bottom:3px}.branch strong{display:block}.nav{display:grid;gap:7px}.nav button{border:1px solid transparent;background:transparent;color:var(--muted);padding:11px 12px;border-radius:12px;text-align:left;display:flex;gap:10px;align-items:center}.nav button:hover,.nav button.active{background:rgba(108,143,255,.11);border-color:var(--border2);color:var(--text)}.nav .ico{width:22px;text-align:center}.sidebar-foot{margin-top:auto;display:grid;gap:8px}.status{padding:10px 12px;border:1px solid var(--border);border-radius:12px;background:var(--glass);font-size:12px;color:var(--muted)}.main{min-width:0}.topbar{position:sticky;top:0;z-index:9;height:72px;padding:12px 24px;display:flex;align-items:center;gap:14px;justify-content:space-between;border-bottom:1px solid var(--border);background:rgba(8,12,22,.7);backdrop-filter:blur(18px)}.topbar-left{display:flex;align-items:center;gap:12px}.mobile-menu{display:none}.crumb{color:var(--muted)}.top-actions{display:flex;gap:8px;align-items:center}.content{padding:22px 24px 44px;max-width:1500px;margin:auto}.page{display:none}.page.active{display:block}.page-head{display:flex;justify-content:space-between;align-items:flex-start;gap:15px;margin-bottom:18px}.page-head h1{font-size:28px;line-height:1.05;margin:0 0 5px}.page-head p{margin:0;color:var(--muted)}.actions{display:flex;flex-wrap:wrap;gap:8px}.btn{min-height:40px;padding:0 14px;border-radius:12px;border:1px solid var(--border);background:var(--glass);color:var(--text);font-weight:700}.btn:hover{border-color:var(--border2);background:rgba(108,143,255,.09)}.btn.primary{border-color:transparent;background:linear-gradient(135deg,#6c8fff,#7c6ef7);box-shadow:0 0 24px rgba(108,143,255,.22)}.btn.green{background:rgba(52,211,153,.12);border-color:rgba(52,211,153,.24);color:#9df1cf}.btn.warn{background:rgba(251,146,60,.12);border-color:rgba(251,146,60,.24);color:#ffc38f}.btn.danger{background:rgba(248,113,113,.12);border-color:rgba(248,113,113,.25);color:#ffabab}.grid{display:grid;gap:14px}.kpis{grid-template-columns:repeat(6,minmax(0,1fr));margin-bottom:14px}.card{background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.035));border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);backdrop-filter:blur(14px)}.kpi{padding:16px}.kpi .label{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.08em}.kpi .val{font-size:25px;font-weight:850;margin-top:7px}.kpi .sub{font-size:11px;color:var(--green);margin-top:4px}.layout2{grid-template-columns:1.4fr .9fr}.layout3{grid-template-columns:repeat(3,1fr)}.panel{padding:16px}.panel-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.panel-title h3{margin:0;font-size:15px}.panel-title span{color:var(--muted);font-size:12px}.table-wrap{overflow:auto;border:1px solid var(--border);border-radius:14px}.table{width:100%;border-collapse:collapse;min-width:760px}.table th,.table td{padding:9px 10px;border-bottom:1px solid var(--border);text-align:left}.table th{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);background:rgba(255,255,255,.025)}.table tr:last-child td{border-bottom:0}.table input{width:100%;min-width:70px;padding:8px 9px;background:#0a1020;border:1px solid var(--border);border-radius:8px;color:var(--text)}.mini-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.mini{padding:11px;border:1px solid var(--border);border-radius:12px;background:var(--glass)}.mini b{display:block;font-size:18px}.mini span{color:var(--muted);font-size:11px}.badge{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:4px 8px;font-size:11px;font-weight:800;border:1px solid var(--border)}.badge.ok{color:#9df1cf;background:rgba(52,211,153,.09);border-color:rgba(52,211,153,.22)}.badge.warn{color:#ffc38f;background:rgba(251,146,60,.09);border-color:rgba(251,146,60,.22)}.badge.red{color:#ffabab;background:rgba(248,113,113,.09);border-color:rgba(248,113,113,.22)}.progress{height:8px;background:rgba(255,255,255,.06);border-radius:99px;overflow:hidden}.progress>span{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--accent),var(--purple));}.hero{padding:22px;border-radius:22px;margin-bottom:14px;background:linear-gradient(135deg,rgba(108,143,255,.15),rgba(167,139,250,.08));border:1px solid var(--border2)}.hero h2{font-size:34px;margin:0 0 6px}.hero p{margin:0;color:var(--muted);max-width:70ch}.chart{height:190px;display:flex;align-items:flex-end;gap:8px;padding:16px 10px 8px}.bar{flex:1;min-width:12px;position:relative;border-radius:7px 7px 3px 3px;background:linear-gradient(180deg,var(--accent),rgba(108,143,255,.28));box-shadow:0 0 16px rgba(108,143,255,.08)}.bar small{position:absolute;left:50%;transform:translateX(-50%);bottom:-24px;color:var(--muted);font-size:10px;white-space:nowrap}.chart-wrap{padding-bottom:26px}.alert-list{display:grid;gap:8px}.alert{display:flex;justify-content:space-between;gap:10px;padding:11px;border:1px solid var(--border);border-radius:12px;background:rgba(255,255,255,.025)}.alert b{font-size:13px}.alert small{display:block;color:var(--muted)}.shelf{display:grid;gap:14px}.shelf-row{display:grid;grid-template-columns:120px 1fr;gap:10px;align-items:stretch}.shelf-label{padding:12px;border:1px solid var(--border);border-radius:12px;background:var(--glass);font-weight:800}.shelf-cells{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}.slot{min-height:90px;border:1px dashed rgba(145,160,197,.25);border-radius:12px;padding:9px;background:rgba(255,255,255,.02)}.slot.filled{border-style:solid;background:rgba(108,143,255,.08)}.slot .sku{font-size:10px;color:var(--muted)}.slot b{display:block;margin:3px 0;font-size:12px}.slot small{color:var(--muted)}.form-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.field{display:grid;gap:5px}.field label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}.field input,.field select,.field textarea{width:100%;padding:10px 11px;background:#091020;border:1px solid var(--border);border-radius:10px;color:var(--text);outline:none}.field textarea{min-height:100px;resize:vertical}.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent)}.span2{grid-column:span 2}.span4{grid-column:span 4}.scan-box{display:grid;grid-template-columns:1.1fr .9fr;gap:14px}.scanner{min-height:300px;border:1px dashed var(--border2);border-radius:16px;display:grid;place-items:center;background:radial-gradient(circle,rgba(108,143,255,.08),transparent 65%);position:relative;overflow:hidden}.scanner video{width:100%;height:100%;object-fit:cover}.scan-center{text-align:center;color:var(--muted)}.scan-center strong{display:block;color:var(--text);margin-bottom:4px}.tag-row{display:flex;gap:7px;flex-wrap:wrap}.modal{position:fixed;inset:0;display:none;place-items:center;background:rgba(0,0,0,.62);backdrop-filter:blur(8px);z-index:50;padding:20px}.modal.open{display:grid}.modal-card{width:min(720px,100%);max-height:90vh;overflow:auto;padding:18px;border-radius:18px;background:#0d1423;border:1px solid var(--border2);box-shadow:var(--shadow)}.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.modal-head h3{margin:0}.toast{position:fixed;right:18px;bottom:18px;z-index:80;background:#111a2d;border:1px solid var(--border2);padding:11px 14px;border-radius:12px;box-shadow:var(--shadow);display:none}.toast.show{display:block}.muted{color:var(--muted)}.right{text-align:right}.mobile-only{display:none}@media(max-width:1150px){.kpis{grid-template-columns:repeat(3,1fr)}.layout2,.scan-box{grid-template-columns:1fr}.form-grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:850px){.app{grid-template-columns:1fr}.sidebar{position:fixed;left:-280px;width:250px;transition:left .2s}.sidebar.open{left:0}.mobile-menu{display:inline-flex}.content{padding:16px}.topbar{padding:10px 14px}.kpis{grid-template-columns:repeat(2,1fr)}.layout3{grid-template-columns:1fr}.shelf-row{grid-template-columns:1fr}.shelf-cells{grid-template-columns:repeat(3,1fr)}.page-head{flex-direction:column}.form-grid{grid-template-columns:1fr}.span2,.span4{grid-column:span 1}.mobile-only{display:block}}@media(max-width:520px){.kpis{grid-template-columns:1fr 1fr}.top-actions .btn.label{display:none}.mini-grid{grid-template-columns:1fr 1fr}.shelf-cells{grid-template-columns:1fr 1fr}}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShelfRx Pro & MY Offline Tracker</title>
+    <style>
+        :root {
+            /* Midnight Dark Theme (Default) */
+            --bg-color: #0f172a;
+            --surface-color: rgba(30, 41, 59, 0.7);
+            --border-color: rgba(168, 85, 247, 0.3);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-glow: #a855f7;
+            --success-color: #10b981;
+            --shelf-bg: linear-gradient(180deg, #d9a05b 0%, #8b5a2b 100%);
+        }
+
+        [data-theme="light"] {
+            /* Mint Light Theme */
+            --bg-color: #f0fdf4;
+            --surface-color: rgba(255, 255, 255, 0.8);
+            --border-color: rgba(16, 185, 129, 0.3);
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --accent-glow: #10b981;
+            --success-color: #059669;
+            --shelf-bg: linear-gradient(180deg, #fef3c7 0%, #f59e0b 100%);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+            transition: background-color 0.4s ease, color 0.4s ease;
+        }
+
+        /* Glassmorphism Utilities */
+        .glass {
+            background: var(--surface-color);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .glass-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .glass-btn:hover { background: var(--border-color); box-shadow: 0 0 15px var(--accent-glow); }
+
+        /* Cinematic Loader */
+        #loader {
+            position: fixed; inset: 0; background: #0f172a; z-index: 9999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: opacity 0.8s ease;
+        }
+        
+        .loader-terminal { color: #10b981; font-family: monospace; font-size: 1.2rem; margin-bottom: 20px; }
+        .loader-reveal {
+            opacity: 0; color: #f8fafc; font-size: 1.5rem; font-weight: 300; letter-spacing: 2px;
+            animation: revealText 2.5s forwards 1.5s;
+        }
+        @keyframes revealText { 0% { opacity: 0; transform: translateY(10px); } 100% { opacity: 1; transform: translateY(0); } }
+        
+        /* Main Application Header */
+        header { display: flex; justify-content: space-between; align-items: center; padding: 20px; }
+        .app-title { font-size: 1.5rem; font-weight: 800; text-shadow: 0 0 10px var(--accent-glow); }
+
+        /* 4-Door Navigation Portal */
+        #portal-nav {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; padding: 20px;
+        }
+        
+        .portal-door {
+            padding: 40px 20px; text-align: center; cursor: pointer; transition: transform 0.3s ease;
+        }
+        .portal-door:hover { transform: translateY(-5px); box-shadow: 0 10px 40px var(--accent-glow); }
+        .portal-door h2 { font-size: 1.2rem; margin-bottom: 10px; }
+        
+        /* Views */
+        .view-section { display: none; padding: 20px; animation: fadeIn 0.4s ease; }
+        .view-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Module: KPI Table */
+        .kpi-table-wrapper { overflow-x: auto; margin-top: 20px; border-radius: 12px; }
+        table { width: 100%; min-width: 700px; border-collapse: collapse; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border-color); }
+        th { background: rgba(0,0,0,0.2); font-size: 0.9rem; text-transform: uppercase; color: var(--text-muted); }
+        input[type="text"] { 
+            width: 80px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); 
+            color: var(--text-main); padding: 8px; border-radius: 6px; outline: none;
+        }
+        input[type="text"]:focus { border-color: var(--accent-glow); box-shadow: 0 0 8px var(--accent-glow); }
+
+        /* Module: Planner & Inventory */
+        .sku-widget {
+            display: inline-block; padding: 15px 30px; font-size: 1.5rem; font-weight: 800;
+            color: var(--success-color); border: 2px solid var(--success-color); border-radius: 12px; margin-bottom: 30px;
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.2); cursor: pointer;
+        }
+        .wooden-rack { background: var(--shelf-bg); padding: 20px 10px; border-radius: 8px; display: flex; gap: 15px; border-bottom: 8px solid #5c3a18; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+        .bottle { width: 60px; height: 100px; background: rgba(255,255,255,0.9); border-radius: 8px 8px 2px 2px; position: relative; border: 2px solid #ccc; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 5px; color: #333; font-weight: bold; font-size: 0.8rem; cursor: pointer; }
+        .badge-exp { position: absolute; top: -5px; right: -5px; width: 15px; height: 15px; background: #ef4444; border-radius: 50%; box-shadow: 0 0 8px #ef4444; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+
+        /* Utilities */
+        .back-btn { margin-bottom: 20px; }
+        .grid-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        select { background: var(--surface-color); color: var(--text-main); border: 1px solid var(--border-color); padding: 10px; border-radius: 8px; }
+
+    </style>
 </head>
 <body>
-<div class="app">
-<aside class="sidebar" id="sidebar">
-  <div class="brand"><div class="mark">P</div><div><b>Pharma<span>Track</span></b><small style="display:block;color:var(--muted)">Pro · v2.0</small></div></div>
-  <div class="branch"><small>ACTIVE BRANCH</small><strong id="branchName">Boots DXB T3 Arrivals</strong><span class="badge ok" style="margin-top:7px">● Offline ready</span></div>
-  <nav class="nav" id="nav">
-    <button class="active" data-page="dashboard"><span class="ico">◈</span>Dashboard</button>
-    <button data-page="sales"><span class="ico">▥</span>Sales Entry</button>
-    <button data-page="inventory"><span class="ico">▦</span>Inventory</button>
-    <button data-page="scanner"><span class="ico">⌗</span>GS1 Scanner</button>
-    <button data-page="expiry"><span class="ico">◷</span>Expiry</button>
-    <button data-page="shelf"><span class="ico">▤</span>Shelf Planner</button>
-    <button data-page="restock"><span class="ico">↗</span>Smart Restock</button>
-    <button data-page="reports"><span class="ico">▧</span>Reports</button>
-    <button data-page="settings"><span class="ico">⚙</span>Settings</button>
-  </nav>
-  <div class="sidebar-foot"><div class="status">Autosave: <b id="saveStatus" style="color:var(--green)">ON</b><br>Last save <span id="lastSave">now</span></div><button class="btn" id="resetDemo">Reset demo data</button></div>
-</aside>
-<main class="main">
-  <header class="topbar"><div class="topbar-left"><button class="btn mobile-menu" id="mobileMenu">☰</button><div class="crumb">PharmaTrack Pro / <b id="crumb">Dashboard</b></div></div><div class="top-actions"><button class="btn label" id="quickAdd">＋ Quick Add</button><button class="btn" id="exportJson">Backup</button></div></header>
-  <div class="content">
-    <section class="page active" id="page-dashboard">
-      <div class="hero"><div style="display:flex;justify-content:space-between;gap:16px;align-items:flex-end;flex-wrap:wrap"><div><div class="badge" style="margin-bottom:8px">Built for the pharmacy floor</div><h2>Good evening, Vysakh.</h2><p>One live view of sales, stock, expiry, restock and shelf execution. All demo data is editable and persists locally in this browser.</p></div><div class="actions"><button class="btn primary" data-goto="sales">Enter sales</button><button class="btn" data-goto="scanner">Scan GS1</button></div></div></div>
-      <div class="grid kpis" id="dashKpis"></div>
-      <div class="grid layout2">
-        <div class="card panel"><div class="panel-title"><h3>Hourly Sales — Today</h3><span id="todayLabel"></span></div><div class="chart-wrap"><div class="chart" id="salesChart"></div></div></div>
-        <div class="card panel"><div class="panel-title"><h3>Expiry & Stock Watch</h3><span id="watchCount"></span></div><div class="alert-list" id="watchList"></div></div>
-      </div>
-      <div class="grid layout3" style="margin-top:14px">
-        <div class="card panel"><div class="panel-title"><h3>Target Achievement</h3><span id="achSub"></span></div><div style="font-size:34px;font-weight:900" id="achVal">0%</div><div class="progress" style="margin:9px 0 6px"><span id="achBar" style="width:0%"></span></div><div class="muted" id="paceText"></div></div>
-        <div class="card panel"><div class="panel-title"><h3>AURA Performance</h3><span>Today</span></div><div class="mini-grid" id="auraMini"></div></div>
-        <div class="card panel"><div class="panel-title"><h3>Fast Actions</h3><span>workflow</span></div><div class="actions"><button class="btn" data-goto="expiry">Review expiry</button><button class="btn" data-goto="restock">Generate restock</button><button class="btn" data-goto="shelf">Open shelf map</button><button class="btn" data-goto="reports">Daily report</button></div></div>
-      </div>
-    </section>
 
-    <section class="page" id="page-sales">
-      <div class="page-head"><div><h1>Sales Entry</h1><p>10 hourly slots · live totals · target pacing · KPI workflow.</p></div><div class="actions"><button class="btn" id="setTarget">Set monthly target</button><button class="btn green" id="saveSales">Save sales</button></div></div>
-      <div class="grid kpis" id="salesKpis"></div>
-      <div class="card panel"><div class="table-wrap"><table class="table" id="salesTable"></table></div></div>
-    </section>
+    <!-- Cinematic Loader -->
+    <div id="loader">
+        <div class="loader-terminal" id="terminal-text">Booting ShelfRx OS...</div>
+        <div class="loader-reveal">Designed & Developed by VYSAKH CHANDRAN</div>
+    </div>
 
-    <section class="page" id="page-inventory">
-      <div class="page-head"><div><h1>Inventory Master</h1><p>GTIN, RMS, description, brand, supplier, batch, expiry, units and facings.</p></div><div class="actions"><button class="btn" id="addProduct">＋ Add product</button><button class="btn" id="downloadCsv">CSV template</button></div></div>
-      <div class="card panel"><div class="actions" style="margin-bottom:10px"><input id="invSearch" placeholder="Search product / GTIN / RMS" style="flex:1;min-width:220px;padding:10px;border:1px solid var(--border);border-radius:10px;background:#091020;color:var(--text)"><select id="invFilter" class="field" style="width:auto;padding:10px;background:#091020;color:var(--text);border:1px solid var(--border);border-radius:10px"><option value="all">All status</option><option value="expired">Expired</option><option value="soon">Within 30d</option><option value="low">Low stock</option><option value="ok">OK</option></select></div><div class="table-wrap"><table class="table" id="invTable"></table></div></div>
-    </section>
+    <!-- Main Interface -->
+    <div id="app" style="display: none;">
+        <header>
+            <div class="app-title">ShelfRx Pro <span style="font-size: 0.8rem; font-weight:400; color:var(--text-muted);">| BY VYSAKH</span></div>
+            <button class="glass-btn" onclick="toggleTheme()">🌓 Toggle Theme</button>
+        </header>
 
-    <section class="page" id="page-scanner">
-      <div class="page-head"><div><h1>GS1 Scanner</h1><p>Parse GTIN, expiry and batch from common GS1 application identifiers.</p></div><div class="actions"><button class="btn primary" id="startCamera">Start camera</button><button class="btn" id="stopCamera">Stop</button></div></div>
-      <div class="scan-box"><div class="card panel"><div class="scanner" id="scannerBox"><video id="scanVideo" playsinline muted></video><div class="scan-center" id="scanPlaceholder"><strong>Camera scanner ready</strong>Use a device with a supported barcode API, or use manual parsing on the right.</div></div><div style="height:8px"></div><div class="tag-row"><span class="badge">01 GTIN</span><span class="badge">17 Expiry</span><span class="badge">10 Batch</span><span class="badge">Offline manual parser</span></div></div>
-        <div class="card panel"><div class="panel-title"><h3>Manual GS1 Parse</h3><span id="parseState">waiting</span></div><div class="field"><label>Barcode string</label><textarea id="gs1Input" placeholder="Example: (01)06212345678903(17)270131(10)B24018"></textarea></div><div class="actions" style="margin-top:10px"><button class="btn primary" id="parseGs1">Parse GS1</button><button class="btn" id="clearGs1">Clear</button></div><div id="parseResult" style="margin-top:12px"></div></div>
-      </div>
-      <div class="card panel" style="margin-top:14px"><div class="panel-title"><h3>Recent Scans</h3><span id="scanCount"></span></div><div class="table-wrap"><table class="table" id="scanTable"></table></div></div>
-    </section>
+        <!-- 4-Door Portal -->
+        <div id="portal-nav">
+            <div class="glass portal-door" onclick="openView('view-kpi')">
+                <h2>📊 KPI & Agenda</h2>
+                <p style="font-size: 0.8rem; color: var(--text-muted);">Hourly inputs, cumulative math, ATV & Aura %</p>
+            </div>
+            <div class="glass portal-door" onclick="openView('view-planner')">
+                <h2>📦 Inventory & Planner</h2>
+                <p style="font-size: 0.8rem; color: var(--text-muted);">Planogram racks, total SKU audit, labeling</p>
+            </div>
+            <div class="glass portal-door" onclick="openView('view-rota')">
+                <h2>⏰ Duty Rota & Time</h2>
+                <p style="font-size: 0.8rem; color: var(--text-muted);">RTA shift tracking, 12-language guides</p>
+            </div>
+            <div class="glass portal-door" onclick="openView('view-scanner')">
+                <h2>📷 Scanner & Expiry</h2>
+                <p style="font-size: 0.8rem; color: var(--text-muted);">GS1 Parser, Data Logger telemetry</p>
+            </div>
+        </div>
 
-    <section class="page" id="page-expiry">
-      <div class="page-head"><div><h1>Expiry Monitor</h1><p>RAG triage for expired, near-expiry and safe stock.</p></div><div class="actions"><button class="btn danger" id="filterExpired">Expired</button><button class="btn warn" id="filterSoon">Within 30d</button><button class="btn" id="filterAllExpiry">All</button></div></div>
-      <div class="grid kpis" id="expiryKpis"></div>
-      <div class="card panel"><div class="table-wrap"><table class="table" id="expiryTable"></table></div></div>
-    </section>
+        <!-- KPI & Agenda View -->
+        <section id="view-kpi" class="view-section">
+            <button class="glass-btn back-btn" onclick="goHome()">← Back to Portal</button>
+            <div class="glass" style="padding: 20px;">
+                <h2 style="margin-bottom: 10px;">Daily Agenda & KPIs</h2>
+                <p style="font-size: 0.9rem; color: var(--text-muted);">Math supported in fields (e.g., type "25+15" and click away)</p>
+                <div class="kpi-table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Hours</th>
+                                <th>Sale (AED)</th>
+                                <th>TRN</th>
+                                <th>ATV</th>
+                                <th>No7 %</th>
+                                <th>Aura %</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Example Rows for Clubbed Times -->
+                            <tr><td>12:00 AM - 06:00 AM</td><td><input type="text" onblur="calcField(this)" placeholder="0"></td><td><input type="text" onblur="calcField(this)" placeholder="0"></td><td>Auto</td><td>Auto</td><td>Auto</td></tr>
+                            <tr><td>06:00 AM - 08:00 AM</td><td><input type="text" onblur="calcField(this)" placeholder="0"></td><td><input type="text" onblur="calcField(this)" placeholder="0"></td><td>Auto</td><td>Auto</td><td>Auto</td></tr>
+                            <tr><td>08:00 AM - 10:00 AM</td><td><input type="text" onblur="calcField(this)" placeholder="0"></td><td><input type="text" onblur="calcField(this)" placeholder="0"></td><td>Auto</td><td>Auto</td><td>Auto</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
 
-    <section class="page" id="page-shelf">
-      <div class="page-head"><div><h1>Shelf Planner</h1><p>Visual shelf map with facings, units, expiry status and eye-level priority.</p></div><div class="actions"><button class="btn" id="addSlot">＋ Assign product</button><button class="btn" id="printShelf">Print map</button></div></div>
-      <div class="card panel"><div class="shelf" id="shelfMap"></div></div>
-    </section>
+        <!-- Inventory & Planner View -->
+        <section id="view-planner" class="view-section">
+            <button class="glass-btn back-btn" onclick="goHome()">← Back to Portal</button>
+            <div class="glass" style="padding: 20px; text-align: center;">
+                <div class="sku-widget" onclick="alert('Launching Interactive SKU & Out-Of-Stock Audit Modal...')">
+                    TOTAL SKU / STOCK UNITS<br>122 / 840
+                </div>
+                
+                <h3 style="text-align: left; margin-bottom: 15px;">Dermatology Rack A</h3>
+                <div class="wooden-rack">
+                    <div class="bottle" onclick="alert('Opening QuickLabel Creator for Item 1...')"><div class="badge-exp"></div>Item 1</div>
+                    <div class="bottle">Item 2</div>
+                    <div class="bottle">Item 3</div>
+                    <div class="bottle"><div class="badge-exp" style="background:#f59e0b; box-shadow:0 0 8px #f59e0b;"></div>Item 4</div>
+                </div>
+            </div>
+        </section>
 
-    <section class="page" id="page-restock">
-      <div class="page-head"><div><h1>Smart Restock</h1><p>Action queue based on stock on hand, min/max levels and expiry risk.</p></div><div class="actions"><button class="btn primary" id="rebuildRestock">Refresh queue</button><button class="btn" id="exportRestock">Export CSV</button></div></div>
-      <div class="grid kpis" id="restockKpis"></div>
-      <div class="card panel"><div class="table-wrap"><table class="table" id="restockTable"></table></div></div>
-    </section>
+        <!-- Duty Rota & Time View -->
+        <section id="view-rota" class="view-section">
+            <button class="glass-btn back-btn" onclick="goHome()">← Back to Portal</button>
+            <div class="glass" style="padding: 20px;">
+                <div class="grid-header">
+                    <h2>⭐ TODAY SHIFT: VYSAKH</h2>
+                    <select id="lang-selector">
+                        <option>English</option>
+                        <option>Chinese (Mandarin)</option>
+                        <option>Russian</option>
+                        <option>French</option>
+                        <option>Spanish</option>
+                        <option>Arabic</option>
+                        <option>Portuguese</option>
+                        <option>Korean</option>
+                        <option>Japanese</option>
+                        <option>Indonesian</option>
+                        <option>Swahili</option>
+                        <option>Kazakh/Kyrgyz</option>
+                    </select>
+                </div>
+                <div style="background: rgba(0,0,0,0.2); padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+                    <h1 id="live-clock" style="font-size: 3rem; font-family: monospace; color: var(--accent-glow);">00:00:00</h1>
+                    <p style="color: var(--text-muted); margin-bottom: 15px;">Scheduled: 06:00 AM - 03:00 PM</p>
+                    <button class="glass-btn" style="background: var(--success-color);">Clock In</button>
+                    <button class="glass-btn">Start Break</button>
+                </div>
+            </div>
+        </section>
 
-    <section class="page" id="page-reports">
-      <div class="page-head"><div><h1>Reports</h1><p>Print-ready views for daily sales, expiry and stock audits.</p></div><div class="actions"><button class="btn primary" id="printReport">Print / Save PDF</button><button class="btn" id="backupNow">JSON backup</button></div></div>
-      <div class="grid layout2"><div class="card panel"><div class="panel-title"><h3>Daily Sales Snapshot</h3><span id="reportDate"></span></div><div id="reportSales"></div></div><div class="card panel"><div class="panel-title"><h3>Expiry Audit</h3><span id="reportExpirySub"></span></div><div id="reportExpiry"></div></div></div>
-      <div class="card panel" style="margin-top:14px"><div class="panel-title"><h3>Branch / Audit Notes</h3><span>editable</span></div><div class="field"><label>Notes</label><textarea id="reportNotes" placeholder="Enter handover / audit notes..."></textarea></div></div>
-    </section>
+        <!-- Scanner & Expiry View -->
+        <section id="view-scanner" class="view-section">
+            <button class="glass-btn back-btn" onclick="goHome()">← Back to Portal</button>
+            <div class="glass" style="padding: 20px;">
+                <h2>Scanner & Data Logger</h2>
+                <div style="height: 200px; border: 2px dashed var(--border-color); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 20px 0;">
+                    <p style="color: var(--text-muted);">📷 Camera Viewfinder / GS1 Dropzone</p>
+                </div>
+                <button class="glass-btn" style="width: 100%;">Export CSV Order Sheet</button>
+            </div>
+        </section>
+    </div>
 
-    <section class="page" id="page-settings">
-      <div class="page-head"><div><h1>Settings & Data</h1><p>Local-first configuration, backup and import tools.</p></div></div>
-      <div class="grid layout2"><div class="card panel"><div class="panel-title"><h3>Branch</h3><span>data separation</span></div><div class="form-grid"><div class="field span2"><label>Branch name</label><input id="setBranch"></div><div class="field"><label>Currency</label><select id="setCurrency"><option>AED</option><option>KWD</option></select></div><div class="field"><label>Monthly target</label><input type="number" id="setTargetInput"></div></div><div class="actions" style="margin-top:12px"><button class="btn primary" id="saveSettings">Save settings</button></div></div>
-        <div class="card panel"><div class="panel-title"><h3>Data tools</h3><span>LocalStorage</span></div><div class="actions"><button class="btn" id="importJsonBtn">Import JSON</button><button class="btn" id="exportJson2">Export JSON</button><button class="btn" id="exportAllCsv">Export inventory CSV</button><input type="file" id="importJsonFile" accept="application/json" hidden></div><div class="muted" style="margin-top:10px">Your current browser copy is the source of truth. Export a backup before moving devices.</div></div></div>
-      <div class="card panel" style="margin-top:14px"><div class="panel-title"><h3>Application status</h3><span>v2.0</span></div><div class="mini-grid"><div class="mini"><span>Products</span><b id="stProducts">0</b></div><div class="mini"><span>Scans</span><b id="stScans">0</b></div><div class="mini"><span>Sales rows</span><b>10</b></div><div class="mini"><span>Storage</span><b style="color:var(--green)">Local</b></div></div></div>
-    </section>
-  </div>
-</main>
-</div>
-<div class="modal" id="productModal"><div class="modal-card"><div class="modal-head"><h3 id="modalTitle">Add product</h3><button class="btn" id="closeModal">✕</button></div><form id="productForm"><div class="form-grid"><div class="field"><label>GTIN</label><input name="gtin" required></div><div class="field"><label>RMS</label><input name="rms"></div><div class="field span2"><label>Description</label><input name="description" required></div><div class="field"><label>Brand</label><input name="brand"></div><div class="field"><label>Supplier</label><input name="supplier"></div><div class="field"><label>Batch</label><input name="batch"></div><div class="field"><label>Expiry</label><input type="date" name="expiry"></div><div class="field"><label>Units</label><input type="number" min="0" name="units" value="0"></div><div class="field"><label>Min</label><input type="number" min="0" name="min" value="5"></div><div class="field"><label>Max</label><input type="number" min="0" name="max" value="20"></div><div class="field"><label>Facings</label><input type="number" min="0" name="facings" value="1"></div><div class="field span2"><label>Shelf</label><select name="shelf"><option>A</option><option>B</option><option>C</option></select></div></div><div class="actions" style="justify-content:flex-end;margin-top:14px"><button type="button" class="btn" id="cancelProduct">Cancel</button><button type="submit" class="btn primary">Save product</button></div></form></div></div>
-<div class="toast" id="toast"></div>
-<script>
-const KEY='pharmatrack_pro_v2';
-const hours=['12am','2am','4am','6am','8am','10am','12pm','2pm','4pm','6pm'];
-const metricCols=['sales','trn','no7','aura','units','footfall'];
-const today=new Date();
-const iso=d=>new Date(d).toISOString().slice(0,10);
-const days=(a,b)=>Math.round((new Date(b)-new Date(a))/86400000);
-const fmt=n=>Number(n||0).toLocaleString('en-US',{maximumFractionDigits:2});
-const money=n=>`${state.settings.currency} ${fmt(n)}`;
-const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
-let state=load();
-function defaultState(){
- const t=iso(today);
- const products=[
-  {id:1,gtin:'05012345678901',rms:'100201',description:'No7 Protect & Perfect Night Cream 50ml',brand:'No7',supplier:'Boots Supplier',batch:'N7A2406',expiry:addDays(t,64),units:12,min:8,max:24,facings:3,shelf:'A'},
-  {id:2,gtin:'05012345678918',rms:'100202',description:'No7 Future Renew Day Cream SPF15',brand:'No7',supplier:'Boots Supplier',batch:'N7B2402',expiry:addDays(t,18),units:5,min:8,max:24,facings:3,shelf:'A'},
-  {id:3,gtin:'05012345678925',rms:'100203',description:'La Roche-Posay Anthelios SPF50+',brand:'La Roche-Posay',supplier:'L’Oreal',batch:'LRP6241',expiry:addDays(t,210),units:28,min:10,max:36,facings:4,shelf:'B'},
-  {id:4,gtin:'05012345678932',rms:'100204',description:'Wegovy 1mg Pre-filled Pen',brand:'Novo Nordisk',supplier:'Novo Nordisk',batch:'WG1-0626',expiry:addDays(t,11),units:3,min:4,max:10,facings:2,shelf:'C'},
-  {id:5,gtin:'05012345678949',rms:'100205',description:'Magnesium Glycinate 400mg 60 Tabs',brand:'White Health',supplier:'White Health',batch:'WH24071',expiry:addDays(t,120),units:7,min:10,max:30,facings:2,shelf:'B'},
-  {id:6,gtin:'05012345678956',rms:'100206',description:'Omega 3 2000mg 120 Tabs',brand:'KEENVITA',supplier:'KEENVITA',batch:'KV24051',expiry:addDays(t,-5),units:6,min:8,max:24,facings:2,shelf:'C'},
-  {id:7,gtin:'05012345678963',rms:'100207',description:'Vitamin D3 5000 IU 100 Caps',brand:'Puritan’s Pride',supplier:'Puritan’s Pride',batch:'PP24101',expiry:addDays(t,330),units:19,min:8,max:32,facings:3,shelf:'B'},
-  {id:8,gtin:'05012345678970',rms:'100208',description:'Brufen 400mg 30 Tabs',brand:'Abbott',supplier:'Abbott',batch:'BR2404',expiry:addDays(t,95),units:4,min:10,max:30,facings:3,shelf:'A'}
- ];
- const sales={date:t,target:60000,rows:hours.map((h,i)=>({hour:h,sales:[1200,980,1450,880,1640,2180,1900,1760,1200,980][i],trn:[12,10,15,9,18,22,20,17,13,10][i],no7:[58,42,64,38,71,92,77,66,45,39][i],aura:[8,6,10,7,12,15,13,11,8,7][i],units:[28,22,34,18,39,49,45,38,31,24][i],footfall:[45,41,53,37,66,78,74,63,50,43][i]}))};
- return {version:2,settings:{branch:'Boots DXB T3 Arrivals',currency:'AED',target:60000},products,sales,scans:[],notes:'',lastSave:new Date().toISOString()};
-}
-function addDays(base,n){const d=new Date(base);d.setDate(d.getDate()+n);return iso(d)}
-function load(){try{const x=JSON.parse(localStorage.getItem(KEY)||'null');return x&&x.version===2?x:defaultState()}catch{return defaultState()}}
-function persist(){state.lastSave=new Date().toISOString();localStorage.setItem(KEY,JSON.stringify(state));document.getElementById('lastSave').textContent=new Date(state.lastSave).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});}
-persist();
-function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2200)}
-function statusFor(p){const d=days(iso(today),p.expiry);if(d<0)return'Expired';if(d<=30)return'Within 30d';if(p.units<=p.min)return'Low stock';return'OK'}
-function statusBadge(s){return `<span class="badge ${s==='Expired'?'red':(s==='Within 30d'||s==='Low stock')?'warn':'ok'}">${esc(s)}</span>`}
-function totals(){const t={sales:0,trn:0,no7:0,aura:0,units:0,footfall:0};state.sales.rows.forEach(r=>metricCols.forEach(k=>t[k]+=Number(r[k]||0)));return t}
-function achievement(){const t=state.settings.target||state.sales.target||60000;return Math.min(100,(totals().sales/t)*100)}
-function renderDashboard(){const t=totals(), expired=state.products.filter(p=>statusFor(p)==='Expired'), soon=state.products.filter(p=>statusFor(p)==='Within 30d'), low=state.products.filter(p=>statusFor(p)==='Low stock');
- document.getElementById('branchName').textContent=state.settings.branch;document.getElementById('todayLabel').textContent=today.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});document.getElementById('dashKpis').innerHTML=[['Sales',money(t.sales),'+14% vs pacing'],['Transactions',fmt(t.trn),'live'],['ATV',money(t.trn?t.sales/t.trn:0),'sales / trn'],['IPC',fmt(t.trn?t.units/t.trn:0),'units / trn'],['No7',money(t.no7),`${t.sales?((t.no7/t.sales)*100).toFixed(1):0}% share`],['Footfall',fmt(t.footfall),'tracked today']].map(x=>`<div class="card kpi"><div class="label">${x[0]}</div><div class="val">${x[1]}</div><div class="sub">${x[2]}</div></div>`).join('');
- const vals=state.sales.rows.map(r=>r.sales);const mx=Math.max(...vals,1);document.getElementById('salesChart').innerHTML=state.sales.rows.map(r=>`<div class="bar" style="height:${Math.max(10,(r.sales/mx)*100)}%"><small>${r.hour}</small></div>`).join('');
- const watch=[...expired,...soon,...low].slice(0,6);document.getElementById('watchCount').textContent=`${expired.length+soon.length+low.length} flagged`;document.getElementById('watchList').innerHTML=watch.length?watch.map(p=>`<div class="alert"><div><b>${esc(p.description)}</b><small>${esc(p.gtin)} · ${p.units} units</small></div>${statusBadge(statusFor(p))}</div>`).join(''):`<div class="muted">No alerts.</div>`;
- const ach=achievement();document.getElementById('achVal').textContent=ach.toFixed(1)+'%';document.getElementById('achBar').style.width=Math.min(100,ach)+'%';document.getElementById('achSub').textContent=money(state.settings.target||60000)+' target';document.getElementById('paceText').textContent=`${money(t.sales)} achieved · ${money(Math.max(0,(state.settings.target||60000)-t.sales))} remaining`;
- document.getElementById('auraMini').innerHTML=[['Full AURA',fmt(t.aura),'transactions'],['AURA %',t.trn?(t.aura/t.trn*100).toFixed(1)+'%':'0%','penetration'],['Units',fmt(t.units),'sold'],['Best hour',bestHour().hour,bestHour().sales?money(bestHour().sales):'']].map(x=>`<div class="mini"><span>${x[0]}</span><b>${x[1]}</b><small class="muted">${x[2]}</small></div>`).join('');
-}
-function bestHour(){return state.sales.rows.reduce((a,b)=>Number(b.sales)>Number(a.sales)?b:a,state.sales.rows[0])}
-function renderSales(){const t=totals();document.getElementById('salesKpis').innerHTML=[['Sales',money(t.sales)],['Transactions',fmt(t.trn)],['ATV',money(t.trn?t.sales/t.trn:0)],['IPC',t.trn?(t.units/t.trn).toFixed(2):'0'],['No7 share',t.sales?(t.no7/t.sales*100).toFixed(1)+'%':'0%'],['AURA',fmt(t.aura)]].map(x=>`<div class="card kpi"><div class="label">${x[0]}</div><div class="val">${x[1]}</div><div class="sub">live calculation</div></div>`).join('');
- let html='<thead><tr><th>Hour</th><th>Sales (AED)</th><th>TRN</th><th>No7</th><th>AURA</th><th>Units</th><th>Footfall</th></tr></thead><tbody>';
- state.sales.rows.forEach((r,i)=>{html+=`<tr><td><b>${r.hour}</b></td>${metricCols.map(k=>`<td><input type="number" min="0" step="0.01" data-sales-index="${i}" data-key="${k}" value="${r[k]??0}"></td>`).join('')}</tr>`});
- html+=`<tr><td><b>TOTAL</b></td>${metricCols.map(k=>`<td><b id="sum-${k}">${fmt(t[k])}</b></td>`).join('')}</tr></tbody>`;document.getElementById('salesTable').innerHTML=html;
- document.querySelectorAll('[data-sales-index]').forEach(inp=>inp.oninput=e=>{const i=+e.target.dataset.salesIndex;state.sales.rows[i][e.target.dataset.key]=Number(e.target.value||0);renderSales();renderDashboard();persist()});
-}
-function renderInventory(){const q=(document.getElementById('invSearch')?.value||'').toLowerCase();const f=document.getElementById('invFilter')?.value||'all';const rows=state.products.filter(p=>{const hay=[p.description,p.gtin,p.rms,p.brand,p.batch].join(' ').toLowerCase();const st=statusFor(p);return(!q||hay.includes(q))&&(f==='all'||(f==='expired'&&st==='Expired')||(f==='soon'&&st==='Within 30d')||(f==='low'&&st==='Low stock')||(f==='ok'&&st==='OK'))});let html='<thead><tr><th>Product</th><th>GTIN</th><th>RMS</th><th>Expiry</th><th>Batch</th><th>Units</th><th>Facings</th><th>Status</th><th></th></tr></thead><tbody>';rows.forEach(p=>{html+=`<tr><td><b>${esc(p.description)}</b><div class="muted">${esc(p.brand)} · ${esc(p.supplier)}</div></td><td>${esc(p.gtin)}</td><td>${esc(p.rms)}</td><td>${p.expiry}</td><td>${esc(p.batch)}</td><td>${p.units}</td><td>${p.facings}</td><td>${statusBadge(statusFor(p))}</td><td><button class="btn" onclick="editProduct(${p.id})">Edit</button></td></tr>`});html+='</tbody>';document.getElementById('invTable').innerHTML=html}
-function renderExpiry(){const e=state.products.filter(p=>statusFor(p)==='Expired').length,s=state.products.filter(p=>statusFor(p)==='Within 30d').length,o=state.products.filter(p=>statusFor(p)==='OK').length,l=state.products.filter(p=>statusFor(p)==='Low stock').length;document.getElementById('expiryKpis').innerHTML=[['Expired',e,'red'],['Within 30d',s,'warn'],['Low stock',l,'warn'],['OK',o,'ok'],['Total products',state.products.length,''],['Tracked units',state.products.reduce((a,p)=>a+p.units,0),'']].map(x=>`<div class="card kpi"><div class="label">${x[0]}</div><div class="val">${fmt(x[1])}</div><div class="sub" style="color:${x[2]==='red'?'var(--red)':x[2]==='warn'?'var(--amber)':x[2]==='ok'?'var(--green)':'var(--muted)'}">${x[2]||'inventory'}</div></div>`).join('');renderExpiryTable('all')}
-function renderExpiryTable(mode='all'){let rows=state.products.filter(p=>{const s=statusFor(p);return mode==='all'||(mode==='expired'&&s==='Expired')||(mode==='soon'&&s==='Within 30d')});rows.sort((a,b)=>new Date(a.expiry)-new Date(b.expiry));let html='<thead><tr><th>Product</th><th>Expiry</th><th>Days</th><th>Units</th><th>Batch</th><th>Status</th></tr></thead><tbody>';rows.forEach(p=>html+=`<tr><td><b>${esc(p.description)}</b><div class="muted">${esc(p.gtin)}</div></td><td>${p.expiry}</td><td>${days(iso(today),p.expiry)}</td><td>${p.units}</td><td>${esc(p.batch)}</td><td>${statusBadge(statusFor(p))}</td></tr>`);html+='</tbody>';document.getElementById('expiryTable').innerHTML=html}
-function renderShelf(){const groups=['A','B','C'];document.getElementById('shelfMap').innerHTML=groups.map(g=>{const ps=state.products.filter(p=>p.shelf===g);const cells=[...ps,...Array(Math.max(0,6-ps.length)).fill(null)];return `<div class="shelf-row"><div class="shelf-label">Shelf ${g}<div class="muted" style="font-weight:500">${ps.length} products</div></div><div class="shelf-cells">${cells.slice(0,6).map((p,i)=>p?`<div class="slot filled"><div class="sku">${esc(p.rms)}</div><b>${esc(p.description.slice(0,27))}${p.description.length>27?'…':''}</b><small>${p.units} units · ${p.facings} facings</small><div style="margin-top:6px">${statusBadge(statusFor(p))}</div></div>`:`<div class="slot"><div class="muted">Empty slot</div><small>Tap Assign product</small></div>`).join('')}</div></div>`}).join('')}
-function buildRestock(){return state.products.map(p=>{const need=Math.max(0,p.max-p.units);const score=(p.units<=p.min?3:0)+(statusFor(p)==='Expired'?4:0)+(statusFor(p)==='Within 30d'?2:0);return {...p,need,score}}).filter(x=>x.need>0||x.score>0).sort((a,b)=>b.score-a.score||b.need-a.need)}
-function renderRestock(){const list=buildRestock(),urgent=list.filter(x=>x.score>=3).length,units=list.reduce((a,p)=>a+p.need,0),sup=new Set(list.map(p=>p.supplier)).size;document.getElementById('restockKpis').innerHTML=[['Action items',list.length,'queue'],['Urgent',urgent,'priority'],['Suggested units',units,'to max'],['Suppliers',sup,'vendor count'],['Expired risk',list.filter(p=>statusFor(p)==='Expired').length,'remove'],['Near expiry',list.filter(p=>statusFor(p)==='Within 30d').length,'review']].map(x=>`<div class="card kpi"><div class="label">${x[0]}</div><div class="val">${fmt(x[1])}</div><div class="sub">${x[2]}</div></div>`).join('');let html='<thead><tr><th>Priority</th><th>Product</th><th>On hand</th><th>Min / Max</th><th>Suggested</th><th>Supplier</th><th>Reason</th></tr></thead><tbody>';list.forEach(p=>html+=`<tr><td>${p.score>=3?'<span class="badge red">HIGH</span>':p.score>=2?'<span class="badge warn">WATCH</span>':'<span class="badge">NORMAL</span>'}</td><td><b>${esc(p.description)}</b><div class="muted">${esc(p.rms)}</div></td><td>${p.units}</td><td>${p.min} / ${p.max}</td><td><b>${p.need}</b></td><td>${esc(p.supplier)}</td><td>${statusFor(p)==='Expired'?'Remove expired stock':statusFor(p)==='Within 30d'?'Near expiry + replenishment':p.units<=p.min?'Below minimum':'Below max target'}</td></tr>`);html+='</tbody>';document.getElementById('restockTable').innerHTML=html}
-function renderScans(){document.getElementById('scanCount').textContent=`${state.scans.length} scans`;let html='<thead><tr><th>Time</th><th>Raw</th><th>GTIN</th><th>Expiry</th><th>Batch</th><th>Match</th></tr></thead><tbody>';state.scans.slice().reverse().forEach(s=>html+=`<tr><td>${new Date(s.at).toLocaleString()}</td><td>${esc(s.raw)}</td><td>${esc(s.gtin||'—')}</td><td>${esc(s.expiry||'—')}</td><td>${esc(s.batch||'—')}</td><td>${s.match?statusBadge('OK'):'—'}</td></tr>`);html+='</tbody>';document.getElementById('scanTable').innerHTML=html}
-function parseGS1(raw){let s=raw.replace(/\u001d/g,'|').trim();const out={raw,gtin:'',expiry:'',batch:''};const m01=s.match(/(?:\(01\)|01)(\d{14})/);if(m01)out.gtin=m01[1];const m17=s.match(/(?:\(17\)|17)(\d{6})/);if(m17){const v=m17[1];let yy=+v.slice(0,2),mm=+v.slice(2,4),dd=+v.slice(4,6);const yyyy=2000+yy;out.expiry=`${yyyy}-${String(mm).padStart(2,'0')}-${String(dd).padStart(2,'0')}`}const m10=s.match(/(?:\(10\)|10)([A-Za-z0-9._\/-]{1,20})/);if(m10)out.batch=m10[1].replace(/[|()]+$/,'');return out}
-function useParsed(x){const match=state.products.find(p=>p.gtin===x.gtin);state.scans.push({...x,at:new Date().toISOString(),match:!!match});if(match){match.batch=x.batch||match.batch;match.expiry=x.expiry||match.expiry;toast(`Matched: ${match.description}`)}else toast('GS1 parsed — product not in master');persist();renderScans();renderExpiry();renderInventory();}
-function renderReports(){const t=totals(), e=state.products.filter(p=>statusFor(p)==='Expired').length,s=state.products.filter(p=>statusFor(p)==='Within 30d').length;document.getElementById('reportDate').textContent=new Date().toLocaleDateString();document.getElementById('reportSales').innerHTML=`<div class="mini-grid"><div class="mini"><span>Sales</span><b>${money(t.sales)}</b></div><div class="mini"><span>TRN</span><b>${fmt(t.trn)}</b></div><div class="mini"><span>ATV</span><b>${money(t.trn?t.sales/t.trn:0)}</b></div><div class="mini"><span>IPC</span><b>${t.trn?(t.units/t.trn).toFixed(2):0}</b></div><div class="mini"><span>No7</span><b>${money(t.no7)}</b></div><div class="mini"><span>AURA</span><b>${fmt(t.aura)}</b></div></div>`;document.getElementById('reportExpirySub').textContent=`${e+s} flagged`;document.getElementById('reportExpiry').innerHTML=`<div class="tag-row"><span class="badge red">Expired ${e}</span><span class="badge warn">Within 30d ${s}</span><span class="badge ok">OK ${state.products.length-e-s}</span></div>`;document.getElementById('reportNotes').value=state.notes||''}
-function renderSettings(){document.getElementById('setBranch').value=state.settings.branch;document.getElementById('setCurrency').value=state.settings.currency;document.getElementById('setTargetInput').value=state.settings.target;document.getElementById('stProducts').textContent=state.products.length;document.getElementById('stScans').textContent=state.scans.length}
-function renderAll(){renderDashboard();renderSales();renderInventory();renderExpiry();renderShelf();renderRestock();renderScans();renderReports();renderSettings()}
-function switchPage(name){document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id==='page-'+name));document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===name));document.getElementById('crumb').textContent=name.replace(/^./,c=>c.toUpperCase());document.getElementById('sidebar').classList.remove('open');window.scrollTo(0,0)}
-document.getElementById('nav').addEventListener('click',e=>{const b=e.target.closest('button[data-page]');if(b)switchPage(b.dataset.page)});document.querySelectorAll('[data-goto]').forEach(b=>b.onclick=()=>switchPage(b.dataset.goto));document.getElementById('mobileMenu').onclick=()=>document.getElementById('sidebar').classList.toggle('open');
-document.getElementById('quickAdd').onclick=()=>openProduct();
-document.getElementById('saveSales').onclick=()=>{persist();toast('Sales saved locally')};
-document.getElementById('setTarget').onclick=()=>{const v=prompt('Monthly target (AED):',state.settings.target);if(v!==null&&!isNaN(v)){state.settings.target=Number(v);state.sales.target=Number(v);persist();renderAll();toast('Target updated')}};
-document.getElementById('invSearch').oninput=renderInventory;document.getElementById('invFilter').onchange=renderInventory;
-let editId=null;function openProduct(p=null){editId=p?.id||null;document.getElementById('modalTitle').textContent=p?'Edit product':'Add product';const f=document.getElementById('productForm');['gtin','rms','description','brand','supplier','batch','expiry','units','min','max','facings','shelf'].forEach(k=>f.elements[k].value=p?.[k]??(k==='shelf'?'A':''));document.getElementById('productModal').classList.add('open')}
-function editProduct(id){openProduct(state.products.find(p=>p.id===id))}window.editProduct=editProduct;
-document.getElementById('addProduct').onclick=()=>openProduct();['closeModal','cancelProduct'].forEach(id=>document.getElementById(id).onclick=()=>document.getElementById('productModal').classList.remove('open'));
-document.getElementById('productForm').onsubmit=e=>{e.preventDefault();const f=new FormData(e.target);const obj={gtin:f.get('gtin'),rms:f.get('rms'),description:f.get('description'),brand:f.get('brand'),supplier:f.get('supplier'),batch:f.get('batch'),expiry:f.get('expiry'),units:Number(f.get('units')),min:Number(f.get('min')),max:Number(f.get('max')),facings:Number(f.get('facings')),shelf:f.get('shelf')};if(editId){Object.assign(state.products.find(p=>p.id===editId),obj)}else{obj.id=Math.max(0,...state.products.map(p=>p.id))+1;state.products.push(obj)}persist();renderAll();document.getElementById('productModal').classList.remove('open');toast(editId?'Product updated':'Product added')};
-document.getElementById('parseGs1').onclick=()=>{const x=parseGS1(document.getElementById('gs1Input').value);document.getElementById('parseState').textContent=x.gtin?'parsed':'invalid';document.getElementById('parseResult').innerHTML=`<div class="mini-grid"><div class="mini"><span>GTIN</span><b>${esc(x.gtin||'—')}</b></div><div class="mini"><span>Expiry</span><b>${esc(x.expiry||'—')}</b></div><div class="mini"><span>Batch</span><b>${esc(x.batch||'—')}</b></div><div class="mini"><span>Master match</span><b>${state.products.some(p=>p.gtin===x.gtin)?'YES':'NO'}</b></div></div>`;if(x.gtin)useParsed(x)};
-document.getElementById('clearGs1').onclick=()=>{document.getElementById('gs1Input').value='';document.getElementById('parseResult').innerHTML='';document.getElementById('parseState').textContent='waiting'};
-['filterExpired','filterSoon','filterAllExpiry'].forEach(id=>document.getElementById(id).onclick=()=>renderExpiryTable(id==='filterExpired'?'expired':id==='filterSoon'?'soon':'all'));
-document.getElementById('rebuildRestock').onclick=()=>{renderRestock();toast('Restock queue refreshed')};
-document.getElementById('saveSettings').onclick=()=>{state.settings.branch=document.getElementById('setBranch').value.trim()||state.settings.branch;state.settings.currency=document.getElementById('setCurrency').value;state.settings.target=Number(document.getElementById('setTargetInput').value||60000);state.sales.target=state.settings.target;persist();renderAll();toast('Settings saved')};
-document.getElementById('reportNotes').oninput=e=>{state.notes=e.target.value;persist()};
-function download(name,text,type='application/json'){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)}
-function inventoryCsv(){const head=['GTIN','RMS','DESCRIPTION','BRAND','SUPPLIER','BATCH','EXPIRY','UNITS','MIN','MAX','FACINGS','SHELF'];const rows=state.products.map(p=>[p.gtin,p.rms,p.description,p.brand,p.supplier,p.batch,p.expiry,p.units,p.min,p.max,p.facings,p.shelf]);return [head,...rows].map(r=>r.map(v=>'"'+String(v??'').replaceAll('"','""')+'"').join(',')).join('\n')}
-document.getElementById('downloadCsv').onclick=()=>download('pharmatrack_inventory_template.csv',inventoryCsv(),'text/csv');document.getElementById('exportAllCsv').onclick=()=>download('pharmatrack_inventory.csv',inventoryCsv(),'text/csv');
-function restockCsv(){const h=['PRIORITY','RMS','PRODUCT','UNITS','MIN','MAX','SUGGESTED','SUPPLIER','REASON'];const rows=buildRestock().map(p=>[p.score>=3?'HIGH':p.score>=2?'WATCH':'NORMAL',p.rms,p.description,p.units,p.min,p.max,p.need,p.supplier,statusFor(p)]);return [h,...rows].map(r=>r.map(v=>'"'+String(v??'').replaceAll('"','""')+'"').join(',')).join('\n')};document.getElementById('exportRestock').onclick=()=>download('pharmatrack_restock.csv',restockCsv(),'text/csv');
-function backup(){download('pharmatrack_backup_'+iso(today)+'.json',JSON.stringify(state,null,2));toast('Backup exported')};document.getElementById('exportJson').onclick=backup;document.getElementById('exportJson2').onclick=backup;document.getElementById('backupNow').onclick=backup;
-document.getElementById('importJsonBtn').onclick=()=>document.getElementById('importJsonFile').click();document.getElementById('importJsonFile').onchange=e=>{const file=e.target.files[0];if(!file)return;const r=new FileReader();r.onload=()=>{try{const x=JSON.parse(r.result);if(!x.products||!x.sales)throw Error();state=x;persist();renderAll();toast('Backup imported')}catch{toast('Invalid backup file')}};r.readAsText(file)};
-document.getElementById('printReport').onclick=()=>window.print();document.getElementById('printShelf').onclick=()=>window.print();
-document.getElementById('resetDemo').onclick=()=>{if(confirm('Reset all local data to demo defaults?')){state=defaultState();persist();renderAll();toast('Demo data reset')}};
-let stream=null;document.getElementById('startCamera').onclick=async()=>{try{if(!('BarcodeDetector' in window))throw Error('BarcodeDetector unavailable');const detector=new BarcodeDetector({formats:['ean_13','ean_8','upc_a','upc_e','code_128','data_matrix']});stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}}});const v=document.getElementById('scanVideo');v.srcObject=stream;await v.play();document.getElementById('scanPlaceholder').style.display='none';const loop=async()=>{if(!stream)return;try{const codes=await detector.detect(v);if(codes.length&&codes[0].rawValue){document.getElementById('gs1Input').value=codes[0].rawValue;document.getElementById('parseGs1').click();}}catch{}requestAnimationFrame(loop)};loop();toast('Camera started')}catch(e){toast('Camera API not supported here — use manual GS1 parsing')}};document.getElementById('stopCamera').onclick=()=>{if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;document.getElementById('scanVideo').srcObject=null;document.getElementById('scanPlaceholder').style.display='block'}toast('Camera stopped')};
-renderAll();
-</script>
-<style>@media print{.sidebar,.topbar,.actions{display:none!important}.app{display:block}.main{width:100%}.page{display:none!important}.page#page-reports{display:block!important}.card{box-shadow:none;border:1px solid #bbb;background:#fff;color:#111}.muted,.page p{color:#555}.table th,.table td{color:#111}}</style>
+    <script>
+        // Cinematic Loader Sequence
+        setTimeout(() => {
+            document.getElementById('terminal-text').innerText = "Loading UI Constraints...";
+            setTimeout(() => {
+                document.getElementById('loader').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('loader').style.display = 'none';
+                    document.getElementById('app').style.display = 'block';
+                }, 800);
+            }, 2500); // Wait for reveal text to finish
+        }, 1000);
+
+        // Theme Toggle Logic
+        let isLight = false;
+        function toggleTheme() {
+            isLight = !isLight;
+            document.documentElement.setAttribute('data-theme', isLight ? 'light' : 'dark');
+        }
+
+        // 4-Door Navigation Logic
+        function openView(viewId) {
+            document.getElementById('portal-nav').style.display = 'none';
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+        }
+
+        function goHome() {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.getElementById('portal-nav').style.display = 'grid';
+        }
+
+        // Math Evaluation for KPI Inputs (e.g., typing "25+10" returns "35")
+        function calcField(input) {
+            try {
+                if (input.value && /^[0-9+\-*/().\s]+$/.test(input.value)) {
+                    // Safe evaluation using Function
+                    input.value = new Function('return ' + input.value)();
+                }
+            } catch (e) {
+                console.warn("Invalid math entry");
+            }
+        }
+
+        // Live Clock for Rota
+        setInterval(() => {
+            const now = new Date();
+            document.getElementById('live-clock').innerText = now.toLocaleTimeString();
+        }, 1000);
+    </script>
 </body>
 </html>
